@@ -5,6 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { STUDIO_GITHUB_REPO_URL, STUDIO_PRODUCT_NAME } from '@/features/studio/studioBrand'
 import type { StudioController } from '@/features/studio/useStudioController'
 import { type StudioLanguage } from '@/i18n'
 
@@ -23,14 +24,14 @@ function GitHubLogo() {
 export function StudioIdentity({ className = '', language, setLanguage, t }: StudioIdentityProps) {
   return (
     <div className={`studio-identity ${className}`.trim()}>
-      <div className="brand">
+      <div className="brand" aria-label={STUDIO_PRODUCT_NAME}>
         <span className="brand-mark" />
-        Bible Strong <em>Avatar Lab</em>
+        Radar <em>Avatar Lab</em>
       </div>
       <div className="language-picker">
         <a
           className="source-link"
-          href="https://github.com/smontlouis/bible-strong-avatar-lab"
+          href={STUDIO_GITHUB_REPO_URL}
           target="_blank"
           rel="noreferrer"
           aria-label="GitHub"

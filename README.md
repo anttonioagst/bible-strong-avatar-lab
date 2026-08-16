@@ -1,6 +1,8 @@
-# Radar · Bible Strong Avatar Lab fork
+# Radar Avatar Lab
 
 This repository is [Antonio Augusto](https://github.com/anttonioagst)'s public fork of [Bible Strong Avatar Lab](https://github.com/smontlouis/bible-strong-avatar-lab) (AGPL-3.0). It keeps the original Studio and procedural engine, and turns the project into the home of **Radar**, the AI-news mascot of the [WIP](https://wiip.club) community (`@radar`).
+
+The Studio chrome is branded **Radar Avatar Lab**. The canvas footer credits [Antonio Augusto](https://github.com/anttonioagst) (`@anttonioagst`). This is a product-facing label for the fork; it does not replace the AGPL attribution below.
 
 The geometry engine, playback, expressions, and Studio UI were written by [Stéphane Montlouis-Calixte](https://github.com/smontlouis) for Bible Strong Avatar Lab. This fork does not replace that engine. Significant changes in this fork are listed below.
 
@@ -11,6 +13,7 @@ The application still runs entirely in the browser. Projects are stored locally 
 ## Significant changes in this fork
 
 - **Radar is the default bundled avatar.** Opening the Studio on a fresh document selects Radar (`id: radar`) first. The character is a charcoal procedural sphere with amber eyes and a small dish node, matching Radar's charcoal / cream / bronze / amber palette without pasting the icon raster. Existing bundled avatars (Strobi, Freddy, Grok bot, and the rest) remain in the library.
+- **Studio chrome is branded Radar Avatar Lab.** The header, document title, Open Graph tags, and web manifest use that name. The GitHub button points at [this fork](https://github.com/anttonioagst/bible-strong-avatar-lab). The canvas footer reads `Made with ❤️ by @anttonioagst` and links to [github.com/anttonioagst](https://github.com/anttonioagst). Upstream Bible Strong / smontlouis credit remains in this README and in `LICENSE`.
 - **Player-only page** at [`radar.html`](./radar.html) (`/radar.html` in dev and in the production build). It renders only Radar, playing the bundled idle loop with blink, with no Studio chrome. The page is sized for a feed or profile embed and can later be iframed into wiip.club. Use `?bg=transparent` for a transparent background; the default is a dark charcoal page. The player is client-only and does not use a backend.
 
 ## What you can do

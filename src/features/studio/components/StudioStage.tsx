@@ -7,6 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import { AvatarCanvas } from '@/features/rendering/components/AvatarCanvas'
 import { StudioIdentity } from '@/features/studio/components/StudioIdentity'
+import { STUDIO_AUTHOR_HANDLE, STUDIO_AUTHOR_PROFILE_URL } from '@/features/studio/studioBrand'
 import type { StudioController } from '@/features/studio/useStudioController'
 
 export function StudioStage({ controller }: { controller: StudioController }) {
@@ -152,8 +153,8 @@ export function StudioStage({ controller }: { controller: StudioController }) {
       </TooltipProvider>
       <p className="stage-credit">
         Made with ❤️ by{' '}
-        <a href="https://x.com/_smontlouis" target="_blank" rel="noreferrer">
-          @_smontlouis
+        <a href={STUDIO_AUTHOR_PROFILE_URL} target="_blank" rel="noreferrer">
+          {STUDIO_AUTHOR_HANDLE}
         </a>
         .
       </p>
