@@ -1,3 +1,4 @@
+import viteConfig from '../../../../vite.config'
 import { loadStudioDocument } from '@/features/studio/studioDocument'
 import { createRadarPlayerDocument, RADAR_AVATAR_ID } from '@/features/player/radarPayload'
 
@@ -26,5 +27,14 @@ describe('Radar player document', () => {
     expect(player.expressions[player.sequence.steps[0].expressionId]).toBeDefined()
     expect(grok?.colors).toEqual({ body: '#000000', eyes: '#ffffff' })
     expect(player.avatar.colors).not.toEqual(grok?.colors)
+  })
+
+  it('keeps a relative Vite base and Radar HTML entry for GitHub Pages project URLs', () => {
+    expect(viteConfig.base).toBe('./')
+    expect(viteConfig.build?.rollupOptions?.input).toEqual(
+      expect.objectContaining({
+        radar: expect.stringMatching(/radar\.html$/),
+      })
+    )
   })
 })

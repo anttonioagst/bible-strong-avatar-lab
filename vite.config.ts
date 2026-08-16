@@ -10,6 +10,8 @@ const root = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
   root,
+  // Relative URLs keep assets working on a GitHub Pages project site
+  // (https://anttonioagst.github.io/bible-strong-avatar-lab/) and at a domain root.
   base: './',
   plugins: [react(), babel({ presets: [reactCompilerPreset()] }), tailwindcss()],
   resolve: {
