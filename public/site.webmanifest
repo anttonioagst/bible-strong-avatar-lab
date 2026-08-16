@@ -1,6 +1,6 @@
 {
-  "name": "Bible Strong Avatar Lab",
-  "short_name": "Avatar Lab",
+  "name": "Radar Avatar Lab",
+  "short_name": "Radar Lab",
   "description": "A browser-based studio for designing procedural 2D avatars, expressions and reusable animations.",
   "lang": "en",
   "start_url": ".",
