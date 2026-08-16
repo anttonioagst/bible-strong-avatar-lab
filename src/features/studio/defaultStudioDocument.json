@@ -111,6 +111,168 @@
         }
       },
       {
+        "id": "wiipo",
+        "name": "Wiipo",
+        "body": {
+          "primary": {
+            "type": "cube",
+            "width": 198,
+            "height": 132,
+            "depth": 92,
+            "roundness": 0
+          },
+          "nodes": [
+            {
+              "id": "wiipo-ear-left",
+              "name": "Left ear",
+              "surface": {
+                "type": "cube",
+                "width": 66,
+                "height": 100,
+                "depth": 70,
+                "roundness": 0
+              },
+              "position": [
+                -66,
+                -116,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "id": "wiipo-ear-right",
+              "name": "Right ear",
+              "surface": {
+                "type": "cube",
+                "width": 66,
+                "height": 100,
+                "depth": 70,
+                "roundness": 0
+              },
+              "position": [
+                66,
+                -116,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "id": "wiipo-foot-left",
+              "name": "Left foot",
+              "surface": {
+                "type": "cube",
+                "width": 48,
+                "height": 40,
+                "depth": 48,
+                "roundness": 0
+              },
+              "position": [
+                -66,
+                86,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "id": "wiipo-foot-right",
+              "name": "Right foot",
+              "surface": {
+                "type": "cube",
+                "width": 48,
+                "height": 40,
+                "depth": 48,
+                "roundness": 0
+              },
+              "position": [
+                66,
+                86,
+                0
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "id": "wiipo-tail",
+              "name": "Tail",
+              "surface": {
+                "type": "cube",
+                "width": 22,
+                "height": 20,
+                "depth": 22,
+                "roundness": 0.35
+              },
+              "position": [
+                0,
+                36,
+                -56
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "id": "wiipo-nose",
+              "name": "Nose",
+              "surface": {
+                "type": "cube",
+                "width": 12,
+                "height": 10,
+                "depth": 12,
+                "roundness": 0
+              },
+              "position": [
+                0,
+                10,
+                52
+              ],
+              "rotation": [
+                0,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "colors": {
+          "body": "#F4A6A3",
+          "eyes": "#000000"
+        },
+        "eyes": {
+          "widthLeft": 38,
+          "widthRight": 38,
+          "heightLeft": 38,
+          "heightRight": 38,
+          "spacing": 74,
+          "positionXLeft": 0,
+          "positionXRight": 0,
+          "positionYLeft": -8,
+          "positionYRight": -8,
+          "leftAngle": 0,
+          "rightAngle": 0
+        },
+        "renderStyle": {
+          "type": "pixel",
+          "resolution": 32
+        }
+      },
+      {
         "id": "strobi",
         "name": "Strobi",
         "body": {
