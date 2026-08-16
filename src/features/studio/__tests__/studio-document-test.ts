@@ -153,8 +153,101 @@ describe('Studio document', () => {
 
   it('keeps a locally saved project authoritative over the bundled snapshot', () => {
     const localDocument = documentFixture()
+    const loaded = loadStudioDocument(storage(JSON.stringify(localDocument)))
 
-    expect(loadStudioDocument(storage(JSON.stringify(localDocument)))).toEqual(localDocument)
+    expect(loaded.library.activeAvatarId).toBe(localDocument.library.activeAvatarId)
+    expect(loaded.library.avatars[0]).toEqual(localDocument.library.avatars[0])
+    expect(loaded.expressions).toEqual(localDocument.expressions)
+    expect(loaded.sequences).toEqual(localDocument.sequences)
+    expect(loaded.playback).toEqual(localDocument.playback)
+  })
+
+  it('appends bundled avatars that are missing from a saved library', () => {
+    const bundled = loadStudioDocument(storage())
+    const userAvatar = createAvatar('Custom')
+    const savedAvatars = [
+      ...bundled.library.avatars.filter(avatar => avatar.id !== 'antonio' && avatar.id !== 'wiipo'),
+      userAvatar,
+    ]
+    const saved: StudioDocument = {
+      ...bundled,
+      library: {
+        activeAvatarId: 'radar',
+        avatars: savedAvatars,
+      },
+      playback: { stateId: 'idle', playing: false },
+    }
+
+    const loaded = loadStudioDocument(storage(JSON.stringify(saved)))
+
+    expect(loaded.library.activeAvatarId).toBe('radar')
+    expect(loaded.library.avatars.map(avatar => avatar.id)).toEqual([
+      ...savedAvatars.map(avatar => avatar.id),
+      'antonio',
+      'wiipo',
+    ])
+    expect(loaded.library.avatars.find(avatar => avatar.id === 'antonio')).toMatchObject({
+      id: 'antonio',
+      name: 'Antonio',
+    })
+    expect(loaded.library.avatars.find(avatar => avatar.id === 'wiipo')).toMatchObject({
+      id: 'wiipo',
+      name: 'Wiipo',
+    })
+    expect(loaded.library.avatars.find(avatar => avatar.id === userAvatar.id)).toEqual(userAvatar)
+    expect(loaded.expressions).toEqual(saved.expressions)
+    expect(loaded.sequences).toEqual(saved.sequences)
+    expect(loaded.playback).toEqual({ stateId: 'idle', playing: false })
+  })
+
+  it('does not overwrite a saved avatar that shares a bundled id', () => {
+    const bundled = loadStudioDocument(storage())
+    const editedAntonio = {
+      ...bundled.library.avatars.find(avatar => avatar.id === 'antonio')!,
+      name: 'Antonio edited',
+      colors: { body: '#123456', eyes: '#abcdef' },
+    }
+    const saved: StudioDocument = {
+      ...bundled,
+      library: {
+        activeAvatarId: 'radar',
+        avatars: bundled.library.avatars
+          .filter(avatar => avatar.id !== 'wiipo')
+          .map(avatar => (avatar.id === 'antonio' ? editedAntonio : avatar)),
+      },
+    }
+
+    const loaded = loadStudioDocument(storage(JSON.stringify(saved)))
+
+    expect(loaded.library.activeAvatarId).toBe('radar')
+    expect(loaded.library.avatars.find(avatar => avatar.id === 'antonio')).toEqual(editedAntonio)
+    expect(loaded.library.avatars.find(avatar => avatar.id === 'wiipo')).toMatchObject({
+      id: 'wiipo',
+      name: 'Wiipo',
+    })
+  })
+
+  it('appends missing bundled avatars when importing a project', () => {
+    const bundled = loadStudioDocument(storage())
+    const userAvatar = createAvatar('Imported')
+    const imported = parseImportedStudioDocument(
+      serializeStudioDocument({
+        ...bundled,
+        library: {
+          activeAvatarId: userAvatar.id,
+          avatars: [userAvatar],
+        },
+      }),
+      bundled
+    )
+
+    expect(imported.library.activeAvatarId).toBe(userAvatar.id)
+    expect(imported.library.avatars[0]).toEqual(userAvatar)
+    expect(imported.library.avatars.some(avatar => avatar.id === 'antonio')).toBe(true)
+    expect(imported.library.avatars.some(avatar => avatar.id === 'wiipo')).toBe(true)
+    expect(imported.expressions).toEqual(bundled.expressions)
+    expect(imported.sequences).toEqual(bundled.sequences)
+    expect(imported.playback).toEqual(bundled.playback)
   })
 
   it('persists one coherent document after a mutation', () => {
