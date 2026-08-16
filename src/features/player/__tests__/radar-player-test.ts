@@ -15,9 +15,11 @@ describe('Radar player document', () => {
       colors: { body: '#1c1c1c', eyes: '#e8a54b' },
     })
     expect(bundled.library.avatars.map(avatar => avatar.name)).toEqual(
-      expect.arrayContaining(['Radar', 'Strobi', 'Freddy', 'Grok bot'])
+      expect.arrayContaining(['Radar', 'Antonio', 'Strobi', 'Freddy', 'Grok bot'])
     )
+    expect(bundled.library.avatars[1]).toMatchObject({ id: 'antonio', name: 'Antonio' })
     expect(player.avatar.id).toBe(RADAR_AVATAR_ID)
+    expect(player.avatar.id).not.toBe('antonio')
     expect(player.avatar.body.primary.type).toBe('sphere')
     expect(player.avatar.body.nodes).toHaveLength(1)
     expect(player.sequence.id).toBe('idle')

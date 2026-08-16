@@ -58,6 +58,59 @@
         }
       },
       {
+        "id": "antonio",
+        "name": "Antonio",
+        "body": {
+          "primary": {
+            "type": "cube",
+            "width": 228,
+            "height": 196,
+            "depth": 188,
+            "roundness": 0.84
+          },
+          "nodes": [
+            {
+              "id": "antonio-peak",
+              "name": "Peak",
+              "surface": {
+                "type": "diamond",
+                "width": 58,
+                "height": 46,
+                "depth": 42,
+                "roundness": 0.42
+              },
+              "position": [
+                14,
+                -116,
+                -16
+              ],
+              "rotation": [
+                8,
+                0,
+                18
+              ]
+            }
+          ]
+        },
+        "colors": {
+          "body": "#353535",
+          "eyes": "#e4e0d6"
+        },
+        "eyes": {
+          "widthLeft": 24,
+          "widthRight": 24,
+          "heightLeft": 36,
+          "heightRight": 36,
+          "spacing": 40,
+          "positionXLeft": 0,
+          "positionXRight": 0,
+          "positionYLeft": -2,
+          "positionYRight": -2,
+          "leftAngle": 0,
+          "rightAngle": 0
+        }
+      },
+      {
         "id": "strobi",
         "name": "Strobi",
         "body": {

@@ -29,16 +29,44 @@ describe('Studio document', () => {
   it('loads the bundled Studio snapshot when no local project exists', () => {
     const document = loadStudioDocument(storage())
 
-    expect(document.library.avatars).toHaveLength(11)
+    expect(document.library.avatars).toHaveLength(12)
     expect(document.library.activeAvatarId).toBe('radar')
     expect(document.library.avatars[0].id).toBe('radar')
     expect(document.library.avatars[0].name).toBe('Radar')
+    expect(document.library.avatars[1]).toMatchObject({
+      id: 'antonio',
+      name: 'Antonio',
+    })
     expect(
       document.library.avatars.some(avatar => avatar.id === 'strobi' && avatar.name === 'Strobi')
     ).toBe(true)
     expect(document.expressions).toHaveLength(27)
     expect(document.sequences).toHaveLength(23)
     expect(document.playback).toEqual({ stateId: 'proud', playing: true })
+  })
+
+  it('bundles Antonio as a selectable person mascot without replacing Radar', () => {
+    const document = loadStudioDocument(storage())
+    const antonio = document.library.avatars.find(avatar => avatar.id === 'antonio')
+
+    expect(document.library.activeAvatarId).toBe('radar')
+    expect(document.library.avatars[0].id).toBe('radar')
+    expect(antonio).toMatchObject({
+      id: 'antonio',
+      name: 'Antonio',
+      colors: { body: '#353535', eyes: '#e4e0d6' },
+    })
+    expect(antonio?.body.primary.type).toBe('cube')
+    expect(antonio?.body.nodes).toHaveLength(1)
+    expect(antonio?.body.nodes[0]).toMatchObject({
+      id: 'antonio-peak',
+      name: 'Peak',
+    })
+    expect(antonio?.body.nodes[0].surface.type).toBe('diamond')
+    expect(antonio?.body.nodes.some(node => /dish|antenna/i.test(node.id + node.name))).toBe(false)
+    expect(antonio?.behavior).toBeUndefined()
+    expect(antonio?.colors.body).not.toBe('#1c1c1c')
+    expect(antonio?.colors.eyes).not.toBe('#e8a54b')
   })
 
   it('keeps a locally saved project authoritative over the bundled snapshot', () => {
