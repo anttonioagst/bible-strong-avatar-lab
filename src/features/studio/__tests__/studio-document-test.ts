@@ -85,16 +85,11 @@ describe('Studio document', () => {
     expect(wiipo).toMatchObject({
       id: 'wiipo',
       name: 'Wiipo',
-      colors: { body: '#F4A6A3', eyes: '#000000' },
-      renderStyle: { type: 'pixel', resolution: 32 },
+      colors: { body: '#F4A6A3', eyes: '#111316' },
+      renderStyle: { type: 'vector' },
     })
-    expect(wiipo?.body.primary).toMatchObject({
-      type: 'cube',
-      width: 198,
-      height: 132,
-      depth: 92,
-      roundness: 0,
-    })
+    expect(wiipo?.body.primary.type).toBe('cube')
+    expect(wiipo?.body.primary.roundness).toBeGreaterThanOrEqual(0.7)
     expect(wiipo?.body.primary.width).toBeGreaterThan(wiipo?.body.primary.height ?? 0)
     expect(wiipo?.body.primary.width).toBeGreaterThan(wiipo?.body.primary.depth ?? 0)
     expect(nodeIds).toEqual([
@@ -105,7 +100,7 @@ describe('Studio document', () => {
       'wiipo-tail',
       'wiipo-nose',
     ])
-    expect(wiipo?.body.nodes.every(node => node.surface.type === 'cube')).toBe(true)
+    expect(wiipo?.body.nodes.every(node => node.surface.roundness >= 0.7)).toBe(true)
     expect(wiipo?.body.nodes.filter(node => node.id.startsWith('wiipo-ear-'))).toHaveLength(2)
     expect(wiipo?.body.nodes.filter(node => node.id.startsWith('wiipo-foot-'))).toHaveLength(2)
     const leftEar = wiipo?.body.nodes.find(node => node.id === 'wiipo-ear-left')
@@ -113,6 +108,13 @@ describe('Studio document', () => {
     const leftFoot = wiipo?.body.nodes.find(node => node.id === 'wiipo-foot-left')
     const rightFoot = wiipo?.body.nodes.find(node => node.id === 'wiipo-foot-right')
     const tail = wiipo?.body.nodes.find(node => node.id === 'wiipo-tail')
+    const nose = wiipo?.body.nodes.find(node => node.id === 'wiipo-nose')
+    expect(leftEar?.surface.type).toBe('capsule')
+    expect(rightEar?.surface.type).toBe('capsule')
+    expect(leftFoot?.surface.type).toBe('sphere')
+    expect(rightFoot?.surface.type).toBe('sphere')
+    expect(tail?.surface.type).toBe('sphere')
+    expect(nose?.surface.type).toBe('sphere')
     expect(leftEar && rightEar && leftEar.position[0] < 0 && rightEar.position[0] > 0).toBe(true)
     expect(leftEar && rightEar && rightEar.position[0] - leftEar.position[0]).toBeGreaterThan(
       leftEar?.surface.width ?? 0
@@ -122,8 +124,9 @@ describe('Studio document', () => {
       true
     )
     expect(tail && tail.position[2] < 0).toBe(true)
-    expect(wiipo?.eyes.widthLeft).toBe(wiipo?.eyes.heightLeft)
-    expect(wiipo?.eyes.widthRight).toBe(wiipo?.eyes.heightRight)
+    expect(nose && nose.position[2] > 0).toBe(true)
+    expect(wiipo?.eyes.heightLeft).toBeGreaterThan(wiipo?.eyes.widthLeft ?? 0)
+    expect(wiipo?.eyes.heightRight).toBeGreaterThan(wiipo?.eyes.widthRight ?? 0)
     expect(wiipo?.behavior).toBeUndefined()
     expect(wiipo?.colors.body).not.toBe('#1c1c1c')
     expect(wiipo?.colors.eyes).not.toBe('#e8a54b')

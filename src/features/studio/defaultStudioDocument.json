@@ -116,25 +116,25 @@
         "body": {
           "primary": {
             "type": "cube",
-            "width": 198,
-            "height": 132,
-            "depth": 92,
-            "roundness": 0
+            "width": 204,
+            "height": 148,
+            "depth": 118,
+            "roundness": 0.88
           },
           "nodes": [
             {
               "id": "wiipo-ear-left",
               "name": "Left ear",
               "surface": {
-                "type": "cube",
-                "width": 66,
-                "height": 100,
-                "depth": 70,
-                "roundness": 0
+                "type": "capsule",
+                "width": 48,
+                "height": 112,
+                "depth": 44,
+                "roundness": 1
               },
               "position": [
-                -66,
-                -116,
+                -54,
+                -132,
                 0
               ],
               "rotation": [
@@ -147,15 +147,15 @@
               "id": "wiipo-ear-right",
               "name": "Right ear",
               "surface": {
-                "type": "cube",
-                "width": 66,
-                "height": 100,
-                "depth": 70,
-                "roundness": 0
+                "type": "capsule",
+                "width": 48,
+                "height": 112,
+                "depth": 44,
+                "roundness": 1
               },
               "position": [
-                66,
-                -116,
+                54,
+                -132,
                 0
               ],
               "rotation": [
@@ -168,16 +168,16 @@
               "id": "wiipo-foot-left",
               "name": "Left foot",
               "surface": {
-                "type": "cube",
-                "width": 48,
-                "height": 40,
-                "depth": 48,
-                "roundness": 0
+                "type": "sphere",
+                "width": 46,
+                "height": 34,
+                "depth": 46,
+                "roundness": 1
               },
               "position": [
-                -66,
-                86,
-                0
+                -50,
+                90,
+                6
               ],
               "rotation": [
                 0,
@@ -189,16 +189,16 @@
               "id": "wiipo-foot-right",
               "name": "Right foot",
               "surface": {
-                "type": "cube",
-                "width": 48,
-                "height": 40,
-                "depth": 48,
-                "roundness": 0
+                "type": "sphere",
+                "width": 46,
+                "height": 34,
+                "depth": 46,
+                "roundness": 1
               },
               "position": [
-                66,
-                86,
-                0
+                50,
+                90,
+                6
               ],
               "rotation": [
                 0,
@@ -210,16 +210,16 @@
               "id": "wiipo-tail",
               "name": "Tail",
               "surface": {
-                "type": "cube",
-                "width": 22,
-                "height": 20,
-                "depth": 22,
-                "roundness": 0.35
+                "type": "sphere",
+                "width": 28,
+                "height": 26,
+                "depth": 28,
+                "roundness": 1
               },
               "position": [
                 0,
-                36,
-                -56
+                32,
+                -66
               ],
               "rotation": [
                 0,
@@ -231,16 +231,16 @@
               "id": "wiipo-nose",
               "name": "Nose",
               "surface": {
-                "type": "cube",
-                "width": 12,
-                "height": 10,
-                "depth": 12,
-                "roundness": 0
+                "type": "sphere",
+                "width": 18,
+                "height": 16,
+                "depth": 16,
+                "roundness": 1
               },
               "position": [
                 0,
-                10,
-                52
+                18,
+                62
               ],
               "rotation": [
                 0,
@@ -252,24 +252,20 @@
         },
         "colors": {
           "body": "#F4A6A3",
-          "eyes": "#000000"
+          "eyes": "#111316"
         },
         "eyes": {
-          "widthLeft": 38,
-          "widthRight": 38,
-          "heightLeft": 38,
-          "heightRight": 38,
-          "spacing": 74,
+          "widthLeft": 24,
+          "widthRight": 24,
+          "heightLeft": 34,
+          "heightRight": 34,
+          "spacing": 50,
           "positionXLeft": 0,
           "positionXRight": 0,
-          "positionYLeft": -8,
-          "positionYRight": -8,
+          "positionYLeft": 10,
+          "positionYRight": 10,
           "leftAngle": 0,
           "rightAngle": 0
-        },
-        "renderStyle": {
-          "type": "pixel",
-          "resolution": 32
         }
       },
       {
