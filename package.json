@@ -6,10 +6,10 @@
   "homepage": "https://avatars.bible-strong.app",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/smontlouis/bible-strong-avatar-lab.git"
+    "url": "git+https://github.com/anttonioagst/bible-strong-avatar-lab.git"
   },
   "bugs": {
-    "url": "https://github.com/smontlouis/bible-strong-avatar-lab/issues"
+    "url": "https://github.com/anttonioagst/bible-strong-avatar-lab/issues"
   },
   "license": "AGPL-3.0-only",
   "private": true,

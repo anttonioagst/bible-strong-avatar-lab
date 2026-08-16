@@ -1,10 +1,17 @@
-# Bible Strong Avatar Lab
+# Radar · Bible Strong Avatar Lab fork
 
-Bible Strong Avatar Lab is a browser-based authoring studio for procedural 2D avatars. It combines 3D-inspired geometry with SVG rendering so you can construct a character, define its neutral appearance, create expressions, compose reusable animations, and export the result without depending on the Studio UI.
+This repository is [Antonio Augusto](https://github.com/anttonioagst)'s public fork of [Bible Strong Avatar Lab](https://github.com/smontlouis/bible-strong-avatar-lab) (AGPL-3.0). It keeps the original Studio and procedural engine, and turns the project into the home of **Radar**, the AI-news mascot of the [WIP](https://wiip.club) community (`@radar`).
 
-Website: [avatars.bible-strong.app](https://avatars.bible-strong.app) · Source: [GitHub](https://github.com/smontlouis/bible-strong-avatar-lab)
+The geometry engine, playback, expressions, and Studio UI were written by [Stéphane Montlouis-Calixte](https://github.com/smontlouis) for Bible Strong Avatar Lab. This fork does not replace that engine. Significant changes in this fork are listed below.
 
-The application runs entirely in the browser. Projects are stored locally and can be moved between browsers with JSON export/import; no account or backend is required.
+Website of the upstream Studio: [avatars.bible-strong.app](https://avatars.bible-strong.app) · Upstream source: [smontlouis/bible-strong-avatar-lab](https://github.com/smontlouis/bible-strong-avatar-lab)
+
+The application still runs entirely in the browser. Projects are stored locally and can be moved between browsers with JSON export/import; no account or backend is required.
+
+## Significant changes in this fork
+
+- **Radar is the default bundled avatar.** Opening the Studio on a fresh document selects Radar (`id: radar`) first. The character is a charcoal procedural sphere with amber eyes and a small dish node, matching Radar's charcoal / cream / bronze / amber palette without pasting the icon raster. Existing bundled avatars (Strobi, Freddy, Grok bot, and the rest) remain in the library.
+- **Player-only page** at [`radar.html`](./radar.html) (`/radar.html` in dev and in the production build). It renders only Radar, playing the bundled idle loop with blink, with no Studio chrome. The page is sized for a feed or profile embed and can later be iframed into wiip.club. Use `?bg=transparent` for a transparent background; the default is a dark charcoal page. The player is client-only and does not use a backend.
 
 ## What you can do
 
@@ -34,6 +41,8 @@ The workspace has a live canvas on the left and an inspector on the right. Start
 4. **Export** — choose animations to include, download an integration package, configure Photo Mode, or back up the full Studio project.
 
 Changes to the Studio document are saved automatically in browser local storage. Unsaved edits inside an avatar, expression, or animation editor can still be cancelled. Use **Export → Studio project** to create a portable JSON backup before clearing browser data or moving to another device.
+
+If a previous Studio document is already saved in local storage, that project stays authoritative. Clear site data or import a fresh project to see the bundled Radar default.
 
 ## Avatars and behavior libraries
 
@@ -75,7 +84,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173).
+Open the Studio at [http://localhost:5173](http://localhost:5173) and the Radar player at [http://localhost:5173/radar.html](http://localhost:5173/radar.html).
 
 ## Available commands
 
@@ -116,21 +125,19 @@ The deployable site is written to `dist/`. Serve it locally before publishing:
 pnpm preview
 ```
 
-The application is a client-only Vite site with no server runtime or environment variables. The build uses relative asset paths, so the contents of `dist/` can be hosted at a domain root or a subpath, including a GitHub Pages project URL. Any static host that serves `index.html` can deploy it.
-
-Vercel Web Analytics and Speed Insights are integrated in the React entry point. Enable both products in the Vercel project dashboard, then redeploy so their collection routes become available.
+The application is a client-only Vite site with no server runtime or environment variables. The build uses relative asset paths, so the contents of `dist/` can be hosted at a domain root or a subpath, including a GitHub Pages project URL. Any static host that serves `index.html` can deploy it. The Radar player is emitted as `dist/radar.html`.
 
 ## Technical overview
 
 - **React 19** coordinates the editor UI and durable application state.
 - **TypeScript** is configured in strict mode.
-- **Vite 8** provides the development server and production build.
-- **Motion** owns high-frequency rendering and playback values.
+- **Vite 8** provides the development server and production build, including a second HTML entry for the Radar player.
+- **Motion** owns high-frequency rendering and playback values in the Studio.
 - **SVG** renders the procedural avatar geometry.
-- **Tailwind CSS 4** and reusable components under `src/components/ui/` provide the interface layer.
-- **Vitest** covers geometry, playback, editing, persistence, rendering, and export behavior.
+- **Tailwind CSS 4** and reusable components under `src/components/ui/` provide the Studio interface layer.
+- **Vitest** covers geometry, playback, editing, persistence, rendering, export, and Radar player document behavior.
 
-Geometry, playback, document operations, and the standalone runtime remain framework-independent. React state stores durable editor data; Motion values handle frame-by-frame visual updates without forcing React renders.
+Geometry, playback, document operations, and the standalone runtime remain framework-independent. React state stores durable editor data; Motion values handle frame-by-frame visual updates without forcing React renders. The Radar player mounts the same geometry and idle sequence without the Studio shell.
 
 ## Repository map
 
@@ -142,12 +149,15 @@ Geometry, playback, document operations, and the standalone runtime remain frame
 | `src/features/animation/`                | Animation sequences, framework-independent playback, and tests.          |
 | `src/features/rendering/`                | Stable SVG scene, canvas preview, rotation gizmo, and rendering tests.   |
 | `src/features/export/`                   | Packages, snapshots, ZIPs, standalone runtime, and export tests.         |
+| `src/features/player/`                   | Radar player document, SVG mount, idle/blink playback, and tests.        |
 | `src/features/studio/`                   | Studio controller, composed views, persistence, bundled data, and tests. |
+| `src/player/`                            | Radar player HTML entry (no Studio chrome, no analytics).                |
 | `src/i18n/`                              | Localized interface copy and translation tests.                          |
 | `src/lib/`                               | Small shared utilities without product-domain ownership.                 |
 | `scripts/generate-standalone-engine.mjs` | Standalone-engine generator.                                             |
 | `docs/adr/`                              | Accepted architecture decisions.                                         |
 | `legacy/`                                | Self-contained HTML prototypes that preceded the React application.      |
+| `radar.html`                             | Player-only page for Radar idle playback and embeds.                     |
 
 ## Persistence and privacy
 
@@ -165,7 +175,7 @@ For the domain vocabulary, invariants, and architecture boundaries, read [CONTEX
 
 ## License
 
-Bible Strong Avatar Lab is licensed under the [GNU Affero General Public License v3.0](./LICENSE).
+This fork remains licensed under the [GNU Affero General Public License v3.0](./LICENSE), the same license as Bible Strong Avatar Lab.
 
 You may use, study, modify, and redistribute the project. If you distribute the application or a modified version, you must notably:
 

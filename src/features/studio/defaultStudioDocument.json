@@ -1,8 +1,62 @@
 {
   "version": 2,
   "library": {
-    "activeAvatarId": "strobi",
+    "activeAvatarId": "radar",
     "avatars": [
+      {
+        "id": "radar",
+        "name": "Radar",
+        "body": {
+          "primary": {
+            "type": "sphere",
+            "width": 240,
+            "height": 224,
+            "depth": 240,
+            "roundness": 1
+          },
+          "nodes": [
+            {
+              "id": "radar-dish",
+              "name": "Dish",
+              "surface": {
+                "type": "cylinder",
+                "width": 152,
+                "height": 16,
+                "depth": 152,
+                "roundness": 1,
+                "morphRoundness": 1
+              },
+              "position": [
+                0,
+                -114,
+                -26
+              ],
+              "rotation": [
+                32,
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        "colors": {
+          "body": "#1c1c1c",
+          "eyes": "#e8a54b"
+        },
+        "eyes": {
+          "widthLeft": 26,
+          "widthRight": 26,
+          "heightLeft": 34,
+          "heightRight": 34,
+          "spacing": 36,
+          "positionXLeft": 0,
+          "positionXRight": 0,
+          "positionYLeft": -4,
+          "positionYRight": -4,
+          "leftAngle": 0,
+          "rightAngle": 0
+        }
+      },
       {
         "id": "strobi",
         "name": "Strobi",

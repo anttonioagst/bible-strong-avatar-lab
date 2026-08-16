@@ -20,5 +20,11 @@ export default defineConfig({
   build: {
     outDir: path.join(root, 'dist'),
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        index: path.join(root, 'index.html'),
+        radar: path.join(root, 'radar.html'),
+      },
+    },
   },
 })
