@@ -6,6 +6,7 @@ import {
   createAvatar,
   defaultAvatarEyes,
   parseAvatarEyeDefaults,
+  parseAvatarLibrary,
   parseAvatarRenderStyle,
   resolveAvatarBehavior,
 } from '@/features/avatar/avatars'
@@ -78,5 +79,48 @@ describe('avatar behavior library', () => {
     expect(behavior.sequences).not.toBe(base.sequences)
     expect(behavior.sequences[0].steps).not.toBe(base.sequences[0].steps)
     expect(behavior.sequences[0].blink).not.toBe(base.sequences[0].blink)
+  })
+})
+
+describe('parseAvatarLibrary', () => {
+  const base = {
+    expressions: initialExpressions,
+    sequences: createInitialSequences(),
+  }
+
+  it('appends fallback avatars whose ids are missing from the saved library', () => {
+    const saved = createAvatar('Saved')
+    const radar = { ...createAvatar('Radar'), id: 'radar' }
+    const antonio = { ...createAvatar('Antonio'), id: 'antonio' }
+    const wiipo = { ...createAvatar('Wiipo'), id: 'wiipo' }
+
+    const result = parseAvatarLibrary(
+      { activeAvatarId: saved.id, avatars: [saved] },
+      { activeAvatarId: 'radar', avatars: [radar, antonio, wiipo] },
+      base
+    )
+
+    expect(result.activeAvatarId).toBe(saved.id)
+    expect(result.avatars.map(avatar => avatar.id)).toEqual([
+      saved.id,
+      'radar',
+      'antonio',
+      'wiipo',
+    ])
+  })
+
+  it('keeps a saved avatar when the fallback has the same id', () => {
+    const savedAntonio = { ...createAvatar('My Antonio'), id: 'antonio' }
+    const bundledAntonio = { ...createAvatar('Antonio'), id: 'antonio' }
+
+    const result = parseAvatarLibrary(
+      { activeAvatarId: 'antonio', avatars: [savedAntonio] },
+      { activeAvatarId: 'antonio', avatars: [bundledAntonio] },
+      base
+    )
+
+    expect(result.avatars).toHaveLength(1)
+    expect(result.avatars[0].name).toBe('My Antonio')
+    expect(result.activeAvatarId).toBe('antonio')
   })
 })

@@ -237,6 +237,7 @@ export const parseAvatarLibrary = (
     const activeAvatarId = avatars.some(avatar => avatar.id === parsed.activeAvatarId)
       ? parsed.activeAvatarId!
       : avatars[0].id
+    avatars.push(...fallback.avatars.filter(avatar => !seenIds.has(avatar.id)))
     return { activeAvatarId, avatars }
   } catch {
     return fallback
