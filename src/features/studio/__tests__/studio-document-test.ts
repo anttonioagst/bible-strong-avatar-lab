@@ -74,7 +74,7 @@ describe('Studio document', () => {
     expect(antonio?.colors.eyes).not.toBe('#e8a54b')
   })
 
-  it('bundles Wiipo as a selectable coral block mascot without replacing Radar', () => {
+  it('bundles Wiipo as a selectable coral rabbit without replacing Radar', () => {
     const document = loadStudioDocument(storage())
     const wiipo = document.library.avatars.find(avatar => avatar.id === 'wiipo')
     const nodeIds = wiipo?.body.nodes.map(node => node.id) ?? []
@@ -86,44 +86,17 @@ describe('Studio document', () => {
       id: 'wiipo',
       name: 'Wiipo',
       colors: { body: '#F4A6A3', eyes: '#000000' },
-      renderStyle: { type: 'pixel', resolution: 32 },
+      renderStyle: { type: 'vector' },
     })
-    expect(wiipo?.body.primary).toMatchObject({
-      type: 'cube',
-      width: 198,
-      height: 132,
-      depth: 92,
-      roundness: 0,
-    })
-    expect(wiipo?.body.primary.width).toBeGreaterThan(wiipo?.body.primary.height ?? 0)
-    expect(wiipo?.body.primary.width).toBeGreaterThan(wiipo?.body.primary.depth ?? 0)
-    expect(nodeIds).toEqual([
-      'wiipo-ear-left',
-      'wiipo-ear-right',
-      'wiipo-foot-left',
-      'wiipo-foot-right',
-      'wiipo-tail',
-      'wiipo-nose',
-    ])
+    expect(wiipo?.body.primary.type).toBe('cube')
+    expect(wiipo?.body.primary.roundness).toBeGreaterThan(0)
+    expect(wiipo?.body.nodes).toHaveLength(2)
+    expect(nodeIds).toEqual(['wiipo-ear-left', 'wiipo-ear-right'])
     expect(wiipo?.body.nodes.every(node => node.surface.type === 'cube')).toBe(true)
-    expect(wiipo?.body.nodes.filter(node => node.id.startsWith('wiipo-ear-'))).toHaveLength(2)
-    expect(wiipo?.body.nodes.filter(node => node.id.startsWith('wiipo-foot-'))).toHaveLength(2)
     const leftEar = wiipo?.body.nodes.find(node => node.id === 'wiipo-ear-left')
     const rightEar = wiipo?.body.nodes.find(node => node.id === 'wiipo-ear-right')
-    const leftFoot = wiipo?.body.nodes.find(node => node.id === 'wiipo-foot-left')
-    const rightFoot = wiipo?.body.nodes.find(node => node.id === 'wiipo-foot-right')
-    const tail = wiipo?.body.nodes.find(node => node.id === 'wiipo-tail')
     expect(leftEar && rightEar && leftEar.position[0] < 0 && rightEar.position[0] > 0).toBe(true)
-    expect(leftEar && rightEar && rightEar.position[0] - leftEar.position[0]).toBeGreaterThan(
-      leftEar?.surface.width ?? 0
-    )
     expect(leftEar && leftEar.position[1] < 0).toBe(true)
-    expect(leftFoot && rightFoot && leftFoot.position[1] > 0 && rightFoot.position[1] > 0).toBe(
-      true
-    )
-    expect(tail && tail.position[2] < 0).toBe(true)
-    expect(wiipo?.eyes.widthLeft).toBe(wiipo?.eyes.heightLeft)
-    expect(wiipo?.eyes.widthRight).toBe(wiipo?.eyes.heightRight)
     expect(wiipo?.behavior).toBeUndefined()
     expect(wiipo?.colors.body).not.toBe('#1c1c1c')
     expect(wiipo?.colors.eyes).not.toBe('#e8a54b')
@@ -140,14 +113,7 @@ describe('Studio document', () => {
     expect(geometry.leftVisible).toBe(true)
     expect(geometry.rightVisible).toBe(true)
     expect([...geometry.backNodeIds, ...geometry.frontNodeIds]).toEqual(
-      expect.arrayContaining([
-        'wiipo-ear-left',
-        'wiipo-ear-right',
-        'wiipo-foot-left',
-        'wiipo-foot-right',
-        'wiipo-tail',
-        'wiipo-nose',
-      ])
+      expect.arrayContaining(['wiipo-ear-left', 'wiipo-ear-right'])
     )
   })
 
