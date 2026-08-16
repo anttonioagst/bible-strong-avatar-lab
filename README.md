@@ -125,7 +125,25 @@ The deployable site is written to `dist/`. Serve it locally before publishing:
 pnpm preview
 ```
 
-The application is a client-only Vite site with no server runtime or environment variables. The build uses relative asset paths, so the contents of `dist/` can be hosted at a domain root or a subpath, including a GitHub Pages project URL. Any static host that serves `index.html` can deploy it. The Radar player is emitted as `dist/radar.html`.
+The application is a client-only Vite site with no server runtime or environment variables. Vite `base` is `./`, so asset URLs stay relative and work on a domain root or a GitHub Pages project subpath. Any static host that serves `index.html` can deploy it. The Radar player is emitted as `dist/radar.html`.
+
+### GitHub Pages
+
+Pushes to `main` run [`.github/workflows/pages.yml`](./.github/workflows/pages.yml): Node 22.12, pnpm 10.34.5, `pnpm build`, then deploy `dist/`. No secrets or environment variables are required.
+
+Expected live URLs after Pages is enabled and the workflow has succeeded:
+
+- Studio: [https://anttonioagst.github.io/bible-strong-avatar-lab/](https://anttonioagst.github.io/bible-strong-avatar-lab/)
+- Radar player: [https://anttonioagst.github.io/bible-strong-avatar-lab/radar.html](https://anttonioagst.github.io/bible-strong-avatar-lab/radar.html)
+- Transparent embed: [https://anttonioagst.github.io/bible-strong-avatar-lab/radar.html?bg=transparent](https://anttonioagst.github.io/bible-strong-avatar-lab/radar.html?bg=transparent)
+
+GitHub Pages cannot be turned on from the workflow alone. Enable it once with GitHub Actions as the source:
+
+1. Open [Settings → Pages](https://github.com/anttonioagst/bible-strong-avatar-lab/settings/pages).
+2. Under **Build and deployment**, set **Source** to **GitHub Actions**.
+3. Re-run **Deploy GitHub Pages** on `main` (Actions → Run workflow, or push to `main`).
+
+This repository remains the AGPL-3.0 corresponding source for the hosted site.
 
 ## Technical overview
 
