@@ -101,12 +101,7 @@ describe('parseAvatarLibrary', () => {
     )
 
     expect(result.activeAvatarId).toBe(saved.id)
-    expect(result.avatars.map(avatar => avatar.id)).toEqual([
-      saved.id,
-      'radar',
-      'antonio',
-      'wiipo',
-    ])
+    expect(result.avatars.map(avatar => avatar.id)).toEqual([saved.id, 'radar', 'antonio', 'wiipo'])
   })
 
   it('keeps a saved avatar when the fallback has the same id', () => {

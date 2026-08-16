@@ -166,9 +166,7 @@ describe('Studio document', () => {
     const bundled = loadStudioDocument(storage())
     const userAvatar = createAvatar('Custom')
     const savedAvatars = [
-      ...bundled.library.avatars.filter(
-        avatar => avatar.id !== 'antonio' && avatar.id !== 'wiipo'
-      ),
+      ...bundled.library.avatars.filter(avatar => avatar.id !== 'antonio' && avatar.id !== 'wiipo'),
       userAvatar,
     ]
     const saved: StudioDocument = {
