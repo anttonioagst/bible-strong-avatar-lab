@@ -1,0 +1,36 @@
+html,
+body,
+#radar {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+html {
+  color-scheme: dark;
+  background: #111316;
+}
+
+html[data-bg='transparent'] {
+  color-scheme: normal;
+  background: transparent;
+}
+
+body {
+  background: inherit;
+}
+
+#radar {
+  display: grid;
+  place-items: center;
+}
+
+#radar svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: min(100%, 100dvh);
+  max-height: min(100%, 100dvw);
+  overflow: visible;
+}

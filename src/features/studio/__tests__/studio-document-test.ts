@@ -29,9 +29,13 @@ describe('Studio document', () => {
   it('loads the bundled Studio snapshot when no local project exists', () => {
     const document = loadStudioDocument(storage())
 
-    expect(document.library.avatars).toHaveLength(10)
-    expect(document.library.activeAvatarId).toBe(document.library.avatars[0].id)
-    expect(document.library.avatars[0].name).toBe('Strobi')
+    expect(document.library.avatars).toHaveLength(11)
+    expect(document.library.activeAvatarId).toBe('radar')
+    expect(document.library.avatars[0].id).toBe('radar')
+    expect(document.library.avatars[0].name).toBe('Radar')
+    expect(
+      document.library.avatars.some(avatar => avatar.id === 'strobi' && avatar.name === 'Strobi')
+    ).toBe(true)
     expect(document.expressions).toHaveLength(27)
     expect(document.sequences).toHaveLength(23)
     expect(document.playback).toEqual({ stateId: 'proud', playing: true })
