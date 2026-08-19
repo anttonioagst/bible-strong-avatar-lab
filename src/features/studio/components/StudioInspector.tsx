@@ -39,11 +39,10 @@ import {
   ExportSection,
   InspectorCard,
   PanelTitle,
-  SnapshotPreview,
   StatePlayer,
 } from '@/app/components/common'
 import { ColorField, LinkButton, NumericField } from '@/app/components/controls'
-import { formatSeconds, scaleSurface, type Side, type SnapshotFormat } from '@/app/studio-utils'
+import { formatSeconds, scaleSurface, type Side } from '@/app/studio-utils'
 import { SequenceWorkspace } from '@/features/animation/components/SequenceWorkspace'
 import { findExpressionIndex, groupSequences } from '@/features/animation/sequences'
 import {
@@ -63,7 +62,6 @@ import {
 } from '@/features/avatar/components/ExpressionWorkspace'
 import { defaultExpression } from '@/features/avatar/presets'
 import { surfaceLabels, surfacePresets } from '@/features/avatar/surfaces'
-import { type SnapshotBackground } from '@/features/export/snapshotExporter'
 import { AvatarPage } from '@/features/studio/components/AvatarDrawer'
 import { StudioIdentity } from '@/features/studio/components/StudioIdentity'
 import { StudioModeTabs } from '@/features/studio/components/StudioModeTabs'
@@ -167,19 +165,9 @@ export function StudioInspector({ controller }: { controller: StudioController }
     setMode,
     setSelectedSequenceStepId,
     setSequenceEditing,
-    setSnapshotBackground,
-    setSnapshotColorFrom,
-    setSnapshotColorTo,
-    setSnapshotFormat,
-    setSnapshotSize,
     setSpringSpeed,
     setStatePlayerExpanded,
     showWire,
-    snapshotBackground,
-    snapshotColorFrom,
-    snapshotColorTo,
-    snapshotFormat,
-    snapshotSize,
     springSpeed,
     springSpeedRef,
     stateDragOrigin,
@@ -1720,7 +1708,28 @@ export function StudioInspector({ controller }: { controller: StudioController }
             )}
 
             {!sequenceEditing && !editing && !bodyEditing && mode === 'export' && (
-              <Accordion className="export-panel" defaultValue={['snapshot']}>
+              <Accordion className="export-panel" defaultValue={['avatar']}>
+                <ExportSection
+                  value="photo"
+                  title="Photo"
+                  subtitle="Capture une image statique de l’avatar."
+                >
+                  <InspectorCard>
+                    <PanelTitle
+                      title="Mode photo"
+                      subtitle="Les réglages de fond, taille et format sont sur la surface Photo."
+                    />
+                    <Button
+                      nativeButton={false}
+                      className="export-photo-link"
+                      variant="outline"
+                      render={<a href={`#/photo?pet=${encodeURIComponent(activeAvatar.id)}`} />}
+                    >
+                      {t('Ouvrir Photo')}
+                    </Button>
+                  </InspectorCard>
+                </ExportSection>
+
                 <ExportSection
                   value="avatar"
                   title="Exporter l’avatar"
@@ -1846,136 +1855,6 @@ export function StudioInspector({ controller }: { controller: StudioController }
                         : 'Télécharger le module'
                     )}
                   </Button>
-                </ExportSection>
-
-                <ExportSection
-                  value="snapshot"
-                  title="Mode photo"
-                  subtitle="Capture une image statique de l’avatar."
-                >
-                  <InspectorCard className="snapshot-preview-card">
-                    {isClassicAvatarStyle(activeAvatar.styleFamily) ? (
-                      <SnapshotPreview
-                        scene={renderedScene}
-                        colors={renderedColors}
-                        background={snapshotBackground}
-                        colorFrom={snapshotColorFrom}
-                        colorTo={snapshotColorTo}
-                        renderStyle={activeAvatar.renderStyle}
-                      />
-                    ) : (
-                      <div className="snapshot-preview">
-                        <AvatarMarkPreview
-                          avatar={activeAvatar}
-                          expression={expressions[0] ?? defaultExpression}
-                        />
-                      </div>
-                    )}
-                    <div>
-                      <small>{t('Aperçu du mode photo')}</small>
-                      <strong>{activeAvatar.name}</strong>
-                      <span>
-                        {snapshotSize} × {snapshotSize} px · {snapshotFormat.toUpperCase()}
-                      </span>
-                    </div>
-                  </InspectorCard>
-
-                  <InspectorCard>
-                    <PanelTitle
-                      title="Arrière-plan"
-                      subtitle="Choisis un fond transparent, uni ou en dégradé."
-                    />
-                    <Field className="snapshot-background-field" orientation="horizontal">
-                      <FieldTitle>{t('Style')}</FieldTitle>
-                      <Select
-                        value={snapshotBackground}
-                        items={[
-                          { value: 'transparent', label: t('Transparent') },
-                          { value: 'solid', label: t('Uni') },
-                          { value: 'linear', label: t('Dégradé linéaire') },
-                          { value: 'radial', label: t('Dégradé radial') },
-                        ]}
-                        onValueChange={next =>
-                          next && setSnapshotBackground(next as SnapshotBackground)
-                        }
-                      >
-                        <SelectTrigger aria-label={t('Style d’arrière-plan')}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="transparent">{t('Transparent')}</SelectItem>
-                          <SelectItem value="solid">{t('Uni')}</SelectItem>
-                          <SelectItem value="linear">{t('Dégradé linéaire')}</SelectItem>
-                          <SelectItem value="radial">{t('Dégradé radial')}</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </Field>
-                    {snapshotBackground !== 'transparent' && (
-                      <div className="snapshot-colors">
-                        <ColorField
-                          label={snapshotBackground === 'solid' ? 'Couleur' : 'Départ'}
-                          value={snapshotColorFrom}
-                          onChange={setSnapshotColorFrom}
-                        />
-                        {(snapshotBackground === 'linear' || snapshotBackground === 'radial') && (
-                          <ColorField
-                            label="Arrivée"
-                            value={snapshotColorTo}
-                            onChange={setSnapshotColorTo}
-                          />
-                        )}
-                      </div>
-                    )}
-                  </InspectorCard>
-
-                  <InspectorCard>
-                    <Field className="snapshot-background-field" orientation="horizontal">
-                      <div>
-                        <FieldTitle>{t('Format d’export')}</FieldTitle>
-                        <small>{t('Choisis le type de fichier généré par le mode photo.')}</small>
-                      </div>
-                      <Select
-                        value={snapshotFormat}
-                        items={[
-                          { value: 'png', label: 'PNG' },
-                          { value: 'svg', label: 'SVG' },
-                        ]}
-                        onValueChange={next => next && setSnapshotFormat(next as SnapshotFormat)}
-                      >
-                        <SelectTrigger aria-label={t('Format d’export du mode photo')}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="png">PNG</SelectItem>
-                          <SelectItem value="svg">SVG</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </Field>
-                    <Separator className="snapshot-settings-separator" />
-                    <Field className="snapshot-background-field" orientation="horizontal">
-                      <div>
-                        <FieldTitle>{t('Définition')}</FieldTitle>
-                        <small>{t('Dimensions du fichier exporté.')}</small>
-                      </div>
-                      <Select
-                        value={snapshotSize}
-                        items={['512', '1024', '2048'].map(value => ({
-                          value,
-                          label: `${value} px`,
-                        }))}
-                        onValueChange={next => next && setSnapshotSize(next)}
-                      >
-                        <SelectTrigger aria-label={t('Définition du mode photo')}>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="512">512 px</SelectItem>
-                          <SelectItem value="1024">1024 px</SelectItem>
-                          <SelectItem value="2048">2048 px</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </Field>
-                  </InspectorCard>
                 </ExportSection>
 
                 <ExportSection

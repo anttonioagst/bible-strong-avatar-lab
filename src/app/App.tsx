@@ -1,4 +1,5 @@
 import { LabHome } from '@/app/LabHome'
+import { PhotoView } from '@/app/PhotoView'
 import { useHashSurface } from '@/app/surface'
 import { StudioView } from '@/features/studio/components/StudioView'
 import { useStudioController } from '@/features/studio/useStudioController'
@@ -10,6 +11,10 @@ function AppContent() {
 
   if (surface === 'studio') {
     return <StudioView {...controller} />
+  }
+
+  if (surface === 'photo') {
+    return <PhotoView {...controller} />
   }
 
   return (
