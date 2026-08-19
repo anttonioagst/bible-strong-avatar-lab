@@ -10,12 +10,18 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AvatarThumb } from '@/features/avatar/components/AvatarThumb'
 import { avatarStyleFamilies, type AvatarStyleFamily } from '@/features/avatar/avatarStyle'
 import type { StudioController } from '@/features/studio/useStudioController'
 
 const familyLabel = (family: AvatarStyleFamily) =>
   family === 'classic' ? 'Classic' : family === 'blob' ? 'Blob' : 'IP logo'
+
+type StyleFilter = 'all' | AvatarStyleFamily
+
+const isStyleFilter = (value: string | null): value is StyleFilter =>
+  value === 'all' || value === 'classic' || value === 'blob' || value === 'ip-logo'
 
 export function AvatarPage({ controller }: { controller: StudioController }) {
   const {
@@ -42,42 +48,41 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
     setFocusAvatarName,
     t,
   } = controller
-  const [styleFilter, setStyleFilter] = useState<'all' | AvatarStyleFamily>('all')
+  const [styleFilter, setStyleFilter] = useState<StyleFilter>('all')
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const visibleAvatars =
     styleFilter === 'all' ? avatars : avatars.filter(avatar => avatar.styleFamily === styleFilter)
 
   return (
     <div className="panel-stack avatar-page">
-      <section className="avatar-shelf" aria-label={t('Choisir un avatar')}>
+      <section className="avatar-shelf" aria-label={t('Choisir un pet')}>
         <div className="avatar-shelf-heading">
           <strong>{t('Famille')}</strong>
           <span>{visibleAvatars.length}</span>
         </div>
-        <div className="style-family-picker" role="tablist" aria-label={t('Famille')}>
-          <Button
-            type="button"
-            size="sm"
-            variant={styleFilter === 'all' ? 'default' : 'outline'}
-            aria-pressed={styleFilter === 'all'}
-            onClick={() => setStyleFilter('all')}
-          >
-            {t('Toutes')}
-          </Button>
-          {avatarStyleFamilies.map(family => (
-            <Button
-              key={family}
-              type="button"
-              size="sm"
-              variant={styleFilter === family ? 'default' : 'outline'}
-              aria-pressed={styleFilter === family}
-              onClick={() => setStyleFilter(family)}
-            >
-              {t(familyLabel(family))}
-            </Button>
-          ))}
-        </div>
+        <Tabs
+          className="style-family-tabs"
+          value={styleFilter}
+          onValueChange={next => {
+            if (isStyleFilter(next)) setStyleFilter(next)
+          }}
+        >
+          <TabsList aria-label={t('Famille')} className="style-family-picker">
+            <TabsTrigger value="all">{t('Toutes')}</TabsTrigger>
+            {avatarStyleFamilies.map(family => (
+              <TabsTrigger key={family} value={family}>
+                {t(familyLabel(family))}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
         <p className="style-family-hint">{t('Survolez une carte pour lire l’animation.')}</p>
+        {visibleAvatars.length === 0 && (
+          <div className="studio-empty-state" role="status">
+            <p>{t('Aucun pet dans cette famille.')}</p>
+            <p>{t('Créez un pet Classic, Blob ou IP logo.')}</p>
+          </div>
+        )}
         <div className="avatar-grid">
           {visibleAvatars.map(avatar => (
             <motion.div
@@ -177,7 +182,7 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
             variant="outline"
             className="avatar-add creation-card"
             onClick={createNewAvatar}
-            aria-label={t('Nouvel avatar')}
+            aria-label={t('Nouveau pet Classic')}
           >
             <Plus />
             <span>{t('Classic')}</span>
@@ -186,7 +191,7 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
             variant="outline"
             className="avatar-add creation-card"
             onClick={() => setCreateBlobOpen(true)}
-            aria-label={t('Nouvel avatar Blob')}
+            aria-label={t('Nouveau pet Blob')}
           >
             <Plus />
             <span>{t('Blob')}</span>

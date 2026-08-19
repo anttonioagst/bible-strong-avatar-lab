@@ -3,6 +3,8 @@ import { translateStudioText } from '@/i18n'
 describe('avatar studio translations', () => {
   it('translates style family chrome', () => {
     expect(translateStudioText('Famille', 'en')).toBe('Family')
+    expect(translateStudioText('Pets', 'en')).toBe('Pets')
+    expect(translateStudioText('Choisir un pet', 'zh-CN')).toBe('选择宠物')
     expect(translateStudioText('Survolez une carte pour lire l’animation.', 'zh-CN')).toBe(
       '将指针悬停在卡片上以播放动画。'
     )

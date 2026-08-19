@@ -2,7 +2,7 @@
 
 ## Project
 
-Bible Strong Avatar Lab is a standalone React 19 + Vite 8 application for procedural SVG avatars.
+AntX Pets is a standalone React 19 + Vite 8 application for procedural SVG avatars (AGPL-3.0 fork of Bible Strong Avatar Lab).
 Read `CONTEXT.md` before changing behavior or persistence semantics.
 
 ## Commands
