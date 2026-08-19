@@ -1,14 +1,18 @@
 import { useEffect, useState } from 'react'
 
-export type AppSurface = 'lab' | 'studio' | 'photo'
+export type AppSurface = 'lab' | 'studio' | 'photo' | 'create-blob' | 'create-ip'
 
 export type NavSurface = 'lab' | 'studio' | 'photo'
+
+export const studioPetHash = (petId: string) => `#/studio?pet=${encodeURIComponent(petId)}`
 
 export const parseHashSurface = (hash: string): AppSurface => {
   const normalized = hash.replace(/^#/, '').replace(/^\/?/, '/').split('?')[0] ?? '/'
   if (normalized === '/' || normalized === '') return 'lab'
   if (normalized === '/studio') return 'studio'
   if (normalized === '/photo') return 'photo'
+  if (normalized === '/create/blob') return 'create-blob'
+  if (normalized === '/create/ip') return 'create-ip'
   return 'lab'
 }
 

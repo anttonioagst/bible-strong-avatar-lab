@@ -117,6 +117,7 @@ export const chinese: Record<string, string> = {
   Studio: '工作室',
   Photo: '照片',
   Mark: '标志',
+  Pet: '宠物',
   'Navigation du site': '站点导航',
   'Des pets à créer, photographier et emporter avec vous.': '可制作、拍摄并随身携带的宠物。',
   'Créez des créatures procédurales dans votre navigateur. Tout reste local.':
@@ -125,6 +126,18 @@ export const chinese: Record<string, string> = {
   'Photographier Radar': '拍摄 Radar',
   'Créer un Blob': '制作 Blob',
   'Créer un Mark': '制作标志',
+  'Créer un pet Blob': '创建 Blob 宠物',
+  'Créer un pet Mark': '创建标志宠物',
+  'Créer le pet': '创建宠物',
+  'Aperçu du blob': 'Blob 预览',
+  'Tapez une graine pour prévisualiser le blob, puis créez le pet.':
+    '输入种子预览 Blob，然后创建宠物。',
+  'Nom du pet': '宠物名称',
+  'Le nom sert de graine pour la marque générée et le titre du pet.':
+    '名称作为生成标志的种子，并作为宠物标题。',
+  'Nouveau pet Mark': '新建 Mark 宠物',
+  'Créez un pet Classic, Blob ou Mark.': '创建一个 Classic、Blob 或 Mark 宠物。',
+  'Ouvrir la page de création': '打开创建页面',
   'Vos pets': '你的宠物',
   Photographier: '拍摄',
   'Ouvrir dans le Studio': '在工作室中打开',

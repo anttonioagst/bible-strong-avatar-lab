@@ -17,8 +17,12 @@ describe('hash surfaces', () => {
     expect(parseHashSurface('#/photo?pet=radar')).toBe('photo')
   })
 
+  it('maps create hashes to dedicated surfaces', () => {
+    expect(parseHashSurface('#/create/blob')).toBe('create-blob')
+    expect(parseHashSurface('#/create/ip')).toBe('create-ip')
+  })
+
   it('falls back to the Lab surface for unknown hashes', () => {
-    expect(parseHashSurface('#/create/blob')).toBe('lab')
     expect(parseHashSurface('#/unknown')).toBe('lab')
   })
 

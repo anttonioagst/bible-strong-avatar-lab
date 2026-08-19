@@ -1,3 +1,5 @@
+import { CreateBlobView } from '@/app/CreateBlobView'
+import { CreateMarkView } from '@/app/CreateMarkView'
 import { LabHome } from '@/app/LabHome'
 import { PhotoView } from '@/app/PhotoView'
 import { useHashSurface } from '@/app/surface'
@@ -15,6 +17,29 @@ function AppContent() {
 
   if (surface === 'photo') {
     return <PhotoView {...controller} />
+  }
+
+  if (surface === 'create-blob') {
+    return (
+      <CreateBlobView
+        finishSurfaceBlobCreate={controller.finishSurfaceBlobCreate}
+        language={controller.language}
+        setLanguage={controller.setLanguage}
+        t={controller.t}
+      />
+    )
+  }
+
+  if (surface === 'create-ip') {
+    return (
+      <CreateMarkView
+        finishSurfaceMarkCreate={controller.finishSurfaceMarkCreate}
+        importSurfaceMarkFile={controller.importSurfaceMarkFile}
+        language={controller.language}
+        setLanguage={controller.setLanguage}
+        t={controller.t}
+      />
+    )
   }
 
   return (
