@@ -32,3 +32,13 @@ pnpm check
 - Reuse components under `src/components/ui/` rather than adding one-off controls.
 - Keep selection, hover, focus and destructive actions visually consistent across avatars, expressions and animations.
 - Prefer transform/opacity animation over layout animation for continuous interactions.
+
+## Hosted site reform
+
+The public product is **AntX Pets** (Lab + Studio + Photo + `radar.html`), not a renamed Studio header. Before changing hosted IA, chrome, Photo Mode, or Blob/Mark create paths, read:
+
+- [`docs/PETS-SITE.md`](./docs/PETS-SITE.md) — pages, IA, visitor flow
+- [`docs/PETS-UI.md`](./docs/PETS-UI.md) — tokens and anatomy
+- [`docs/PETS-REFORM.md`](./docs/PETS-REFORM.md) — one phase per PR; allowlists are law
+
+Do not invent a backend, a second app tree, or a new document schema. Engine and AGPL attribution stay.
