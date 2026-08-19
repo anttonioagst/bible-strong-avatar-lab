@@ -31,16 +31,18 @@ describe('Studio chrome branding', () => {
       path.join(root, 'src/features/studio/components/StudioIdentity.tsx'),
       'utf8'
     )
+    const header = readFileSync(path.join(root, 'src/app/SiteHeader.tsx'), 'utf8')
 
     expect(stage).toContain('STUDIO_AUTHOR_HANDLE')
     expect(stage).toContain('STUDIO_AUTHOR_PROFILE_URL')
     expect(stage).not.toContain('@_smontlouis')
     expect(stage).not.toContain('x.com/_smontlouis')
-    expect(identity).toContain('STUDIO_GITHUB_REPO_URL')
-    expect(identity).toContain('STUDIO_PRODUCT_NAME')
-    expect(identity).not.toContain('Bible Strong')
-    expect(identity).not.toContain('Radar Avatar Lab')
-    expect(identity).not.toContain('smontlouis/bible-strong-avatar-lab')
+    expect(header).toContain('STUDIO_GITHUB_REPO_URL')
+    expect(header).toContain('STUDIO_PRODUCT_NAME')
+    expect(identity).toContain('SiteHeader')
+    expect(header).not.toContain('Bible Strong')
+    expect(header).not.toContain('Radar Avatar Lab')
+    expect(header).not.toContain('smontlouis/bible-strong-avatar-lab')
   })
 
   it('rebrands document title and Open Graph tags without dropping the player Radar title', () => {
@@ -66,6 +68,7 @@ describe('Studio chrome branding', () => {
       path.join(root, 'src/features/studio/components/StudioIdentity.tsx'),
       'utf8'
     )
+    const header = readFileSync(path.join(root, 'src/app/SiteHeader.tsx'), 'utf8')
     const inspector = readFileSync(
       path.join(root, 'src/features/studio/components/StudioInspector.tsx'),
       'utf8'
@@ -83,8 +86,9 @@ describe('Studio chrome branding', () => {
       'utf8'
     )
 
-    expect(identity).toContain('@/components/ui/button')
-    expect(identity).toContain('@/components/ui/dropdown-menu')
+    expect(identity).toContain('SiteHeader')
+    expect(header).toContain('@/components/ui/button')
+    expect(header).toContain('@/components/ui/dropdown-menu')
     expect(tabs).toContain('@/components/ui/tabs')
     expect(inspector).toContain('StudioModeTabs')
     expect(dialogs).toContain('@/components/ui/dialog')

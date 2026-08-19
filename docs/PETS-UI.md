@@ -8,10 +8,10 @@ from taste. Product map: [`PETS-SITE.md`](./PETS-SITE.md).
 **Not a light app. Not a dark app.** The product is creatures in a den, with a
 workbench beside them.
 
-| Zone | Role | Why |
-| --- | --- | --- |
-| **Habitat** | Lab hero, Studio stage, Photo stage, Radar default page | Radar’s world: warm charcoal, amber eyes, cream dust. Pets read as living. |
-| **Bench** | Inspector, dialogs, create forms, Photo dock, Lab footer copy | Tools need parchment contrast and readable fields. |
+| Zone        | Role                                                          | Why                                                                        |
+| ----------- | ------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| **Habitat** | Lab hero, Studio stage, Photo stage, Radar default page       | Radar’s world: warm charcoal, amber eyes, cream dust. Pets read as living. |
+| **Bench**   | Inspector, dialogs, create forms, Photo dock, Lab footer copy | Tools need parchment contrast and readable fields.                         |
 
 This split already exists in the Studio (dark `#1a2422` stage, paper inspector).
 PR #9 kept shadcn `base-nova` leftovers (teal-olive primary, generic Inter).
@@ -37,11 +37,11 @@ the chrome primary. Antonio stone `#353535` / `#e4e0d6` is a pet, not a token.
 Load variable fonts in the Vite app (fontsource or `index.html` links). No Geist.
 No Inter as the hero face. System stacks are fallbacks only.
 
-| Role | Face | Use |
-| --- | --- | --- |
-| Display | **Fraunces** (soft opsz serif) | Lab headlines, wordmark *Pets*, Photo title |
-| UI | **Source Sans 3** | Chrome, inspector, buttons, fields |
-| Mono | **IBM Plex Mono** | Seeds, ids, `512×512`, JSON hints |
+| Role    | Face                           | Use                                         |
+| ------- | ------------------------------ | ------------------------------------------- |
+| Display | **Fraunces** (soft opsz serif) | Lab headlines, wordmark _Pets_, Photo title |
+| UI      | **Source Sans 3**              | Chrome, inspector, buttons, fields          |
+| Mono    | **IBM Plex Mono**              | Seeds, ids, `512×512`, JSON hints           |
 
 Wordmark: `AntX` in UI sans, medium; `Pets` in Fraunces italic. Keep
 `STUDIO_PRODUCT_MARK` / `STUDIO_PRODUCT_EMPHASIS`. Do not letter-space the
@@ -58,30 +58,30 @@ and do not import Estel / Glide / personal DESIGN.md tokens.
 
 ### Habitat
 
-| Token | Value | Use |
-| --- | --- | --- |
-| `--habitat` | `#1C1914` | Stage, Lab hero, Photo canvas |
-| `--habitat-elevated` | `#2A241C` | Header on habitat, chips |
-| `--habitat-rule` | `#3A3228` | Hairlines on dark |
-| `--cream` | `#F3E6C8` | Type on habitat, dust |
-| `--cream-dim` | `#C9B89A` | Meta on habitat |
-| `--amber` | `#E8A54B` | Signal, focus, living CTA |
-| `--amber-deep` | `#C47A2C` | Amber pressed / ring on paper |
-| `--bronze` | `#8A5A28` | Secondary dark accent |
-| `--coral` | `#F4A6A3` | Wiipo / creature chip only |
+| Token                | Value     | Use                           |
+| -------------------- | --------- | ----------------------------- |
+| `--habitat`          | `#1C1914` | Stage, Lab hero, Photo canvas |
+| `--habitat-elevated` | `#2A241C` | Header on habitat, chips      |
+| `--habitat-rule`     | `#3A3228` | Hairlines on dark             |
+| `--cream`            | `#F3E6C8` | Type on habitat, dust         |
+| `--cream-dim`        | `#C9B89A` | Meta on habitat               |
+| `--amber`            | `#E8A54B` | Signal, focus, living CTA     |
+| `--amber-deep`       | `#C47A2C` | Amber pressed / ring on paper |
+| `--bronze`           | `#8A5A28` | Secondary dark accent         |
+| `--coral`            | `#F4A6A3` | Wiipo / creature chip only    |
 
 Hero wash: radial cream dust at ~18% opacity, not a teal glow, not a grid.
 
 ### Bench
 
-| Token | Value | Use |
-| --- | --- | --- |
-| `--parchment` | `#F4EFE6` | Inspector + Lab page below hero |
-| `--parchment-card` | `#FFFBF4` | Cards, dialogs, Photo dock |
-| `--ink` | `#241C14` | Primary text on paper |
-| `--ink-muted` | `#6B6156` | Help, counts |
-| `--rule` | `#D9D0C2` | Borders, inputs |
-| `--danger` | `#B42318` | Delete only |
+| Token              | Value     | Use                             |
+| ------------------ | --------- | ------------------------------- |
+| `--parchment`      | `#F4EFE6` | Inspector + Lab page below hero |
+| `--parchment-card` | `#FFFBF4` | Cards, dialogs, Photo dock      |
+| `--ink`            | `#241C14` | Primary text on paper           |
+| `--ink-muted`      | `#6B6156` | Help, counts                    |
+| `--rule`           | `#D9D0C2` | Borders, inputs                 |
+| `--danger`         | `#B42318` | Delete only                     |
 
 shadcn mapping: `--background` = parchment; `--foreground` = ink; `--card` =
 parchment-card; `--primary` on bench = `#1C1914` with cream foreground;
