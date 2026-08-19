@@ -1,7 +1,7 @@
 import { animate, useMotionValue, useMotionValueEvent, useReducedMotion } from 'motion/react'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 
-import { parsePetQuery } from '@/app/surface'
+import { parsePetQuery, studioPetHash } from '@/app/surface'
 import { useStudioLanguage } from '@/i18n'
 
 import {
@@ -850,16 +850,43 @@ export function useStudioController() {
     }
   }
 
-  const insertCreatedAvatar = (avatar: StudioAvatar) => {
-    avatarEditSnapshot.current = {
-      avatars: avatarsRef.current,
-      activeAvatarId: activeAvatarIdRef.current,
+  const insertCreatedAvatar = (avatar: StudioAvatar, options?: { focusBody?: boolean }) => {
+    const focusBody = options?.focusBody ?? true
+    if (focusBody) {
+      avatarEditSnapshot.current = {
+        avatars: avatarsRef.current,
+        activeAvatarId: activeAvatarIdRef.current,
+      }
     }
     const next = [...avatarsRef.current, avatar]
     avatarsRef.current = next
     setAvatars(next)
-    setFocusAvatarName(true)
-    activateAvatar(avatar.id, true)
+    setFocusAvatarName(focusBody)
+    activateAvatar(avatar.id, focusBody)
+  }
+
+  const openCreatedPetInStudio = (avatarId: string) => {
+    setMode('avatars')
+    window.location.hash = studioPetHash(avatarId)
+  }
+
+  const finishSurfaceBlobCreate = (seed: string) => {
+    const avatar = createBlobAvatar(seed)
+    insertCreatedAvatar(avatar, { focusBody: false })
+    openCreatedPetInStudio(avatar.id)
+  }
+
+  const finishSurfaceMarkCreate = (name: string, markSvg?: string) => {
+    const avatar = createIpLogoAvatar(name, markSvg)
+    insertCreatedAvatar(avatar, { focusBody: false })
+    openCreatedPetInStudio(avatar.id)
+  }
+
+  const importSurfaceMarkFile = (file: File | undefined, name: string) => {
+    if (!file) return
+    readSquareMarkFile(file)
+      .then(markSvg => finishSurfaceMarkCreate(name || file.name.replace(/\.[^.]+$/, ''), markSvg))
+      .catch(() => undefined)
   }
 
   const createNewAvatar = () => {
@@ -873,30 +900,22 @@ export function useStudioController() {
   const ipMarkImportRef = useRef<HTMLInputElement>(null)
 
   const confirmCreateBlob = () => {
-    insertCreatedAvatar(createBlobAvatar(blobSeedDraft))
+    finishSurfaceBlobCreate(blobSeedDraft)
     setBlobSeedDraft('')
     setCreateBlobOpen(false)
   }
 
   const confirmCreateIpLogo = () => {
-    insertCreatedAvatar(createIpLogoAvatar(ipNameDraft))
+    finishSurfaceMarkCreate(ipNameDraft)
     setIpNameDraft('')
     setCreateIpOpen(false)
   }
 
   const importIpLogoMark = (file: File | undefined) => {
     if (!file) return
-    readSquareMarkFile(file)
-      .then(markSvg => {
-        insertCreatedAvatar(
-          createIpLogoAvatar(ipNameDraft || file.name.replace(/\.[^.]+$/, ''), markSvg)
-        )
-        setIpNameDraft('')
-        setCreateIpOpen(false)
-      })
-      .catch(() => {
-        setCreateIpOpen(false)
-      })
+    importSurfaceMarkFile(file, ipNameDraft)
+    setIpNameDraft('')
+    setCreateIpOpen(false)
   }
 
   const duplicateAvatar = (source: StudioAvatar, editDuplicate = false) => {
@@ -1859,6 +1878,9 @@ export function useStudioController() {
     commitStateMove,
     confirmCreateBlob,
     confirmCreateIpLogo,
+    finishSurfaceBlobCreate,
+    finishSurfaceMarkCreate,
+    importSurfaceMarkFile,
     confirmStudioProjectImport,
     createNewAvatar,
     createBlobOpen,

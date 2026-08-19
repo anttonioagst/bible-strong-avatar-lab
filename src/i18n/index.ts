@@ -147,6 +147,7 @@ const english: Record<string, string> = {
   Studio: 'Studio',
   Photo: 'Photo',
   Mark: 'Mark',
+  Pet: 'Pet',
   'Navigation du site': 'Site navigation',
   'Des pets à créer, photographier et emporter avec vous.':
     'Pets you can make, photograph, and take with you.',
@@ -156,6 +157,18 @@ const english: Record<string, string> = {
   'Photographier Radar': 'Photograph Radar',
   'Créer un Blob': 'Make a Blob',
   'Créer un Mark': 'Make a Mark',
+  'Créer un pet Blob': 'Create a Blob pet',
+  'Créer un pet Mark': 'Create a Mark pet',
+  'Créer le pet': 'Create pet',
+  'Aperçu du blob': 'Blob preview',
+  'Tapez une graine pour prévisualiser le blob, puis créez le pet.':
+    'Type a seed to preview your blob, then create the pet.',
+  'Nom du pet': 'Pet name',
+  'Le nom sert de graine pour la marque générée et le titre du pet.':
+    'The name seeds the generated mark and becomes the pet title.',
+  'Nouveau pet Mark': 'New Mark pet',
+  'Créez un pet Classic, Blob ou Mark.': 'Create a Classic, Blob, or Mark pet.',
+  'Ouvrir la page de création': 'Open create page',
   'Vos pets': 'Your pets',
   Photographier: 'Photograph',
   'Ouvrir dans le Studio': 'Open in Studio',

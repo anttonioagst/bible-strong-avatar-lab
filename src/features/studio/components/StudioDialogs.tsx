@@ -159,11 +159,19 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
             placeholder={t('Graine')}
           />
           <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              nativeButton={false}
+              render={<a href="#/create/blob" />}
+            >
+              {t('Ouvrir la page de création')}
+            </Button>
             <Button type="button" variant="outline" onClick={() => setCreateBlobOpen(false)}>
               {t('Annuler')}
             </Button>
             <Button type="button" onClick={confirmCreateBlob}>
-              {t('Créer')}
+              {t('Créer le pet')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -171,7 +179,7 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
       <Dialog open={createIpOpen} onOpenChange={setCreateIpOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('Nouveau logo IP')}</DialogTitle>
+            <DialogTitle>{t('Nouveau pet Mark')}</DialogTitle>
             <DialogDescription>
               {t(
                 'Générez une marque carrée à partir d’un nom, ou importez un SVG ou une image carrée.'
@@ -180,10 +188,10 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
           </DialogHeader>
           <Input
             className="h-10"
-            aria-label={t('Nom de l’avatar')}
+            aria-label={t('Nom du pet')}
             value={ipNameDraft}
             onChange={event => setIpNameDraft(event.currentTarget.value)}
-            placeholder={t('Nom de l’avatar')}
+            placeholder={t('Nom du pet')}
           />
           <input
             ref={ipMarkImportRef}
@@ -196,6 +204,14 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
             }}
           />
           <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              nativeButton={false}
+              render={<a href="#/create/ip" />}
+            >
+              {t('Ouvrir la page de création')}
+            </Button>
             <Button type="button" variant="outline" onClick={() => setCreateIpOpen(false)}>
               {t('Annuler')}
             </Button>
@@ -207,7 +223,7 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
               {t('Importer une marque carrée')}
             </Button>
             <Button type="button" onClick={confirmCreateIpLogo}>
-              {t('Générer')}
+              {t('Créer le pet')}
             </Button>
           </DialogFooter>
         </DialogContent>

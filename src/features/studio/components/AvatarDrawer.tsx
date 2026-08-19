@@ -16,7 +16,7 @@ import { avatarStyleFamilies, type AvatarStyleFamily } from '@/features/avatar/a
 import type { StudioController } from '@/features/studio/useStudioController'
 
 const familyLabel = (family: AvatarStyleFamily) =>
-  family === 'classic' ? 'Classic' : family === 'blob' ? 'Blob' : 'IP logo'
+  family === 'classic' ? 'Classic' : family === 'blob' ? 'Blob' : 'Mark'
 
 type StyleFilter = 'all' | AvatarStyleFamily
 
@@ -41,8 +41,6 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
     expression,
     previewAvatarMove,
     reduceMotion,
-    setCreateBlobOpen,
-    setCreateIpOpen,
     setDeleteAvatarOpen,
     setDraggingAvatarId,
     setFocusAvatarName,
@@ -80,7 +78,7 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
         {visibleAvatars.length === 0 && (
           <div className="studio-empty-state" role="status">
             <p>{t('Aucun pet dans cette famille.')}</p>
-            <p>{t('Créez un pet Classic, Blob ou IP logo.')}</p>
+            <p>{t('Créez un pet Classic, Blob ou Mark.')}</p>
           </div>
         )}
         <div className="avatar-grid">
@@ -190,7 +188,8 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
           <Button
             variant="outline"
             className="avatar-add creation-card"
-            onClick={() => setCreateBlobOpen(true)}
+            nativeButton={false}
+            render={<a href="#/create/blob" />}
             aria-label={t('Nouveau pet Blob')}
           >
             <Plus />
@@ -199,11 +198,12 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
           <Button
             variant="outline"
             className="avatar-add creation-card"
-            onClick={() => setCreateIpOpen(true)}
-            aria-label={t('Nouveau logo IP')}
+            nativeButton={false}
+            render={<a href="#/create/ip" />}
+            aria-label={t('Nouveau pet Mark')}
           >
             <Plus />
-            <span>{t('IP logo')}</span>
+            <span>{t('Mark')}</span>
           </Button>
         </div>
       </section>
