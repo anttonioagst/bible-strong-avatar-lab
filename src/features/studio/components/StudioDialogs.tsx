@@ -10,6 +10,14 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 
 import type { StudioController } from '@/features/studio/useStudioController'
@@ -18,7 +26,6 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
   const {
     activeAvatar,
     animationsAffectedByExpressionDeletion,
-    avatars,
     blobSeedDraft,
     confirmCreateBlob,
     confirmCreateIpLogo,
@@ -31,8 +38,6 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
     deleteExpressionOpen,
     deleteSequenceEditing,
     deleteSequenceOpen,
-    expression,
-    expressions,
     importIpLogoMark,
     ipMarkImportRef,
     ipNameDraft,
@@ -138,37 +143,43 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <AlertDialog open={createBlobOpen} onOpenChange={setCreateBlobOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Nouvel avatar Blob')}</AlertDialogTitle>
-            <AlertDialogDescription>
+      <Dialog open={createBlobOpen} onOpenChange={setCreateBlobOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('Nouveau pet Blob')}</DialogTitle>
+            <DialogDescription>
               {t('La graine détermine le blobatar. Utilisez le nom ou un identifiant.')}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+            </DialogDescription>
+          </DialogHeader>
           <Input
+            className="h-10"
             aria-label={t('Graine')}
             value={blobSeedDraft}
             onChange={event => setBlobSeedDraft(event.currentTarget.value)}
             placeholder={t('Graine')}
           />
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('Annuler')}</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmCreateBlob}>{t('Créer')}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-      <AlertDialog open={createIpOpen} onOpenChange={setCreateIpOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('Nouveau logo IP')}</AlertDialogTitle>
-            <AlertDialogDescription>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setCreateBlobOpen(false)}>
+              {t('Annuler')}
+            </Button>
+            <Button type="button" onClick={confirmCreateBlob}>
+              {t('Créer')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={createIpOpen} onOpenChange={setCreateIpOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('Nouveau logo IP')}</DialogTitle>
+            <DialogDescription>
               {t(
                 'Générez une marque carrée à partir d’un nom, ou importez un SVG ou une image carrée.'
               )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
+            </DialogDescription>
+          </DialogHeader>
           <Input
+            className="h-10"
             aria-label={t('Nom de l’avatar')}
             value={ipNameDraft}
             onChange={event => setIpNameDraft(event.currentTarget.value)}
@@ -184,8 +195,10 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
               event.currentTarget.value = ''
             }}
           />
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('Annuler')}</AlertDialogCancel>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={() => setCreateIpOpen(false)}>
+              {t('Annuler')}
+            </Button>
             <Button
               type="button"
               variant="outline"
@@ -193,10 +206,12 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
             >
               {t('Importer une marque carrée')}
             </Button>
-            <AlertDialogAction onClick={confirmCreateIpLogo}>{t('Générer')}</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            <Button type="button" onClick={confirmCreateIpLogo}>
+              {t('Générer')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   )
 }

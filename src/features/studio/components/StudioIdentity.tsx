@@ -1,11 +1,18 @@
+import { Button } from '@/components/ui/button'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { STUDIO_GITHUB_REPO_URL, STUDIO_PRODUCT_NAME } from '@/features/studio/studioBrand'
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Separator } from '@/components/ui/separator'
+import {
+  STUDIO_GITHUB_REPO_URL,
+  STUDIO_PRODUCT_EMPHASIS,
+  STUDIO_PRODUCT_MARK,
+  STUDIO_PRODUCT_NAME,
+} from '@/features/studio/studioBrand'
 import type { StudioController } from '@/features/studio/useStudioController'
 import { type StudioLanguage } from '@/i18n'
 
@@ -21,43 +28,63 @@ function GitHubLogo() {
   )
 }
 
+const LANGUAGE_ITEMS: { value: StudioLanguage; flag: string; label: string }[] = [
+  { value: 'en', flag: '🇬🇧', label: 'English' },
+  { value: 'fr', flag: '🇫🇷', label: 'Français' },
+  { value: 'zh-CN', flag: '🇨🇳', label: '简体中文' },
+]
+
 export function StudioIdentity({ className = '', language, setLanguage, t }: StudioIdentityProps) {
+  const activeLanguage = LANGUAGE_ITEMS.find(item => item.value === language) ?? LANGUAGE_ITEMS[0]
+
   return (
     <div className={`studio-identity ${className}`.trim()}>
       <div className="brand" aria-label={STUDIO_PRODUCT_NAME}>
         <span className="brand-mark" />
-        Radar <em>Avatar Lab</em>
+        {STUDIO_PRODUCT_MARK} <em>{STUDIO_PRODUCT_EMPHASIS}</em>
       </div>
       <div className="language-picker">
-        <a
+        <Button
+          nativeButton={false}
+          variant="ghost"
+          size="lg"
           className="source-link"
-          href={STUDIO_GITHUB_REPO_URL}
-          target="_blank"
-          rel="noreferrer"
-          aria-label="GitHub"
+          render={
+            <a href={STUDIO_GITHUB_REPO_URL} target="_blank" rel="noreferrer" aria-label="GitHub" />
+          }
         >
           <GitHubLogo />
           <span>GitHub</span>
-        </a>
-        <span className="identity-divider" aria-hidden="true" />
-        <Select
-          value={language}
-          items={[
-            { value: 'en', label: '🇬🇧' },
-            { value: 'fr', label: '🇫🇷' },
-            { value: 'zh-CN', label: '🇨🇳' },
-          ]}
-          onValueChange={next => next && setLanguage(next as StudioLanguage)}
-        >
-          <SelectTrigger aria-label={t('Langue de l’interface')}>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="en">🇬🇧</SelectItem>
-            <SelectItem value="fr">🇫🇷</SelectItem>
-            <SelectItem value="zh-CN">🇨🇳</SelectItem>
-          </SelectContent>
-        </Select>
+        </Button>
+        <Separator orientation="vertical" className="identity-divider" />
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="lg"
+                className="language-menu-trigger"
+                aria-label={t('Langue de l’interface')}
+              />
+            }
+          >
+            <span aria-hidden="true">{activeLanguage.flag}</span>
+            <span className="language-menu-code">{activeLanguage.value}</span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="language-menu">
+            <DropdownMenuRadioGroup
+              value={language}
+              onValueChange={next => next && setLanguage(next as StudioLanguage)}
+            >
+              {LANGUAGE_ITEMS.map(item => (
+                <DropdownMenuRadioItem key={item.value} value={item.value}>
+                  <span aria-hidden="true">{item.flag}</span>
+                  {item.label}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   )

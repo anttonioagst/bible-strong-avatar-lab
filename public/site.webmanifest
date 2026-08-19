@@ -1,13 +1,13 @@
 {
-  "name": "Radar Avatar Lab",
-  "short_name": "Radar Lab",
-  "description": "A browser-based studio for designing procedural 2D avatars, expressions and reusable animations.",
+  "name": "AntX Pets",
+  "short_name": "AntX Pets",
+  "description": "A browser-based studio for designing procedural 2D pets, expressions and reusable animations.",
   "lang": "en",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
-  "background_color": "#171a1e",
-  "theme_color": "#171a1e",
+  "background_color": "#1a2422",
+  "theme_color": "#1a2422",
   "icons": [
     {
       "src": "favicon.svg",

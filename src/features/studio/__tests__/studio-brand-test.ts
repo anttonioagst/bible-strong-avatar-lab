@@ -12,8 +12,8 @@ import {
 const root = process.cwd()
 
 describe('Studio chrome branding', () => {
-  it('credits Antonio on GitHub and names the fork Radar Avatar Lab', () => {
-    expect(STUDIO_PRODUCT_NAME).toBe('Radar Avatar Lab')
+  it('credits Antonio on GitHub and names the fork AntX Pets', () => {
+    expect(STUDIO_PRODUCT_NAME).toBe('AntX Pets')
     expect(STUDIO_AUTHOR_HANDLE).toBe('@anttonioagst')
     expect(STUDIO_AUTHOR_PROFILE_URL).toBe('https://github.com/anttonioagst')
     expect(STUDIO_GITHUB_REPO_URL).toBe('https://github.com/anttonioagst/bible-strong-avatar-lab')
@@ -39,6 +39,7 @@ describe('Studio chrome branding', () => {
     expect(identity).toContain('STUDIO_GITHUB_REPO_URL')
     expect(identity).toContain('STUDIO_PRODUCT_NAME')
     expect(identity).not.toContain('Bible Strong')
+    expect(identity).not.toContain('Radar Avatar Lab')
     expect(identity).not.toContain('smontlouis/bible-strong-avatar-lab')
   })
 
@@ -50,12 +51,44 @@ describe('Studio chrome branding', () => {
     expect(indexHtml).toContain(STUDIO_PRODUCT_NAME)
     expect(indexHtml).toContain(STUDIO_PUBLIC_SITE_URL)
     expect(indexHtml).not.toContain('Bible Strong')
+    expect(indexHtml).not.toContain('Radar Avatar Lab')
     expect(indexHtml).not.toContain('avatars.bible-strong.app')
     expect(indexHtml).not.toContain('Stéphane Montlouis-Calixte')
-    expect(radarHtml).toContain('<title>Radar</title>')
+    expect(radarHtml).toContain('<title>AntX Pets · Radar</title>')
     expect(radarHtml).not.toContain('Bible Strong')
     expect(manifest).toContain(STUDIO_PRODUCT_NAME)
     expect(manifest).not.toContain('Bible Strong')
+    expect(manifest).not.toContain('Radar Avatar Lab')
+  })
+
+  it('uses shadcn chrome primitives for identity, tabs, and dialogs', () => {
+    const identity = readFileSync(
+      path.join(root, 'src/features/studio/components/StudioIdentity.tsx'),
+      'utf8'
+    )
+    const inspector = readFileSync(
+      path.join(root, 'src/features/studio/components/StudioInspector.tsx'),
+      'utf8'
+    )
+    const tabs = readFileSync(
+      path.join(root, 'src/features/studio/components/StudioModeTabs.tsx'),
+      'utf8'
+    )
+    const dialogs = readFileSync(
+      path.join(root, 'src/features/studio/components/StudioDialogs.tsx'),
+      'utf8'
+    )
+    const gallery = readFileSync(
+      path.join(root, 'src/features/studio/components/AvatarDrawer.tsx'),
+      'utf8'
+    )
+
+    expect(identity).toContain('@/components/ui/button')
+    expect(identity).toContain('@/components/ui/dropdown-menu')
+    expect(tabs).toContain('@/components/ui/tabs')
+    expect(inspector).toContain('StudioModeTabs')
+    expect(dialogs).toContain('@/components/ui/dialog')
+    expect(gallery).toContain('@/components/ui/tabs')
   })
 
   it('keeps AGPL fork attribution in LICENSE and README', () => {

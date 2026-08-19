@@ -3,12 +3,9 @@ import {
   Copy,
   Download,
   FileCode2,
-  Move3D,
   Pencil,
-  Play,
   Plus,
   RotateCcw,
-  Smile,
   Trash2,
   Upload,
 } from 'lucide-react'
@@ -26,7 +23,6 @@ import {
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 import { Field, FieldTitle } from '@/components/ui/field'
-import { Drawer } from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import {
   Select,
@@ -70,6 +66,7 @@ import { surfaceLabels, surfacePresets } from '@/features/avatar/surfaces'
 import { type SnapshotBackground } from '@/features/export/snapshotExporter'
 import { AvatarPage } from '@/features/studio/components/AvatarDrawer'
 import { StudioIdentity } from '@/features/studio/components/StudioIdentity'
+import { StudioModeTabs } from '@/features/studio/components/StudioModeTabs'
 import type { StudioController } from '@/features/studio/useStudioController'
 
 export function StudioInspector({ controller }: { controller: StudioController }) {
@@ -277,7 +274,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
   }
 
   return (
-    <Drawer>
+    <>
       <main
         className={`inspector ${editing ? 'expression-workspace-active' : sequenceEditing ? 'sequence-workspace-active' : bodyEditing ? 'body-workspace' : 'studio-workspace'}${activeSequence && !editorPageOpen ? ' state-player-active' : ''}`}
       >
@@ -287,6 +284,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
           setLanguage={setLanguage}
           t={t}
         />
+        {!editorPageOpen && <StudioModeTabs controller={controller} placement="rail" />}
         {sequenceEditing && !editing && (
           <motion.div
             key={`sequence-${sequenceEditing.sourceId ?? 'new'}`}
@@ -403,7 +401,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                       mode === 'manual'
                         ? 'Pose'
                         : mode === 'avatars'
-                          ? 'Avatars'
+                          ? 'Pets'
                           : mode === 'expressions'
                             ? 'Expressions'
                             : mode === 'states'
@@ -1449,78 +1447,92 @@ export function StudioInspector({ controller }: { controller: StudioController }
                     </div>
                     <span>{t('Double-clic pour modifier')}</span>
                   </div>
-                  <div className="expression-grid">
-                    {expressions.map((preset, index) => (
-                      <motion.div
-                        className="expression-sort-item"
-                        data-dragging={draggingExpressionId === preset.id || undefined}
-                        key={preset.id}
-                        layout="position"
-                        layoutId={`expression-${preset.id}`}
-                        animate={{
-                          opacity: draggingExpressionId === preset.id ? 0.28 : 1,
-                          scale: draggingExpressionId === preset.id ? 0.96 : 1,
-                        }}
-                        transition={
-                          reduceMotion
-                            ? { duration: 0 }
-                            : { type: 'spring', stiffness: 520, damping: 42, mass: 0.7 }
-                        }
+                  {expressions.length === 0 ? (
+                    <div className="studio-empty-state" role="status">
+                      <p>{t('Aucune expression.')}</p>
+                      <Button
+                        className="min-h-10"
+                        type="button"
+                        onClick={() => openExpressionEditor(null, expression)}
                       >
-                        <ExpressionCard
-                          expression={preset}
-                          index={index}
-                          active={activeExpression === index}
-                          surface={surface}
-                          bodyNodes={bodyNodes}
-                          colors={activeAvatar.colors}
-                          avatarEyes={activeAvatarEyes}
-                          renderStyle={activeAvatar.renderStyle}
-                          projection={activeAvatar.projection}
-                          previewId={String(index)}
-                          onSelect={() => transitionToExpression(preset, index)}
-                          onEdit={() => openExpressionEditor(index, preset)}
-                          onDuplicate={() => duplicateExpression(index, preset)}
-                          onDelete={() => {
-                            openExpressionEditor(index, preset)
-                            setDeleteExpressionOpen(true)
+                        <Plus />
+                        {t('Nouvelle expression')}
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="expression-grid">
+                      {expressions.map((preset, index) => (
+                        <motion.div
+                          className="expression-sort-item"
+                          data-dragging={draggingExpressionId === preset.id || undefined}
+                          key={preset.id}
+                          layout="position"
+                          layoutId={`expression-${preset.id}`}
+                          animate={{
+                            opacity: draggingExpressionId === preset.id ? 0.28 : 1,
+                            scale: draggingExpressionId === preset.id ? 0.96 : 1,
                           }}
-                          draggable
-                          onDragStart={event => {
-                            expressionDragOrigin.current = expressions
-                            expressionDragPreview.current = expressions
-                            draggedExpressionId.current = preset.id
-                            setDraggingExpressionId(preset.id)
-                            event.dataTransfer.effectAllowed = 'move'
-                          }}
-                          onDragEnter={() => previewExpressionMove(preset.id)}
-                          onDragOver={event => {
-                            event.preventDefault()
-                            event.dataTransfer.dropEffect = 'move'
-                          }}
-                          onDrop={event => {
-                            event.preventDefault()
-                            commitExpressionMove(preset.id)
-                          }}
-                          onDragEnd={cancelExpressionMove}
-                        />
-                      </motion.div>
-                    ))}
-                    <Button
-                      className="expression-add creation-card"
-                      variant="outline"
-                      type="button"
-                      onDragOver={event => event.preventDefault()}
-                      onDrop={event => {
-                        event.preventDefault()
-                        commitExpressionMove(null)
-                      }}
-                      onClick={() => openExpressionEditor(null, expression)}
-                      aria-label={t('Nouvelle expression')}
-                    >
-                      <Plus />
-                    </Button>
-                  </div>
+                          transition={
+                            reduceMotion
+                              ? { duration: 0 }
+                              : { type: 'spring', stiffness: 520, damping: 42, mass: 0.7 }
+                          }
+                        >
+                          <ExpressionCard
+                            expression={preset}
+                            index={index}
+                            active={activeExpression === index}
+                            surface={surface}
+                            bodyNodes={bodyNodes}
+                            colors={activeAvatar.colors}
+                            avatarEyes={activeAvatarEyes}
+                            renderStyle={activeAvatar.renderStyle}
+                            projection={activeAvatar.projection}
+                            previewId={String(index)}
+                            onSelect={() => transitionToExpression(preset, index)}
+                            onEdit={() => openExpressionEditor(index, preset)}
+                            onDuplicate={() => duplicateExpression(index, preset)}
+                            onDelete={() => {
+                              openExpressionEditor(index, preset)
+                              setDeleteExpressionOpen(true)
+                            }}
+                            draggable
+                            onDragStart={event => {
+                              expressionDragOrigin.current = expressions
+                              expressionDragPreview.current = expressions
+                              draggedExpressionId.current = preset.id
+                              setDraggingExpressionId(preset.id)
+                              event.dataTransfer.effectAllowed = 'move'
+                            }}
+                            onDragEnter={() => previewExpressionMove(preset.id)}
+                            onDragOver={event => {
+                              event.preventDefault()
+                              event.dataTransfer.dropEffect = 'move'
+                            }}
+                            onDrop={event => {
+                              event.preventDefault()
+                              commitExpressionMove(preset.id)
+                            }}
+                            onDragEnd={cancelExpressionMove}
+                          />
+                        </motion.div>
+                      ))}
+                      <Button
+                        className="expression-add creation-card"
+                        variant="outline"
+                        type="button"
+                        onDragOver={event => event.preventDefault()}
+                        onDrop={event => {
+                          event.preventDefault()
+                          commitExpressionMove(null)
+                        }}
+                        onClick={() => openExpressionEditor(null, expression)}
+                        aria-label={t('Nouvelle expression')}
+                      >
+                        <Plus />
+                      </Button>
+                    </div>
+                  )}
                 </InspectorCard>
                 <InspectorCard>
                   <PanelTitle
@@ -1565,130 +1577,144 @@ export function StudioInspector({ controller }: { controller: StudioController }
                       </p>
                     </div>
                   </div>
-                  <div className="state-groups">
-                    {groupSequences(sequences).map(group => (
-                      <div
-                        key={group.name}
-                        onDragOver={event => event.preventDefault()}
-                        onDrop={event => {
-                          event.preventDefault()
-                          commitStateMove(null, group.name)
-                        }}
-                      >
-                        <strong>
-                          {group.sequences.every(sequence => sequence.builtIn)
-                            ? t(group.name)
-                            : group.name}
-                        </strong>
-                        <div className="state-buttons">
-                          {group.sequences.map(sequence => {
-                            const firstStep = sequence.steps[0]
-                            const firstExpression = firstStep
-                              ? expressionById.get(firstStep.expressionId)
-                              : undefined
-                            const card = (
-                              <Button
-                                className="expression-card state-card"
-                                variant="outline"
-                                type="button"
-                                draggable
-                                aria-pressed={selectedState === sequence.id}
-                                onDragStart={event => {
-                                  stateDragOrigin.current = sequences
-                                  stateDragPreview.current = sequences
-                                  draggedStateId.current = sequence.id
-                                  setDraggingStateId(sequence.id)
-                                  event.dataTransfer.effectAllowed = 'move'
-                                }}
-                                onDragEnter={() => previewStateMove(sequence.id, group.name)}
-                                onDragOver={event => {
-                                  event.preventDefault()
-                                  event.stopPropagation()
-                                  event.dataTransfer.dropEffect = 'move'
-                                }}
-                                onDrop={event => {
-                                  event.preventDefault()
-                                  event.stopPropagation()
-                                  commitStateMove(sequence.id, group.name)
-                                }}
-                                onDragEnd={cancelStateMove}
-                                onClick={() => launchSequence(sequence)}
-                                onDoubleClick={() => openSequenceEditor(sequence)}
-                              >
-                                <ExpressionPreview
-                                  expression={
-                                    firstExpression ?? expressions[0] ?? defaultExpression
-                                  }
-                                  surface={surface}
-                                  bodyNodes={bodyNodes}
-                                  colors={activeAvatar.colors}
-                                  avatarEyes={activeAvatarEyes}
-                                  renderStyle={activeAvatar.renderStyle}
-                                  projection={activeAvatar.projection}
-                                  id={`state-card-${sequence.id}`}
-                                />
-                                <span>{sequence.builtIn ? t(sequence.name) : sequence.name}</span>
-                              </Button>
-                            )
-                            return (
-                              <motion.div
-                                className="state-sort-item"
-                                data-dragging={draggingStateId === sequence.id || undefined}
-                                key={sequence.id}
-                                layout="position"
-                                layoutId={`state-${sequence.id}`}
-                                animate={{
-                                  opacity: draggingStateId === sequence.id ? 0.28 : 1,
-                                  scale: draggingStateId === sequence.id ? 0.96 : 1,
-                                }}
-                                transition={
-                                  reduceMotion
-                                    ? { duration: 0 }
-                                    : { type: 'spring', stiffness: 520, damping: 42, mass: 0.7 }
-                                }
-                              >
-                                <ContextMenu>
-                                  <ContextMenuTrigger render={card} />
-                                  <ContextMenuContent>
-                                    <ContextMenuItem onClick={() => openSequenceEditor(sequence)}>
-                                      <Pencil />
-                                      {t('Modifier')}
-                                    </ContextMenuItem>
-                                    <ContextMenuItem onClick={() => duplicateState(sequence)}>
-                                      <Copy />
-                                      {t('Dupliquer')}
-                                    </ContextMenuItem>
-                                    <ContextMenuSeparator />
-                                    <ContextMenuItem
-                                      variant="destructive"
-                                      onClick={() => {
-                                        openSequenceEditor(sequence)
-                                        setDeleteSequenceOpen(true)
-                                      }}
-                                    >
-                                      <Trash2 />
-                                      {t('Supprimer')}
-                                    </ContextMenuItem>
-                                  </ContextMenuContent>
-                                </ContextMenu>
-                              </motion.div>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                    <div className="state-buttons">
+                  {sequences.length === 0 ? (
+                    <div className="studio-empty-state" role="status">
+                      <p>{t('Aucune animation.')}</p>
                       <Button
-                        className="expression-add creation-card"
-                        variant="outline"
+                        className="min-h-10"
                         type="button"
                         onClick={() => openSequenceEditor()}
-                        aria-label={t('Nouvelle animation')}
                       >
                         <Plus />
+                        {t('Nouvelle animation')}
                       </Button>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="state-groups">
+                      {groupSequences(sequences).map(group => (
+                        <div
+                          key={group.name}
+                          onDragOver={event => event.preventDefault()}
+                          onDrop={event => {
+                            event.preventDefault()
+                            commitStateMove(null, group.name)
+                          }}
+                        >
+                          <strong>
+                            {group.sequences.every(sequence => sequence.builtIn)
+                              ? t(group.name)
+                              : group.name}
+                          </strong>
+                          <div className="state-buttons">
+                            {group.sequences.map(sequence => {
+                              const firstStep = sequence.steps[0]
+                              const firstExpression = firstStep
+                                ? expressionById.get(firstStep.expressionId)
+                                : undefined
+                              const card = (
+                                <Button
+                                  className="expression-card state-card"
+                                  variant="outline"
+                                  type="button"
+                                  draggable
+                                  aria-pressed={selectedState === sequence.id}
+                                  onDragStart={event => {
+                                    stateDragOrigin.current = sequences
+                                    stateDragPreview.current = sequences
+                                    draggedStateId.current = sequence.id
+                                    setDraggingStateId(sequence.id)
+                                    event.dataTransfer.effectAllowed = 'move'
+                                  }}
+                                  onDragEnter={() => previewStateMove(sequence.id, group.name)}
+                                  onDragOver={event => {
+                                    event.preventDefault()
+                                    event.stopPropagation()
+                                    event.dataTransfer.dropEffect = 'move'
+                                  }}
+                                  onDrop={event => {
+                                    event.preventDefault()
+                                    event.stopPropagation()
+                                    commitStateMove(sequence.id, group.name)
+                                  }}
+                                  onDragEnd={cancelStateMove}
+                                  onClick={() => launchSequence(sequence)}
+                                  onDoubleClick={() => openSequenceEditor(sequence)}
+                                >
+                                  <ExpressionPreview
+                                    expression={
+                                      firstExpression ?? expressions[0] ?? defaultExpression
+                                    }
+                                    surface={surface}
+                                    bodyNodes={bodyNodes}
+                                    colors={activeAvatar.colors}
+                                    avatarEyes={activeAvatarEyes}
+                                    renderStyle={activeAvatar.renderStyle}
+                                    projection={activeAvatar.projection}
+                                    id={`state-card-${sequence.id}`}
+                                  />
+                                  <span>{sequence.builtIn ? t(sequence.name) : sequence.name}</span>
+                                </Button>
+                              )
+                              return (
+                                <motion.div
+                                  className="state-sort-item"
+                                  data-dragging={draggingStateId === sequence.id || undefined}
+                                  key={sequence.id}
+                                  layout="position"
+                                  layoutId={`state-${sequence.id}`}
+                                  animate={{
+                                    opacity: draggingStateId === sequence.id ? 0.28 : 1,
+                                    scale: draggingStateId === sequence.id ? 0.96 : 1,
+                                  }}
+                                  transition={
+                                    reduceMotion
+                                      ? { duration: 0 }
+                                      : { type: 'spring', stiffness: 520, damping: 42, mass: 0.7 }
+                                  }
+                                >
+                                  <ContextMenu>
+                                    <ContextMenuTrigger render={card} />
+                                    <ContextMenuContent>
+                                      <ContextMenuItem onClick={() => openSequenceEditor(sequence)}>
+                                        <Pencil />
+                                        {t('Modifier')}
+                                      </ContextMenuItem>
+                                      <ContextMenuItem onClick={() => duplicateState(sequence)}>
+                                        <Copy />
+                                        {t('Dupliquer')}
+                                      </ContextMenuItem>
+                                      <ContextMenuSeparator />
+                                      <ContextMenuItem
+                                        variant="destructive"
+                                        onClick={() => {
+                                          openSequenceEditor(sequence)
+                                          setDeleteSequenceOpen(true)
+                                        }}
+                                      >
+                                        <Trash2 />
+                                        {t('Supprimer')}
+                                      </ContextMenuItem>
+                                    </ContextMenuContent>
+                                  </ContextMenu>
+                                </motion.div>
+                              )
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                      <div className="state-buttons">
+                        <Button
+                          className="expression-add creation-card"
+                          variant="outline"
+                          type="button"
+                          onClick={() => openSequenceEditor()}
+                          aria-label={t('Nouvelle animation')}
+                        >
+                          <Plus />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </InspectorCard>
               </div>
             )}
@@ -2142,47 +2168,8 @@ export function StudioInspector({ controller }: { controller: StudioController }
             </motion.div>
           </motion.footer>
         )}
-        {!editorPageOpen && (
-          <nav className="mobile-mode-tabs" aria-label={t('Mode d’édition')}>
-            <Button
-              className="mobile-mode-tab mobile-avatar-tab"
-              variant="ghost"
-              type="button"
-              aria-pressed={mode === 'avatars'}
-              aria-label={t('Choisir un avatar')}
-              onClick={() => setMode('avatars')}
-            >
-              <AvatarThumb
-                avatar={activeAvatar}
-                baseBehavior={baseBehavior}
-                expression={expressions[0] ?? defaultExpression}
-                id={`active-avatar-tab-${activeAvatar.id}`}
-              />
-              <span>{activeAvatar.name}</span>
-            </Button>
-            {(
-              [
-                ['manual', t('Pose'), Move3D],
-                ['expressions', t('Expressions'), Smile],
-                ['states', t('Animations'), Play],
-                ['export', t('Exporter'), Download],
-              ] as const
-            ).map(([value, label, Icon]) => (
-              <Button
-                className="mobile-mode-tab"
-                variant="ghost"
-                type="button"
-                key={value}
-                aria-pressed={mode === value}
-                onClick={() => setMode(value)}
-              >
-                <Icon />
-                <span>{label}</span>
-              </Button>
-            ))}
-          </nav>
-        )}
+        {!editorPageOpen && <StudioModeTabs controller={controller} placement="dock" />}
       </main>
-    </Drawer>
+    </>
   )
 }
