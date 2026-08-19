@@ -9,11 +9,11 @@ Domain law stays in [`CONTEXT.md`](../CONTEXT.md).
 The deployable app is a Vite SPA. `src/app/App.tsx` mounts only `StudioView`.
 There is no router. The public face is the Studio header plus a dark stage.
 
-| URL | What a visitor actually gets |
-| --- | --- |
-| [bible-strong-avatar-lab.vercel.app](https://bible-strong-avatar-lab.vercel.app) | Upstream-looking Studio (Bible Strong chrome, Strobi first). This is the “done badly” public face Antonio called out. |
-| [anttonioagst.github.io/bible-strong-avatar-lab](https://anttonioagst.github.io/bible-strong-avatar-lab/) | This fork’s intended host. Same architecture: Studio is the site. |
-| `/radar.html` | Player-only Radar. Idle + blink. `?bg=transparent` for embeds. No Studio chrome. |
+| URL                                                                                                       | What a visitor actually gets                                                                                          |
+| --------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| [bible-strong-avatar-lab.vercel.app](https://bible-strong-avatar-lab.vercel.app)                          | Upstream-looking Studio (Bible Strong chrome, Strobi first). This is the “done badly” public face Antonio called out. |
+| [anttonioagst.github.io/bible-strong-avatar-lab](https://anttonioagst.github.io/bible-strong-avatar-lab/) | This fork’s intended host. Same architecture: Studio is the site.                                                     |
+| `/radar.html`                                                                                             | Player-only Radar. Idle + blink. `?bg=transparent` for embeds. No Studio chrome.                                      |
 
 PR #9 renamed and restyled Studio chrome as AntX Pets (shadcn `base-nova`). It did
 not add a site. Photo Mode exists as **Export → snapshot accordion** plus a stage
@@ -38,14 +38,14 @@ Do not fold it into the SPA and do not put Lab chrome on it.
 GitHub Pages is served with `base: './'` and no rewrite. Path routes like
 `/studio` 404 on refresh. **Hash surfaces** are the only allowed IA:
 
-| Hash | Surface | Job |
-| --- | --- | --- |
-| `#/` or empty | **Lab** | Public home. Pets, Radar, enter Studio / Photo / create. |
-| `#/studio` | **Studio** | The existing tool (stage + inspector). |
-| `#/photo` | **Photo** | First-class capture: size, background, SVG/PNG. |
-| `#/create/blob` | **Create Blob** | Seed string → pet. |
-| `#/create/ip` | **Create Mark** | Name or square import → pet. |
-| `radar.html` | **Radar embed** | Out of the SPA. Do not hash this. |
+| Hash            | Surface         | Job                                                      |
+| --------------- | --------------- | -------------------------------------------------------- |
+| `#/` or empty   | **Lab**         | Public home. Pets, Radar, enter Studio / Photo / create. |
+| `#/studio`      | **Studio**      | The existing tool (stage + inspector).                   |
+| `#/photo`       | **Photo**       | First-class capture: size, background, SVG/PNG.          |
+| `#/create/blob` | **Create Blob** | Seed string → pet.                                       |
+| `#/create/ip`   | **Create Mark** | Name or square import → pet.                             |
+| `radar.html`    | **Radar embed** | Out of the SPA. Do not hash this.                        |
 
 Optional query on Photo / Studio: `?pet=<avatarId>` selects that pet in the
 existing document. Do not add a router library.
@@ -57,15 +57,15 @@ Animation, Playback, `styleFamily`.
 
 Visitor-facing copy on the hosted site uses **product** words:
 
-| Say | Do not say on the site |
-| --- | --- |
-| Pet | Avatar, character prefab, styleFamily |
-| Lab | Landing, marketing, playground |
-| Studio | Avatar Lab, Bible Strong, Radar Avatar Lab |
-| Photo | Snapshot accordion, Mode photo buried in Export |
-| Blob | “hidden blob style” |
-| Mark | IP logo as a filter chip only |
-| Family | Theme, renderer, skin |
+| Say    | Do not say on the site                          |
+| ------ | ----------------------------------------------- |
+| Pet    | Avatar, character prefab, styleFamily           |
+| Lab    | Landing, marketing, playground                  |
+| Studio | Avatar Lab, Bible Strong, Radar Avatar Lab      |
+| Photo  | Snapshot accordion, Mode photo buried in Export |
+| Blob   | “hidden blob style”                             |
+| Mark   | IP logo as a filter chip only                   |
+| Family | Theme, renderer, skin                           |
 
 **Mascot-as-character:** a mark or logo that becomes a creature you can keep,
 photograph, and open in Studio. The gallery is a shelf of pets, not a tweet
@@ -125,12 +125,12 @@ First-class product surface. This is the feature saved from
 Reuse `snapshotExporter` and the controller’s `takePicture` / snapshot state.
 Do not add a server, a gallery host, or new formats.
 
-| Control | Allowed values |
-| --- | --- |
+| Control    | Allowed values                                |
+| ---------- | --------------------------------------------- |
 | Background | `transparent` · `solid` · `linear` · `radial` |
-| Colors | `colorFrom` / `colorTo` when not transparent |
-| Size | 512 · 1024 · 2048 |
-| Format | SVG · PNG |
+| Colors     | `colorFrom` / `colorTo` when not transparent  |
+| Size       | 512 · 1024 · 2048                             |
+| Format     | SVG · PNG                                     |
 
 Capture writes a local file (`snapshotFileName`). Flash on the stage may stay.
 Photo is not a social share sheet.

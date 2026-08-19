@@ -1,4 +1,5 @@
 /** User-facing Studio chrome. Legal fork attribution lives in LICENSE and README. */
+export const LAB_SHELF_PRIORITY_IDS = ['radar', 'antonio', 'wiipo'] as const
 export const STUDIO_PRODUCT_NAME = 'AntX Pets'
 export const STUDIO_PRODUCT_MARK = 'AntX'
 export const STUDIO_PRODUCT_EMPHASIS = 'Pets'

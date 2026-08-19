@@ -143,6 +143,27 @@ const english: Record<string, string> = {
   Blob: 'Blob',
   'IP logo': 'IP logo',
   'Survolez une carte pour lire l’animation.': 'Hover a card to play its animation.',
+  Lab: 'Lab',
+  Studio: 'Studio',
+  Photo: 'Photo',
+  Mark: 'Mark',
+  'Navigation du site': 'Site navigation',
+  'Des pets à créer, photographier et emporter avec vous.':
+    'Pets you can make, photograph, and take with you.',
+  'Créez des créatures procédurales dans votre navigateur. Tout reste local.':
+    'Create procedural creatures in your browser. Everything stays local.',
+  'Ouvrir le Studio': 'Open Studio',
+  'Photographier Radar': 'Photograph Radar',
+  'Créer un Blob': 'Make a Blob',
+  'Créer un Mark': 'Make a Mark',
+  'Vos pets': 'Your pets',
+  Photographier: 'Photograph',
+  'Ouvrir dans le Studio': 'Open in Studio',
+  'AntX Pets est publié sous licence AGPL-3.0. Fork de Bible Strong Avatar Lab.':
+    'AntX Pets is released under the AGPL-3.0 license. Fork of Bible Strong Avatar Lab.',
+  'Code source': 'Source code',
+  'Vos pets restent sur cet appareil. Exportez un projet JSON pour les sauvegarder ou les déplacer.':
+    'Your pets stay on this device. Export a JSON project to back them up or move them.',
   'Choisir un pet': 'Choose a pet',
   'Nouveau pet Classic': 'New Classic pet',
   'Nouveau pet Blob': 'New Blob pet',
