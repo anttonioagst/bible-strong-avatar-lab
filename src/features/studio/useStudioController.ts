@@ -10,6 +10,7 @@ import {
   downloadBlob,
   INSPECTOR_FRAME_MS,
   interpolateHexColor,
+  poseForAvatarRender,
   poseWithAvatarEyes,
   resolveColors,
   RETARGET_BLEND_MS,
@@ -48,6 +49,8 @@ import {
 import {
   cloneAvatarBehavior,
   createAvatar,
+  createBlobAvatar,
+  createIpLogoAvatar,
   defaultAvatarEyes,
   resolveAvatarBehavior,
   type AvatarBehaviorLibrary,
@@ -56,6 +59,9 @@ import {
   type AvatarRenderStyle,
   type StudioAvatar,
 } from '@/features/avatar/avatars'
+import { applyAvatarProjection, type AvatarProjection } from '@/features/avatar/avatarStyle'
+import { resolveAvatarMarkSvg } from '@/features/avatar/avatarMark'
+import { generateIpLogoSvg, readSquareMarkFile } from '@/features/avatar/ipLogoMark'
 import {
   bodyPrimitiveTypes,
   createBodyNode,
@@ -85,6 +91,7 @@ import {
 } from '@/features/export/exporter'
 import {
   serializeAvatarSnapshot,
+  serializeMarkSnapshot,
   serializePixelSnapshot,
   snapshotFileName,
   type SnapshotBackground,
@@ -275,7 +282,7 @@ export function useStudioController() {
     return {
       pose,
       geometry: renderAvatar(
-        poseWithAvatarEyes(initialExpression, initialAvatar.eyes),
+        poseForAvatarRender(initialExpression, initialAvatar.eyes, initialAvatar.projection),
         surface,
         1,
         { bodyNodes }
@@ -372,9 +379,12 @@ export function useStudioController() {
     const eyeOffset = eyeAmbientEnabled
       ? ambientEyeOffset(pose.expression, lastEyeAmbientElapsed.current, resolvedAmbientStrength)
       : { x: 0, y: 0 }
-    const renderPose = avatar
-      ? poseWithAvatarEyes(renderedExpression, avatar.eyes ?? defaultAvatarEyes)
-      : poseFromExpression(renderedExpression)
+    const renderPose = applyAvatarProjection(
+      avatar
+        ? poseWithAvatarEyes(renderedExpression, avatar.eyes ?? defaultAvatarEyes)
+        : poseFromExpression(renderedExpression),
+      avatar?.projection ?? 'perspective'
+    )
     const geometry = renderAvatar(renderPose, surfaceRef.current, blink ?? blinkValue.get(), {
       includeWire: showWireRef.current || highlightRef.current === 'head',
       bodyNodes: bodyNodesRef.current,
@@ -748,6 +758,21 @@ export function useStudioController() {
     setDisplayColors(resolveColors(expression, colors))
   }
 
+  const updateAvatarProjection = (projection: AvatarProjection) => {
+    updateActiveAvatar(avatar => ({ ...avatar, projection }))
+    paintPose(displayedPose.current)
+  }
+
+  const updateAvatarStyleSeed = (styleSeed: string) => {
+    updateActiveAvatar(avatar => ({
+      ...avatar,
+      styleSeed,
+      ...(avatar.styleFamily === 'ip-logo'
+        ? { markSvg: generateIpLogoSvg(styleSeed || avatar.id) }
+        : {}),
+    }))
+  }
+
   const updateAvatarRenderStyle = (renderStyle: AvatarRenderStyle) => {
     updateActiveAvatar(avatar => ({ ...avatar, renderStyle }))
   }
@@ -824,17 +849,53 @@ export function useStudioController() {
     }
   }
 
-  const createNewAvatar = () => {
+  const insertCreatedAvatar = (avatar: StudioAvatar) => {
     avatarEditSnapshot.current = {
       avatars: avatarsRef.current,
       activeAvatarId: activeAvatarIdRef.current,
     }
-    const avatar = createAvatar('Unknown')
     const next = [...avatarsRef.current, avatar]
     avatarsRef.current = next
     setAvatars(next)
     setFocusAvatarName(true)
     activateAvatar(avatar.id, true)
+  }
+
+  const createNewAvatar = () => {
+    insertCreatedAvatar(createAvatar('Unknown'))
+  }
+
+  const [createBlobOpen, setCreateBlobOpen] = useState(false)
+  const [blobSeedDraft, setBlobSeedDraft] = useState('')
+  const [createIpOpen, setCreateIpOpen] = useState(false)
+  const [ipNameDraft, setIpNameDraft] = useState('')
+  const ipMarkImportRef = useRef<HTMLInputElement>(null)
+
+  const confirmCreateBlob = () => {
+    insertCreatedAvatar(createBlobAvatar(blobSeedDraft))
+    setBlobSeedDraft('')
+    setCreateBlobOpen(false)
+  }
+
+  const confirmCreateIpLogo = () => {
+    insertCreatedAvatar(createIpLogoAvatar(ipNameDraft))
+    setIpNameDraft('')
+    setCreateIpOpen(false)
+  }
+
+  const importIpLogoMark = (file: File | undefined) => {
+    if (!file) return
+    readSquareMarkFile(file)
+      .then(markSvg => {
+        insertCreatedAvatar(
+          createIpLogoAvatar(ipNameDraft || file.name.replace(/\.[^.]+$/, ''), markSvg)
+        )
+        setIpNameDraft('')
+        setCreateIpOpen(false)
+      })
+      .catch(() => {
+        setCreateIpOpen(false)
+      })
   }
 
   const duplicateAvatar = (source: StudioAvatar, editDuplicate = false) => {
@@ -1257,8 +1318,12 @@ export function useStudioController() {
       paintRenderedScene(
         renderedScene,
         renderAvatar(
-          poseFromExpression(
-            resolveCanvasPreviewExpression(next, activeAvatarEyes, bodyEditing, target)
+          applyAvatarProjection(
+            poseFromExpression(
+              resolveCanvasPreviewExpression(next, activeAvatarEyes, bodyEditing, target)
+            ),
+            avatarsRef.current.find(item => item.id === activeAvatarIdRef.current)?.projection ??
+              'perspective'
           ),
           surfaceRef.current,
           blinkValue.get(),
@@ -1515,21 +1580,25 @@ export function useStudioController() {
     })
     downloadBlob(blob, 'avatar-studio-project.json')
   }
-  const currentSnapshotSvg = () =>
-    serializeAvatarSnapshot(
+  const currentSnapshotSvg = () => {
+    const markSvg = resolveAvatarMarkSvg(activeAvatar)
+    const options = {
+      background: snapshotBackground,
+      colorFrom: snapshotColorFrom,
+      colorTo: snapshotColorTo,
+      size: Number(snapshotSize),
+    }
+    if (markSvg) return serializeMarkSnapshot(activeAvatar.name, markSvg, options)
+    return serializeAvatarSnapshot(
       activeAvatar.name,
       renderedScene,
       {
         body: renderedColors.body.get(),
         eyes: renderedColors.eyes.get(),
       },
-      {
-        background: snapshotBackground,
-        colorFrom: snapshotColorFrom,
-        colorTo: snapshotColorTo,
-        size: Number(snapshotSize),
-      }
+      options
     )
+  }
 
   const createPixelSnapshotCanvas = () => {
     const renderStyle = activeAvatar.renderStyle
@@ -1758,7 +1827,9 @@ export function useStudioController() {
     avatarDragPreview,
     avatars,
     avatarsRef,
+    baseBehavior,
     blink,
+    blobSeedDraft,
     bodyEditing,
     bodyNodes,
     cancelAvatarEditing,
@@ -1772,8 +1843,12 @@ export function useStudioController() {
     commitBodyNode,
     commitExpressionMove,
     commitStateMove,
+    confirmCreateBlob,
+    confirmCreateIpLogo,
     confirmStudioProjectImport,
     createNewAvatar,
+    createBlobOpen,
+    createIpOpen,
     deleteActiveAvatar,
     deleteAvatarOpen,
     deleteEditing,
@@ -1806,6 +1881,9 @@ export function useStudioController() {
     focusAvatarName,
     freezeLivePreviewForManipulation,
     highlight,
+    importIpLogoMark,
+    ipMarkImportRef,
+    ipNameDraft,
     language,
     launchSequence,
     linked,
@@ -1844,6 +1922,9 @@ export function useStudioController() {
     selectedState,
     sequenceEditing,
     sequences,
+    setBlobSeedDraft,
+    setCreateBlobOpen,
+    setCreateIpOpen,
     setDeleteAvatarOpen,
     setDeleteExpressionOpen,
     setDeleteSequenceOpen,
@@ -1854,6 +1935,7 @@ export function useStudioController() {
     setExportAnimationIds,
     setExportFormat,
     setFocusAvatarName,
+    setIpNameDraft,
     setLanguage,
     setLinked,
     setMode,
@@ -1888,7 +1970,9 @@ export function useStudioController() {
     toggleStatePlayback,
     transitionToExpression,
     updateAvatarColors,
+    updateAvatarProjection,
     updateAvatarRenderStyle,
+    updateAvatarStyleSeed,
     updateAvatarEyeDimension,
     updateAvatarEyePosition,
     updateAvatarEyeSize,

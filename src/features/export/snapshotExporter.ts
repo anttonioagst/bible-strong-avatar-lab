@@ -77,6 +77,31 @@ export const serializePixelSnapshot = (name: string, imageDataUrl: string, size:
   <image href="${escapeXml(imageDataUrl)}" width="${size}" height="${size}" image-rendering="pixelated"/>
 </svg>`
 
+export const serializeMarkSnapshot = (name: string, markSvg: string, options: SnapshotOptions) => {
+  const inner = markSvg.replace(/<\?xml[\s\S]*?\?>/i, '').trim()
+  const labeled = inner.replace(/<svg\b([^>]*)>/i, (_match, attributes: string) => {
+    const cleaned = String(attributes)
+      .replace(/\swidth="[^"]*"/i, '')
+      .replace(/\sheight="[^"]*"/i, '')
+      .replace(/\saria-label="[^"]*"/i, '')
+    return `<svg${cleaned} width="${options.size}" height="${options.size}" role="img" aria-label="${escapeXml(name)}">`
+  })
+  if (options.background === 'transparent') {
+    return `<?xml version="1.0" encoding="UTF-8"?>\n${labeled}`
+  }
+  const fill =
+    options.background === 'solid'
+      ? options.colorFrom
+      : options.background === 'linear'
+        ? 'url(#snapshot-linear)'
+        : 'url(#snapshot-radial)'
+  const framed = labeled.replace(
+    /(<svg\b[^>]*>)/i,
+    `$1<defs>${gradientMarkup(options)}</defs><rect width="100%" height="100%" fill="${fill}"/>`
+  )
+  return `<?xml version="1.0" encoding="UTF-8"?>\n${framed}`
+}
+
 export const snapshotFileName = (name: string, extension: 'svg' | 'png' = 'svg') => {
   const slug =
     name

@@ -3,6 +3,7 @@ import { defaultExpression } from '@/features/avatar/presets'
 import { createRenderedScene, paintRenderedOffset } from '@/features/rendering/renderedScene'
 import {
   serializeAvatarSnapshot,
+  serializeMarkSnapshot,
   serializePixelSnapshot,
   snapshotFileName,
 } from '@/features/export/snapshotExporter'
@@ -50,5 +51,22 @@ describe('avatar snapshot export', () => {
     expect(svg).toContain('image-rendering="pixelated"')
     expect(svg).toContain('data:image/png;base64,AAAA')
     expect(svg).toContain('aria-label="Pixel &amp; Co"')
+  })
+
+  it('embeds an IP or blob mark as a square snapshot', () => {
+    const svg = serializeMarkSnapshot(
+      'Mark',
+      '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40"/></svg>',
+      {
+        background: 'transparent',
+        colorFrom: '#ffffff',
+        colorTo: '#000000',
+        size: 512,
+      }
+    )
+
+    expect(svg).toContain('width="512" height="512"')
+    expect(svg).toContain('aria-label="Mark"')
+    expect(svg).toContain('<circle cx="50" cy="50" r="40"/>')
   })
 })

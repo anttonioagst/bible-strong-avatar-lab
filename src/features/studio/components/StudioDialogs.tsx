@@ -9,6 +9,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 import type { StudioController } from '@/features/studio/useStudioController'
 
@@ -17,7 +19,12 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
     activeAvatar,
     animationsAffectedByExpressionDeletion,
     avatars,
+    blobSeedDraft,
+    confirmCreateBlob,
+    confirmCreateIpLogo,
     confirmStudioProjectImport,
+    createBlobOpen,
+    createIpOpen,
     deleteActiveAvatar,
     deleteAvatarOpen,
     deleteEditing,
@@ -26,11 +33,18 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
     deleteSequenceOpen,
     expression,
     expressions,
+    importIpLogoMark,
+    ipMarkImportRef,
+    ipNameDraft,
     pendingProjectImport,
+    setCreateBlobOpen,
+    setCreateIpOpen,
+    setBlobSeedDraft,
     setDeleteAvatarOpen,
     setDeleteExpressionOpen,
     setDeleteSequenceOpen,
     setPendingProjectImport,
+    setIpNameDraft,
     t,
   } = controller
   return (
@@ -121,6 +135,65 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
             <AlertDialogAction onClick={confirmStudioProjectImport}>
               {t('Importer')}
             </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={createBlobOpen} onOpenChange={setCreateBlobOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('Nouvel avatar Blob')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('La graine détermine le blobatar. Utilisez le nom ou un identifiant.')}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            aria-label={t('Graine')}
+            value={blobSeedDraft}
+            onChange={event => setBlobSeedDraft(event.currentTarget.value)}
+            placeholder={t('Graine')}
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('Annuler')}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmCreateBlob}>{t('Créer')}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog open={createIpOpen} onOpenChange={setCreateIpOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('Nouveau logo IP')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t(
+                'Générez une marque carrée à partir d’un nom, ou importez un SVG ou une image carrée.'
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <Input
+            aria-label={t('Nom de l’avatar')}
+            value={ipNameDraft}
+            onChange={event => setIpNameDraft(event.currentTarget.value)}
+            placeholder={t('Nom de l’avatar')}
+          />
+          <input
+            ref={ipMarkImportRef}
+            type="file"
+            accept="image/svg+xml,image/png,image/jpeg,image/webp,.svg,.png,.jpg,.jpeg,.webp"
+            hidden
+            onChange={event => {
+              importIpLogoMark(event.currentTarget.files?.[0])
+              event.currentTarget.value = ''
+            }}
+          />
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('Annuler')}</AlertDialogCancel>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => ipMarkImportRef.current?.click()}
+            >
+              {t('Importer une marque carrée')}
+            </Button>
+            <AlertDialogAction onClick={confirmCreateIpLogo}>{t('Générer')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

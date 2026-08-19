@@ -106,6 +106,28 @@ export const chinese: Record<string, string> = {
   'Arrière-plan': '背景',
   'Choisis un fond transparent, uni ou en dégradé.': '选择透明、纯色或渐变背景。',
   Style: '样式',
+  Famille: '系列',
+  Toutes: '全部',
+  Classic: 'Classic',
+  Blob: 'Blob',
+  'IP logo': 'IP 标志',
+  'Survolez une carte pour lire l’animation.': '将指针悬停在卡片上以播放动画。',
+  'Nouvel avatar Blob': '新建 Blob 头像',
+  'Nouveau logo IP': '新建 IP 标志',
+  Graine: '种子',
+  'La graine détermine le blobatar. Utilisez le nom ou un identifiant.':
+    '种子决定 blobatar。使用名称或标识即可。',
+  Créer: '创建',
+  'Générez une marque carrée à partir d’un nom, ou importez un SVG ou une image carrée.':
+    '根据名称生成方形标志，或导入方形 SVG 或图片。',
+  'Importer une marque carrée': '导入方形标志',
+  Générer: '生成',
+  'Choisissez le style de cet avatar. Classic conserve le moteur procédural actuel.':
+    '选择此头像的风格系列。Classic 保留当前程序化引擎。',
+  'Les documents existants sans champ de style restent Classic.':
+    '没有 style 字段的现有文档仍为 Classic。',
+  '2D': '2D',
+  '3D': '3D',
   Transparent: '透明',
   Uni: '纯色',
   'Dégradé linéaire': '线性渐变',

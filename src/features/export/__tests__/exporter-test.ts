@@ -1,4 +1,4 @@
-import { createAvatar } from '@/features/avatar/avatars'
+import { createAvatar, createBlobAvatar } from '@/features/avatar/avatars'
 import { parse } from '@babel/parser'
 import {
   createAvatarExportPayload,
@@ -29,6 +29,9 @@ describe('avatar export', () => {
     expect(payload).not.toHaveProperty('frames')
     expect(payload.avatar.name).toBe('Strobi')
     expect(payload.avatar.renderStyle).toEqual({ type: 'vector' })
+    expect(payload.avatar.styleFamily).toBe('classic')
+    expect(payload.avatar.projection).toBe('perspective')
+    expect(payload.avatar).not.toHaveProperty('markSvg')
   })
 
   it('preserves pixel rendering in standalone exports', () => {
@@ -164,5 +167,23 @@ describe('avatar export', () => {
 
     expect(source).toContain('globalThis.crypto.randomUUID()')
     expect(source).not.toContain('avatarInstanceCount')
+  })
+
+  it('bakes a blobatar mark into non-classic exports', () => {
+    const blobPayload = createAvatarExportPayload(
+      createBlobAvatar('seed-one'),
+      initialExpressions,
+      animations
+    )
+    const source = generateJavaScriptAvatarModule(blobPayload)
+
+    expect(blobPayload.avatar.styleFamily).toBe('blob')
+    expect(blobPayload.avatar.markSvg).toContain('<svg')
+    expect(source).toContain('if (DATA.avatar.markSvg)')
+  })
+
+  it('applies flat projection in the standalone runtime', () => {
+    const source = generateJavaScriptAvatarModule(payload)
+    expect(source).toContain("DATA.avatar.projection === 'flat'")
   })
 })

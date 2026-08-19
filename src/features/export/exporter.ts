@@ -1,4 +1,5 @@
 import { applyAvatarEyeDefaults, type StudioAvatar } from '../avatar/avatars'
+import { resolveAvatarMarkSvg } from '../avatar/avatarMark'
 import type { Expression } from '../avatar/geometry'
 import { translateStudioText, type StudioLanguage } from '../../i18n'
 import { proceduralBrowserRuntime } from './proceduralBrowserRuntime'
@@ -24,6 +25,9 @@ export type AvatarExportPayload = {
     bodyNodes: StudioAvatar['body']['nodes']
     colors: StudioAvatar['colors']
     renderStyle: StudioAvatar['renderStyle']
+    styleFamily: StudioAvatar['styleFamily']
+    projection: StudioAvatar['projection']
+    markSvg?: string
   }
   expressions: Record<string, Expression>
   animations: Record<string, AvatarExportAnimation>
@@ -63,6 +67,7 @@ export const createAvatarExportPayload = (
         : []
     })
   )
+  const markSvg = resolveAvatarMarkSvg(avatar)
   const usedKeys = new Set<string>()
   const animations = Object.fromEntries(
     selectedAnimations.map(animation => {
@@ -94,6 +99,9 @@ export const createAvatarExportPayload = (
       bodyNodes: avatar.body.nodes,
       colors: avatar.colors,
       renderStyle: avatar.renderStyle,
+      styleFamily: avatar.styleFamily,
+      projection: avatar.projection,
+      ...(markSvg ? { markSvg } : {}),
     },
     expressions: exportedExpressions,
     animations,

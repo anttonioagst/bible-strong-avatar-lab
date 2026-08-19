@@ -1,4 +1,15 @@
+import {
+  defaultAvatarProjection,
+  defaultAvatarStyleFamily,
+  parseAvatarMarkSvg,
+  parseAvatarProjection,
+  parseAvatarStyleFamily,
+  parseAvatarStyleSeed,
+  type AvatarProjection,
+  type AvatarStyleFamily,
+} from './avatarStyle'
 import { parseAvatarBody, type AvatarBody } from './body'
+import { generateIpLogoSvg } from './ipLogoMark'
 import { defaultExpression, initialExpressions } from './presets'
 import { surfacePresets } from './surfaces'
 import type { Expression } from './geometry'
@@ -21,7 +32,18 @@ export type StudioAvatar = {
   colors: AvatarColors
   eyes: AvatarEyeDefaults
   renderStyle: AvatarRenderStyle
+  styleFamily: AvatarStyleFamily
+  projection: AvatarProjection
+  styleSeed?: string
+  markSvg?: string
   behavior?: AvatarBehaviorLibrary
+}
+
+export type CreateAvatarOptions = {
+  styleFamily?: AvatarStyleFamily
+  projection?: AvatarProjection
+  styleSeed?: string
+  markSvg?: string
 }
 
 export type AvatarColors = { body: string; eyes: string }
@@ -195,14 +217,36 @@ const parseAvatarBehavior = (
   return { expressions, sequences }
 }
 
-export const createAvatar = (name: string): StudioAvatar => ({
-  id: `avatar-${crypto.randomUUID()}`,
-  name: name.trim() || 'Nouvel avatar',
-  body: { primary: { ...surfacePresets.sphere }, nodes: [] },
-  colors: { ...defaultAvatarColors },
-  eyes: { ...defaultAvatarEyes },
-  renderStyle: { ...defaultAvatarRenderStyle },
-})
+export const createAvatar = (name: string, options: CreateAvatarOptions = {}): StudioAvatar => {
+  const label = name.trim() || 'Nouvel avatar'
+  const styleFamily = options.styleFamily ?? defaultAvatarStyleFamily
+  const styleSeed = options.styleSeed?.trim() || (styleFamily === 'classic' ? undefined : label)
+  const markSvg =
+    options.markSvg ??
+    (styleFamily === 'ip-logo' ? generateIpLogoSvg(styleSeed || label) : undefined)
+  return {
+    id: `avatar-${crypto.randomUUID()}`,
+    name: label,
+    body: { primary: { ...surfacePresets.sphere }, nodes: [] },
+    colors: { ...defaultAvatarColors },
+    eyes: { ...defaultAvatarEyes },
+    renderStyle: { ...defaultAvatarRenderStyle },
+    styleFamily,
+    projection: options.projection ?? defaultAvatarProjection,
+    ...(styleSeed ? { styleSeed } : {}),
+    ...(markSvg ? { markSvg } : {}),
+  }
+}
+
+export const createBlobAvatar = (seed: string) =>
+  createAvatar(seed.trim() || 'Blob', { styleFamily: 'blob', styleSeed: seed.trim() || 'Blob' })
+
+export const createIpLogoAvatar = (name: string, markSvg?: string) =>
+  createAvatar(name.trim() || 'IP logo', {
+    styleFamily: 'ip-logo',
+    styleSeed: name.trim() || 'IP logo',
+    markSvg,
+  })
 
 export const parseAvatarLibrary = (
   value: unknown,
@@ -223,6 +267,9 @@ export const parseAvatarLibrary = (
       })
       .map(avatar => {
         const behavior = parseAvatarBehavior(avatar.behavior, baseBehavior)
+        const styleFamily = parseAvatarStyleFamily(avatar.styleFamily)
+        const styleSeed = parseAvatarStyleSeed(avatar.styleSeed)
+        const markSvg = parseAvatarMarkSvg(avatar.markSvg)
         return {
           id: avatar.id,
           name: avatar.name,
@@ -230,6 +277,10 @@ export const parseAvatarLibrary = (
           colors: parseColors(avatar.colors),
           eyes: parseAvatarEyeDefaults(avatar.eyes),
           renderStyle: parseAvatarRenderStyle(avatar.renderStyle),
+          styleFamily,
+          projection: parseAvatarProjection(avatar.projection),
+          ...(styleSeed ? { styleSeed } : {}),
+          ...(markSvg ? { markSvg } : {}),
           ...(behavior ? { behavior } : {}),
         }
       })

@@ -1361,6 +1361,75 @@ p {
   color: #8d929c;
   font-size: 8px;
 }
+.style-family-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.style-family-hint,
+.style-family-current {
+  margin: 0 0 10px;
+  color: #8d929c;
+  font-size: 11px;
+}
+.style-family-current {
+  font-weight: 700;
+  color: #2f333a;
+}
+.avatar-card > span small {
+  display: block;
+  margin-top: 1px;
+  font-size: 8px;
+  font-weight: 650;
+  color: #8d929c;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.avatar-add.creation-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.avatar-add.creation-card span {
+  font-size: 9px;
+  font-weight: 750;
+}
+.ip-logo-mark,
+.ip-logo-mark svg,
+.stage-mark-preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.ip-logo-mark.is-playing {
+  animation: ip-logo-bob 1.4s ease-in-out infinite;
+}
+@keyframes ip-logo-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ip-logo-mark.is-playing {
+    animation: none;
+  }
+}
+.avatar-wrap-mark {
+  display: grid;
+  place-items: center;
+  width: min(100%, 420px);
+  margin: auto;
+}
+.avatar-wrap-mark .avatar-preview,
+.avatar-wrap-mark .ip-logo-mark {
+  width: min(72vw, 360px);
+  height: min(72vw, 360px);
+}
 .avatar-shelf .avatar-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
