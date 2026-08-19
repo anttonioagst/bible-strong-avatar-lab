@@ -1,6 +1,7 @@
 import { animate, useMotionValue, useMotionValueEvent, useReducedMotion } from 'motion/react'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 
+import { parsePetQuery } from '@/app/surface'
 import { useStudioLanguage } from '@/i18n'
 
 import {
@@ -1761,6 +1762,19 @@ export function useStudioController() {
     const frame = requestAnimationFrame(() => workspaceBackButtonRef.current?.focus())
     return () => cancelAnimationFrame(frame)
   }, [editorPageOpen, focusAvatarName])
+
+  useEffect(() => {
+    const applyPetFromHash = () => {
+      const petId = parsePetQuery(window.location.hash)
+      if (!petId) return
+      if (!avatarsRef.current.some(avatar => avatar.id === petId)) return
+      if (activeAvatarIdRef.current === petId) return
+      activateAvatar(petId)
+    }
+    applyPetFromHash()
+    window.addEventListener('hashchange', applyPetFromHash)
+    return () => window.removeEventListener('hashchange', applyPetFromHash)
+  }, [])
 
   const updateAvatarEyeDimension = (side: Side, dimension: 'width' | 'height', value: number) => {
     const next = updateEyeDimension(

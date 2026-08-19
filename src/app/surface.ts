@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export type AppSurface = 'lab' | 'studio'
+export type AppSurface = 'lab' | 'studio' | 'photo'
 
 export type NavSurface = 'lab' | 'studio' | 'photo'
 
@@ -8,7 +8,14 @@ export const parseHashSurface = (hash: string): AppSurface => {
   const normalized = hash.replace(/^#/, '').replace(/^\/?/, '/').split('?')[0] ?? '/'
   if (normalized === '/' || normalized === '') return 'lab'
   if (normalized === '/studio') return 'studio'
+  if (normalized === '/photo') return 'photo'
   return 'lab'
+}
+
+export const parsePetQuery = (hash: string): string | null => {
+  const query = hash.includes('?') ? (hash.split('?')[1] ?? '') : ''
+  const petId = new URLSearchParams(query).get('pet')
+  return petId?.trim() ? petId.trim() : null
 }
 
 export const parseNavSurface = (hash: string): NavSurface => {

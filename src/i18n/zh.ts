@@ -176,6 +176,11 @@ export const chinese: Record<string, string> = {
   'Format d’export du mode photo': '照片模式导出格式',
   'Choisis le type de fichier généré par le mode photo.': '选择照片模式生成的文件类型。',
   'Prendre une photo': '拍照',
+  Capturer: '拍摄',
+  'Réglages photo': '照片设置',
+  'Ouvrir Photo': '打开照片',
+  'Les réglages de fond, taille et format sont sur la surface Photo.':
+    '背景、尺寸和格式设置在照片页面中。',
   'Informations sur le mode photo': '照片模式信息',
   'Tu peux modifier le format, le fond et la définition du mode photo dans Export.':
     '你可以在“导出”中更改照片模式的格式、背景和分辨率。',

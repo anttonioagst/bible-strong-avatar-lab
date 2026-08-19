@@ -1,9 +1,8 @@
-import { Camera, Info } from 'lucide-react'
+import { Camera, Settings2 } from 'lucide-react'
 import { motion } from 'motion/react'
-import { type CSSProperties, useState } from 'react'
+import { type CSSProperties } from 'react'
 
 import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { AvatarMarkPreview } from '@/features/avatar/components/AvatarMarkPreview'
 import { isClassicAvatarStyle } from '@/features/avatar/avatarStyle'
@@ -13,7 +12,6 @@ import { STUDIO_AUTHOR_HANDLE, STUDIO_AUTHOR_PROFILE_URL } from '@/features/stud
 import type { StudioController } from '@/features/studio/useStudioController'
 
 export function StudioStage({ controller }: { controller: StudioController }) {
-  const [photoHelpOpen, setPhotoHelpOpen] = useState(false)
   const {
     activeAvatar,
     activeAvatarEyes,
@@ -126,45 +124,32 @@ export function StudioStage({ controller }: { controller: StudioController }) {
           transition={{ duration: 0.38, times: [0, 0.16, 1], ease: 'easeOut' }}
         />
       )}
-      <TooltipProvider>
-        <div className="photo-capture-bar">
-          <Button
-            className="photo-capture-button"
-            type="button"
-            aria-label={t('Prendre une photo')}
-            onClick={takePicture}
-          >
-            <Camera />
-            <span className="photo-capture-label">{t('Prendre une photo')}</span>
-          </Button>
-          <Tooltip
-            open={photoHelpOpen}
-            onOpenChange={open => {
-              if (!open) setPhotoHelpOpen(false)
-            }}
-          >
-            <TooltipTrigger
-              closeOnClick={false}
-              render={
-                <Button
-                  className="photo-help-button"
-                  variant="secondary"
-                  size="icon-sm"
-                  type="button"
-                  aria-label={t('Informations sur le mode photo')}
-                  aria-expanded={photoHelpOpen}
-                  onClick={() => setPhotoHelpOpen(open => !open)}
-                />
-              }
-            >
-              <Info />
-            </TooltipTrigger>
-            <TooltipContent side="top" className="photo-help-tooltip">
-              {t('Tu peux modifier le format, le fond et la définition du mode photo dans Export.')}
-            </TooltipContent>
-          </Tooltip>
-        </div>
-      </TooltipProvider>
+      <div className="photo-capture-bar">
+        <Button
+          className="photo-capture-button"
+          type="button"
+          aria-label={t('Prendre une photo')}
+          onClick={takePicture}
+        >
+          <Camera />
+          <span className="photo-capture-label">{t('Prendre une photo')}</span>
+        </Button>
+        <Button
+          nativeButton={false}
+          className="photo-settings-button"
+          variant="secondary"
+          size="sm"
+          render={
+            <a
+              href={`#/photo?pet=${encodeURIComponent(activeAvatar.id)}`}
+              aria-label={t('Ouvrir Photo')}
+            />
+          }
+        >
+          <Settings2 />
+          <span className="photo-settings-label">{t('Photo')}</span>
+        </Button>
+      </div>
       <p className="stage-credit">
         Made with ❤️ by{' '}
         <a href={STUDIO_AUTHOR_PROFILE_URL} target="_blank" rel="noreferrer">
