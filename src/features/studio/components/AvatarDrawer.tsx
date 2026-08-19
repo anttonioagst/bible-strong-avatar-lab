@@ -1,5 +1,6 @@
 import { Copy, Pencil, Plus, Trash2 } from 'lucide-react'
 import { motion } from 'motion/react'
+import { useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -9,10 +10,12 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { defaultAvatarEyes } from '@/features/avatar/avatars'
-import { ExpressionPreview } from '@/features/avatar/components/ExpressionWorkspace'
-import { defaultExpression } from '@/features/avatar/presets'
+import { AvatarThumb } from '@/features/avatar/components/AvatarThumb'
+import { avatarStyleFamilies, type AvatarStyleFamily } from '@/features/avatar/avatarStyle'
 import type { StudioController } from '@/features/studio/useStudioController'
+
+const familyLabel = (family: AvatarStyleFamily) =>
+  family === 'classic' ? 'Classic' : family === 'blob' ? 'Blob' : 'IP logo'
 
 export function AvatarPage({ controller }: { controller: StudioController }) {
   const {
@@ -22,30 +25,61 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
     avatarDragPreview,
     avatars,
     avatarsRef,
+    baseBehavior,
     cancelAvatarMove,
     commitAvatarMove,
     createNewAvatar,
     draggedAvatarId,
     draggingAvatarId,
     duplicateAvatar,
-    expressions,
+    expression,
     previewAvatarMove,
     reduceMotion,
+    setCreateBlobOpen,
+    setCreateIpOpen,
     setDeleteAvatarOpen,
     setDraggingAvatarId,
     setFocusAvatarName,
     t,
   } = controller
+  const [styleFilter, setStyleFilter] = useState<'all' | AvatarStyleFamily>('all')
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
+  const visibleAvatars =
+    styleFilter === 'all' ? avatars : avatars.filter(avatar => avatar.styleFamily === styleFilter)
 
   return (
     <div className="panel-stack avatar-page">
       <section className="avatar-shelf" aria-label={t('Choisir un avatar')}>
         <div className="avatar-shelf-heading">
-          <strong>{t('Double-clic pour modifier')}</strong>
-          <span>{avatars.length}</span>
+          <strong>{t('Famille')}</strong>
+          <span>{visibleAvatars.length}</span>
         </div>
+        <div className="style-family-picker" role="tablist" aria-label={t('Famille')}>
+          <Button
+            type="button"
+            size="sm"
+            variant={styleFilter === 'all' ? 'default' : 'outline'}
+            aria-pressed={styleFilter === 'all'}
+            onClick={() => setStyleFilter('all')}
+          >
+            {t('Toutes')}
+          </Button>
+          {avatarStyleFamilies.map(family => (
+            <Button
+              key={family}
+              type="button"
+              size="sm"
+              variant={styleFilter === family ? 'default' : 'outline'}
+              aria-pressed={styleFilter === family}
+              onClick={() => setStyleFilter(family)}
+            >
+              {t(familyLabel(family))}
+            </Button>
+          ))}
+        </div>
+        <p className="style-family-hint">{t('Survolez une carte pour lire l’animation.')}</p>
         <div className="avatar-grid">
-          {avatars.map(avatar => (
+          {visibleAvatars.map(avatar => (
             <motion.div
               className="avatar-sort-item"
               data-dragging={draggingAvatarId === avatar.id || undefined}
@@ -70,6 +104,10 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
                       aria-pressed={activeAvatarId === avatar.id}
                       type="button"
                       draggable
+                      onPointerEnter={() => setHoveredId(avatar.id)}
+                      onPointerLeave={() =>
+                        setHoveredId(current => (current === avatar.id ? null : current))
+                      }
                       onDragStart={event => {
                         avatarDragOrigin.current = avatarsRef.current
                         avatarDragPreview.current = avatarsRef.current
@@ -93,16 +131,18 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
                         activateAvatar(avatar.id, true)
                       }}
                     >
-                      <ExpressionPreview
-                        expression={expressions[0] ?? defaultExpression}
-                        surface={avatar.body.primary}
-                        bodyNodes={avatar.body.nodes}
-                        colors={avatar.colors}
-                        avatarEyes={avatar.eyes ?? defaultAvatarEyes}
-                        renderStyle={avatar.renderStyle}
+                      <AvatarThumb
+                        avatar={avatar}
+                        baseBehavior={baseBehavior}
+                        expression={activeAvatarId === avatar.id ? expression : undefined}
+                        hoverPlaying={hoveredId === avatar.id}
+                        reduceMotion={Boolean(reduceMotion)}
                         id={`avatar-${avatar.id}`}
                       />
-                      <span>{avatar.name}</span>
+                      <span>
+                        {avatar.name}
+                        <small>{t(familyLabel(avatar.styleFamily))}</small>
+                      </span>
                     </Button>
                   }
                 />
@@ -140,6 +180,25 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
             aria-label={t('Nouvel avatar')}
           >
             <Plus />
+            <span>{t('Classic')}</span>
+          </Button>
+          <Button
+            variant="outline"
+            className="avatar-add creation-card"
+            onClick={() => setCreateBlobOpen(true)}
+            aria-label={t('Nouvel avatar Blob')}
+          >
+            <Plus />
+            <span>{t('Blob')}</span>
+          </Button>
+          <Button
+            variant="outline"
+            className="avatar-add creation-card"
+            onClick={() => setCreateIpOpen(true)}
+            aria-label={t('Nouveau logo IP')}
+          >
+            <Plus />
+            <span>{t('IP logo')}</span>
           </Button>
         </div>
       </section>

@@ -34,6 +34,7 @@ import {
   type AvatarEyeDefaults,
   type AvatarRenderStyle,
 } from '@/features/avatar/avatars'
+import { type AvatarProjection } from '@/features/avatar/avatarStyle'
 import { type BodyNode } from '@/features/avatar/body'
 import { ExpressionPreview } from '@/features/avatar/components/ExpressionWorkspace'
 import { type Expression } from '@/features/avatar/geometry'
@@ -46,6 +47,7 @@ export function SequenceWorkspace({
   colors,
   avatarEyes,
   renderStyle,
+  projection,
   selectedStepId,
   backButtonRef,
   reduceMotion,
@@ -70,6 +72,7 @@ export function SequenceWorkspace({
   colors: AvatarColors
   avatarEyes: AvatarEyeDefaults
   renderStyle: AvatarRenderStyle
+  projection?: AvatarProjection
   selectedStepId: string | null
   backButtonRef: RefObject<HTMLButtonElement | null>
   reduceMotion: boolean
@@ -259,6 +262,7 @@ export function SequenceWorkspace({
                         colors={colors}
                         avatarEyes={avatarEyes}
                         renderStyle={renderStyle}
+                        projection={projection}
                         id={`sequence-${editing.draft.id}-${step.id}`}
                       />
                       <span>{String(expressionIndex).padStart(2, '0')}</span>
@@ -397,6 +401,7 @@ export function SequenceWorkspace({
                     colors={colors}
                     avatarEyes={avatarEyes}
                     renderStyle={renderStyle}
+                    projection={projection}
                     id={`sequence-library-${index}`}
                   />
                   <span>{String(index).padStart(2, '0')}</span>

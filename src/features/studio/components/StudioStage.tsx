@@ -5,6 +5,8 @@ import { type CSSProperties, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
+import { AvatarMarkPreview } from '@/features/avatar/components/AvatarMarkPreview'
+import { isClassicAvatarStyle } from '@/features/avatar/avatarStyle'
 import { AvatarCanvas } from '@/features/rendering/components/AvatarCanvas'
 import { StudioIdentity } from '@/features/studio/components/StudioIdentity'
 import { STUDIO_AUTHOR_HANDLE, STUDIO_AUTHOR_PROFILE_URL } from '@/features/studio/studioBrand'
@@ -31,6 +33,7 @@ export function StudioStage({ controller }: { controller: StudioController }) {
     previewCanvasExpression,
     previewExpressionDraft,
     previewSelectedBodyNode,
+    reduceMotion,
     renderedColors,
     renderedRotationGizmo,
     renderedScene,
@@ -64,44 +67,55 @@ export function StudioStage({ controller }: { controller: StudioController }) {
         setLanguage={controller.setLanguage}
         t={t}
       />
-      <AvatarCanvas
-        expression={canvasExpression}
-        avatarEyes={activeAvatarEyes}
-        surface={surface}
-        scene={renderedScene}
-        colors={renderedColors}
-        renderStyle={activeAvatar.renderStyle}
-        rotationGizmo={renderedRotationGizmo}
-        showWire={showWire}
-        bodyEditing={bodyEditing}
-        selectedBodyNodeId={selectedBodyNodeId}
-        selectedBodyNode={selectedBodyNode}
-        selectedSide={selectedEyeSide}
-        linked={linked}
-        highlight={highlight}
-        onHighlightChange={updateHighlight}
-        onBodyNodeSelect={selectBodyNode}
-        onBodyNodePreview={previewSelectedBodyNode}
-        onBodyNodeChange={commitBodyNode}
-        onEyeSelect={setSelectedEyeSide}
-        onPreview={previewCanvasExpression}
-        onChange={editing ? previewExpressionDraft : updateImmediate}
-        onReset={next => {
-          if (editing) {
-            setEditing(current => (current ? { ...current, draft: next } : current))
+      {isClassicAvatarStyle(activeAvatar.styleFamily) ? (
+        <AvatarCanvas
+          expression={canvasExpression}
+          avatarEyes={activeAvatarEyes}
+          surface={surface}
+          scene={renderedScene}
+          colors={renderedColors}
+          renderStyle={activeAvatar.renderStyle}
+          rotationGizmo={renderedRotationGizmo}
+          showWire={showWire}
+          bodyEditing={bodyEditing}
+          selectedBodyNodeId={selectedBodyNodeId}
+          selectedBodyNode={selectedBodyNode}
+          selectedSide={selectedEyeSide}
+          linked={linked}
+          highlight={highlight}
+          onHighlightChange={updateHighlight}
+          onBodyNodeSelect={selectBodyNode}
+          onBodyNodePreview={previewSelectedBodyNode}
+          onBodyNodeChange={commitBodyNode}
+          onEyeSelect={setSelectedEyeSide}
+          onPreview={previewCanvasExpression}
+          onChange={editing ? previewExpressionDraft : updateImmediate}
+          onReset={next => {
+            if (editing) {
+              setEditing(current => (current ? { ...current, draft: next } : current))
+            }
+            transitionToExpression(next)
+          }}
+          onEyeChange={
+            editing ? previewExpressionDraft : bodyEditing ? persistEditedEyeExpression : undefined
           }
-          transitionToExpression(next)
-        }}
-        onEyeChange={
-          editing ? previewExpressionDraft : bodyEditing ? persistEditedEyeExpression : undefined
-        }
-        playback={
-          activeSequenceLabel && playbackStatus !== 'stopped'
-            ? { name: activeSequenceLabel, status: playbackStatus }
-            : null
-        }
-        onManipulationStart={freezeLivePreviewForManipulation}
-      />
+          playback={
+            activeSequenceLabel && playbackStatus !== 'stopped'
+              ? { name: activeSequenceLabel, status: playbackStatus }
+              : null
+          }
+          onManipulationStart={freezeLivePreviewForManipulation}
+        />
+      ) : (
+        <div className="avatar-wrap avatar-wrap-mark">
+          <AvatarMarkPreview
+            avatar={activeAvatar}
+            animate={reduceMotion ? false : 'always'}
+            expression={canvasExpression}
+            className="avatar-preview stage-mark-preview"
+          />
+        </div>
+      )}
       {photoFlash > 0 && (
         <motion.div
           className="photo-flash"

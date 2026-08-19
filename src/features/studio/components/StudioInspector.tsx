@@ -55,6 +55,9 @@ import {
   defaultPixelRenderStyle,
   type AvatarRenderStyle,
 } from '@/features/avatar/avatars'
+import { isClassicAvatarStyle } from '@/features/avatar/avatarStyle'
+import { AvatarMarkPreview } from '@/features/avatar/components/AvatarMarkPreview'
+import { AvatarThumb } from '@/features/avatar/components/AvatarThumb'
 import { bodyPrimitiveTypes, MAX_BODY_NODES } from '@/features/avatar/body'
 import {
   ExpressionCard,
@@ -84,6 +87,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
     avatarDragPreview,
     avatars,
     avatarsRef,
+    baseBehavior,
     blink,
     bodyEditing,
     bodyNodes,
@@ -192,7 +196,9 @@ export function StudioInspector({ controller }: { controller: StudioController }
     toggleStatePlayback,
     transitionToExpression,
     updateAvatarColors,
+    updateAvatarProjection,
     updateAvatarRenderStyle,
+    updateAvatarStyleSeed,
     updateAvatarEyeDimension,
     updateAvatarEyePosition,
     updateAvatarEyeSize,
@@ -297,6 +303,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
               colors={activeAvatar.colors}
               avatarEyes={activeAvatarEyes}
               renderStyle={activeAvatar.renderStyle}
+              projection={activeAvatar.projection}
               selectedStepId={selectedSequenceStepId}
               backButtonRef={workspaceBackButtonRef}
               reduceMotion={Boolean(reduceMotion)}
@@ -421,6 +428,61 @@ export function StudioInspector({ controller }: { controller: StudioController }
 
             {!editing && mode === 'manual' && (
               <div className="panel-stack">
+                <ControlSection
+                  title="Famille"
+                  subtitle="Choisissez le style de cet avatar. Classic conserve le moteur procédural actuel."
+                >
+                  <InspectorCard>
+                    <PanelTitle
+                      level={3}
+                      title="Style"
+                      subtitle="Les documents existants sans champ de style restent Classic."
+                    />
+                    <p className="style-family-current">
+                      {t(
+                        activeAvatar.styleFamily === 'blob'
+                          ? 'Blob'
+                          : activeAvatar.styleFamily === 'ip-logo'
+                            ? 'IP logo'
+                            : 'Classic'
+                      )}
+                    </p>
+                    {isClassicAvatarStyle(activeAvatar.styleFamily) ? (
+                      <Field className="render-style-field" orientation="horizontal">
+                        <FieldTitle>{t('Projection')}</FieldTitle>
+                        <Select
+                          value={activeAvatar.projection}
+                          items={[
+                            { value: 'perspective', label: t('3D') },
+                            { value: 'flat', label: t('2D') },
+                          ]}
+                          onValueChange={next => {
+                            if (next === 'flat' || next === 'perspective') {
+                              updateAvatarProjection(next)
+                            }
+                          }}
+                        >
+                          <SelectTrigger aria-label={t('Projection')}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="perspective">{t('3D')}</SelectItem>
+                            <SelectItem value="flat">{t('2D')}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </Field>
+                    ) : (
+                      <Field>
+                        <FieldTitle>{t('Graine')}</FieldTitle>
+                        <Input
+                          aria-label={t('Graine')}
+                          value={activeAvatar.styleSeed ?? activeAvatar.name}
+                          onChange={event => updateAvatarStyleSeed(event.currentTarget.value)}
+                        />
+                      </Field>
+                    )}
+                  </InspectorCard>
+                </ControlSection>
                 {bodyEditing && (
                   <>
                     <ControlSection
@@ -1414,6 +1476,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                           colors={activeAvatar.colors}
                           avatarEyes={activeAvatarEyes}
                           renderStyle={activeAvatar.renderStyle}
+                          projection={activeAvatar.projection}
                           previewId={String(index)}
                           onSelect={() => transitionToExpression(preset, index)}
                           onEdit={() => openExpressionEditor(index, preset)}
@@ -1561,6 +1624,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                                   colors={activeAvatar.colors}
                                   avatarEyes={activeAvatarEyes}
                                   renderStyle={activeAvatar.renderStyle}
+                                  projection={activeAvatar.projection}
                                   id={`state-card-${sequence.id}`}
                                 />
                                 <span>{sequence.builtIn ? t(sequence.name) : sequence.name}</span>
@@ -1638,13 +1702,10 @@ export function StudioInspector({ controller }: { controller: StudioController }
                 >
                   <InspectorCard>
                     <div className="export-avatar-summary">
-                      <ExpressionPreview
+                      <AvatarThumb
+                        avatar={activeAvatar}
+                        baseBehavior={baseBehavior}
                         expression={expressions[0] ?? defaultExpression}
-                        surface={activeAvatar.body.primary}
-                        bodyNodes={activeAvatar.body.nodes}
-                        colors={activeAvatar.colors}
-                        avatarEyes={activeAvatarEyes}
-                        renderStyle={activeAvatar.renderStyle}
                         id={`export-avatar-${activeAvatar.id}`}
                       />
                       <div>
@@ -1736,6 +1797,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                               colors={activeAvatar.colors}
                               avatarEyes={activeAvatarEyes}
                               renderStyle={activeAvatar.renderStyle}
+                              projection={activeAvatar.projection}
                               id={`export-animation-${animation.id}`}
                             />
                             <span>{animation.builtIn ? t(animation.name) : animation.name}</span>
@@ -1766,14 +1828,23 @@ export function StudioInspector({ controller }: { controller: StudioController }
                   subtitle="Capture une image statique de l’avatar."
                 >
                   <InspectorCard className="snapshot-preview-card">
-                    <SnapshotPreview
-                      scene={renderedScene}
-                      colors={renderedColors}
-                      background={snapshotBackground}
-                      colorFrom={snapshotColorFrom}
-                      colorTo={snapshotColorTo}
-                      renderStyle={activeAvatar.renderStyle}
-                    />
+                    {isClassicAvatarStyle(activeAvatar.styleFamily) ? (
+                      <SnapshotPreview
+                        scene={renderedScene}
+                        colors={renderedColors}
+                        background={snapshotBackground}
+                        colorFrom={snapshotColorFrom}
+                        colorTo={snapshotColorTo}
+                        renderStyle={activeAvatar.renderStyle}
+                      />
+                    ) : (
+                      <div className="snapshot-preview">
+                        <AvatarMarkPreview
+                          avatar={activeAvatar}
+                          expression={expressions[0] ?? defaultExpression}
+                        />
+                      </div>
+                    )}
                     <div>
                       <small>{t('Aperçu du mode photo')}</small>
                       <strong>{activeAvatar.name}</strong>
@@ -1984,6 +2055,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                         colors={activeAvatar.colors}
                         avatarEyes={activeAvatarEyes}
                         renderStyle={activeAvatar.renderStyle}
+                        projection={activeAvatar.projection}
                         id={`player-${activeSequence.id}-${position}`}
                       />
                       {playbackVisual.position === position && (
@@ -2080,13 +2152,10 @@ export function StudioInspector({ controller }: { controller: StudioController }
               aria-label={t('Choisir un avatar')}
               onClick={() => setMode('avatars')}
             >
-              <ExpressionPreview
+              <AvatarThumb
+                avatar={activeAvatar}
+                baseBehavior={baseBehavior}
                 expression={expressions[0] ?? defaultExpression}
-                surface={activeAvatar.body.primary}
-                bodyNodes={activeAvatar.body.nodes}
-                colors={activeAvatar.colors}
-                avatarEyes={activeAvatarEyes}
-                renderStyle={activeAvatar.renderStyle}
                 id={`active-avatar-tab-${activeAvatar.id}`}
               />
               <span>{activeAvatar.name}</span>

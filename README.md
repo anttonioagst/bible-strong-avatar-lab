@@ -13,12 +13,19 @@ The application still runs entirely in the browser. Projects are stored locally 
 ## Significant changes in this fork
 
 - **Radar is the default bundled avatar.** Opening the Studio on a fresh document selects Radar (`id: radar`) first. The character is a charcoal procedural sphere with amber eyes and a small dish node, matching Radar's charcoal / cream / bronze / amber palette without pasting the icon raster. Existing bundled avatars (Strobi, Freddy, Grok bot, and the rest) remain in the library.
+- **Style families are additive.** Each avatar may declare `styleFamily`: `classic` (default), `blob`, or `ip-logo`. Projects saved before this field, and every bundled character, open as **Classic** — the current SVG procedural engine is unchanged. `radar.html` still embeds classic Radar.
+- **Blob** uses [blobatar](https://github.com/Alain00/blobatar) (MIT) from a seed string (avatar name or id). It is a new option; it does not replace classic faces.
+- **IP logo** is a preset/import path, not a second renderer: generate a square IP mark from a name (IP-as-logo recipe) or import a square SVG/image. Classic avatars stay in the library.
+- **2D / 3D** on Classic flattens SVG perspective at render time without rewriting stored expression perspective values. This PR does not add three.js.
 - **Studio chrome is branded Radar Avatar Lab.** The header, document title, Open Graph tags, and web manifest use that name. The GitHub button points at [this fork](https://github.com/anttonioagst/bible-strong-avatar-lab). The canvas footer reads `Made with ❤️ by @anttonioagst` and links to [github.com/anttonioagst](https://github.com/anttonioagst). Upstream Bible Strong / smontlouis credit remains in this README and in `LICENSE`.
 - **Player-only page** at [`radar.html`](./radar.html) (`/radar.html` in dev and in the production build). It renders only Radar, playing the bundled idle loop with blink, with no Studio chrome. The page is sized for a feed or profile embed and can later be iframed into wiip.club. Use `?bg=transparent` for a transparent background; the default is a dark charcoal page. The player is client-only and does not use a backend.
 
 ## What you can do
 
 - Create, rename, duplicate, reorder, and delete avatars.
+- Pick a character family in the Studio gallery (Classic, Blob, IP logo), including hover-to-play previews.
+- Create a Blob avatar from a seed string, or generate/import a square IP mark as a new avatar.
+- Switch Classic avatars between 2D (flatter SVG) and 3D (current perspective/primitives) without data loss.
 - Build a body from a primary facial surface and additional 3D-inspired primitives.
 - Adjust dimensions, roundness, position, local rotation, perspective, colors, and wireframe guides.
 - Edit each eye independently or link their size, proportions, and position.
@@ -71,7 +78,11 @@ Photo Mode exports the currently rendered avatar as SVG or PNG. You can choose t
 
 ### Studio project
 
-The JSON project file contains the complete current document: avatars, base and avatar-specific behavior libraries, expressions, animations, and playback selection. Importing a project replaces the current local document after confirmation.
+The JSON project file contains the complete current document: avatars, base and avatar-specific behavior libraries, expressions, animations, and playback selection. Importing a project replaces the current local document after confirmation. Optional avatar fields `styleFamily` (`classic` | `blob` | `ip-logo`) and `projection` (`perspective` | `flat`) default to Classic 3D when omitted, so older Studio JSON remains valid.
+
+## License notes for vendored style modules
+
+[blobatar](https://github.com/Alain00/blobatar) is MIT-licensed and pulled in as the `blobatar` npm package. The license text is also kept at `third_party/blobatar/LICENSE`. The IP-as-logo path follows the public recipe from [s1dashu/ip-as-logo-skill](https://github.com/s1dashu/ip-as-logo-skill); it is a generator/import preset, not a copy of MetalForge (https://metalforge.xyz/) shaders, Metal/WGSL, or other commercial engine code.
 
 ## Getting started
 

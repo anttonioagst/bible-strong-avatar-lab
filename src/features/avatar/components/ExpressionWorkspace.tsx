@@ -20,6 +20,7 @@ import {
   type AvatarEyeDefaults,
   type AvatarRenderStyle,
 } from '@/features/avatar/avatars'
+import { type AvatarProjection } from '@/features/avatar/avatarStyle'
 import { type BodyNode } from '@/features/avatar/body'
 import { scaleEye, updateEyeDimension } from '@/features/avatar/expressionEditing'
 import { type Expression } from '@/features/avatar/geometry'
@@ -45,6 +46,7 @@ export function ExpressionPreview({
   colors,
   avatarEyes,
   renderStyle,
+  projection,
   id,
 }: {
   expression: Expression
@@ -53,9 +55,10 @@ export function ExpressionPreview({
   colors: AvatarColors
   avatarEyes: AvatarEyeDefaults
   renderStyle: AvatarRenderStyle
+  projection?: AvatarProjection
   id: string
 }) {
-  const geometry = getPreviewGeometry(expression, surface, bodyNodes, avatarEyes)
+  const geometry = getPreviewGeometry(expression, surface, bodyNodes, avatarEyes, projection)
   const resolvedColors = resolveColors(expression, colors)
   if (renderStyle.type === 'pixel') {
     return (
@@ -130,6 +133,7 @@ export function ExpressionCard({
   colors,
   avatarEyes,
   renderStyle,
+  projection,
   previewId,
   onSelect,
   onEdit,
@@ -150,6 +154,7 @@ export function ExpressionCard({
   colors: AvatarColors
   avatarEyes: AvatarEyeDefaults
   renderStyle: AvatarRenderStyle
+  projection?: AvatarProjection
   previewId: string
   onSelect: () => void
   onEdit?: () => void
@@ -185,6 +190,7 @@ export function ExpressionCard({
         colors={colors}
         avatarEyes={avatarEyes}
         renderStyle={renderStyle}
+        projection={projection}
         id={previewId}
       />
       <span>{String(index).padStart(2, '0')}</span>

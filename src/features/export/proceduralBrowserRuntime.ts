@@ -102,6 +102,29 @@ function mountAvatar(target, options = {}) {
   svg.style.display = 'block';
   svg.style.overflow = 'visible';
   const pixelStyle = DATA.avatar.renderStyle?.type === 'pixel' ? DATA.avatar.renderStyle : null;
+  if (DATA.avatar.markSvg) {
+    const wrap = document.createElement('div');
+    wrap.setAttribute('role', 'img');
+    wrap.setAttribute('aria-label', DATA.avatar.name);
+    wrap.style.width = typeof options.size === 'number' ? options.size + 'px' : options.size || '100%';
+    wrap.style.height = typeof options.size === 'number' ? options.size + 'px' : options.size || '100%';
+    wrap.style.display = 'block';
+    wrap.innerHTML = DATA.avatar.markSvg;
+    const mark = wrap.querySelector('svg');
+    if (mark) {
+      mark.style.width = '100%';
+      mark.style.height = '100%';
+      mark.style.display = 'block';
+    }
+    host.replaceChildren(wrap);
+    const markApi = {
+      play() { return markApi; },
+      pause() { return markApi; },
+      stop() { return markApi; },
+      destroy() { wrap.remove(); },
+    };
+    return markApi;
+  }
   const canvas = document.createElement('canvas');
   const pixelResolution = pixelStyle ? Math.max(8, Math.min(192, Math.round(pixelStyle.resolution))) : 64;
   canvas.width = pixelResolution;
@@ -188,7 +211,10 @@ function mountAvatar(target, options = {}) {
       ? AvatarProceduralEngine.applyAmbientBodyMotion(currentPose.expression, bodyElapsed, ambientStrength)
       : currentPose.expression;
     const eyeOffset = AvatarProceduralEngine.ambientEyeOffset(currentPose.expression, eyeElapsed, ambientStrength);
-    const renderedPose = AvatarProceduralEngine.poseFromExpression(expression);
+    const expressionForRender = DATA.avatar.projection === 'flat'
+      ? { ...expression, perspective: 0 }
+      : expression;
+    const renderedPose = AvatarProceduralEngine.poseFromExpression(expressionForRender);
     const geometry = AvatarProceduralEngine.renderAvatar(renderedPose, DATA.avatar.surface, blinkAmount, {
       includeWire: false,
       bodyNodes: DATA.avatar.bodyNodes,

@@ -136,6 +136,28 @@ const english: Record<string, string> = {
   'Choisis un fond transparent, uni ou en dégradé.':
     'Choose a transparent, solid or gradient background.',
   Style: 'Style',
+  Famille: 'Family',
+  Toutes: 'All',
+  Classic: 'Classic',
+  Blob: 'Blob',
+  'IP logo': 'IP logo',
+  'Survolez une carte pour lire l’animation.': 'Hover a card to play its animation.',
+  'Nouvel avatar Blob': 'New Blob avatar',
+  'Nouveau logo IP': 'New IP logo',
+  Graine: 'Seed',
+  'La graine détermine le blobatar. Utilisez le nom ou un identifiant.':
+    'The seed determines the blobatar. Use the name or an id.',
+  Créer: 'Create',
+  'Générez une marque carrée à partir d’un nom, ou importez un SVG ou une image carrée.':
+    'Generate a square mark from a name, or import a square SVG or image.',
+  'Importer une marque carrée': 'Import a square mark',
+  Générer: 'Generate',
+  'Choisissez le style de cet avatar. Classic conserve le moteur procédural actuel.':
+    'Choose this avatar’s style family. Classic keeps the current procedural engine.',
+  'Les documents existants sans champ de style restent Classic.':
+    'Existing documents without a style field stay Classic.',
+  '2D': '2D',
+  '3D': '3D',
   Transparent: 'Transparent',
   Uni: 'Solid',
   'Dégradé linéaire': 'Linear gradient',

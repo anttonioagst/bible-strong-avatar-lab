@@ -1,8 +1,11 @@
 import { translateStudioText } from '@/i18n'
 
 describe('avatar studio translations', () => {
-  it('uses English for static interface copy', () => {
-    expect(translateStudioText('Couleur des yeux', 'en')).toBe('Eye color')
+  it('translates style family chrome', () => {
+    expect(translateStudioText('Famille', 'en')).toBe('Family')
+    expect(translateStudioText('Survolez une carte pour lire l’animation.', 'zh-CN')).toBe(
+      '将指针悬停在卡片上以播放动画。'
+    )
   })
 
   it('translates dynamic editor labels', () => {

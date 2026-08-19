@@ -8,6 +8,11 @@ import {
   type AvatarColors,
   type AvatarEyeDefaults,
 } from '@/features/avatar/avatars'
+import {
+  applyAvatarProjection,
+  defaultAvatarProjection,
+  type AvatarProjection,
+} from '@/features/avatar/avatarStyle'
 import { type BodyNode } from '@/features/avatar/body'
 import { poseFromExpression, renderAvatar, type Expression } from '@/features/avatar/geometry'
 import { type SurfaceConfig } from '@/features/avatar/surfaces'
@@ -56,11 +61,18 @@ const previewGeometryCache = new WeakMap<
 export const poseWithAvatarEyes = (expression: Expression, eyes: AvatarEyeDefaults) =>
   poseFromExpression(applyAvatarEyeDefaults(expression, eyes))
 
+export const poseForAvatarRender = (
+  expression: Expression,
+  eyes: AvatarEyeDefaults,
+  projection: AvatarProjection = defaultAvatarProjection
+) => applyAvatarProjection(poseWithAvatarEyes(expression, eyes), projection)
+
 export const getPreviewGeometry = (
   expression: Expression,
   surface: SurfaceConfig,
   bodyNodes: BodyNode[],
-  eyes: AvatarEyeDefaults = defaultAvatarEyes
+  eyes: AvatarEyeDefaults = defaultAvatarEyes,
+  projection: AvatarProjection = defaultAvatarProjection
 ) => {
   let surfaceCache = previewGeometryCache.get(expression)
   if (!surfaceCache) {
@@ -72,10 +84,10 @@ export const getPreviewGeometry = (
     bodyCache = new WeakMap()
     surfaceCache.set(surface, bodyCache)
   }
-  const positionKey = JSON.stringify(eyes)
+  const positionKey = JSON.stringify({ eyes, projection })
   const cached = bodyCache.get(bodyNodes)
   if (cached?.positionKey === positionKey) return cached.geometry
-  const geometry = renderAvatar(poseWithAvatarEyes(expression, eyes), surface, 1, {
+  const geometry = renderAvatar(poseForAvatarRender(expression, eyes, projection), surface, 1, {
     includeWire: false,
     bodyNodes,
   })
