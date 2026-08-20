@@ -210,24 +210,32 @@ P1–P4 already shipped. Do not undo hash IA. Do not add Studio
 
 ### Allow
 
-- **Wholesale copy** from `smontlouis/bible-strong-avatar-lab` `main`:
+- **Wholesale copy** from `smontlouis/bible-strong-avatar-lab` commit
+  `fc7445002a` (`feat(studio): add interactive photo mode`, 18 Aug 2026)
+  — **not** floating `main`, not a redesign:
   `PhotoStageFrame.tsx`, `snapshotComposition.ts`, `snapshotPalette.ts`,
-  and their two test files. Same paths. Do not redesign the capture math.
-- `snapshotExporter.ts` — add `options.composition`, `snapshot-frame-clip`,
-  `translate(x y) scale(s)` around the existing scene offset. Extend
-  **our** `serializeMarkSnapshot` with the same clip + transform (upstream
-  has no Mark exporter).
+  `snapshotExporter.ts` (**replace ours**, then append
+  `serializeMarkSnapshot`), plus their three snapshot tests (align
+  `snapshot-exporter-test.ts` with theirs, then add Mark/blob cases).
+- Capture is post-render `translate(x y) scale(s)` + frame clip. Do not
+  touch `geometry.ts` or the generated engine.
 - `useStudioController.ts` — session state only:
   `snapshotComposition`, `photoTool`, `photoPanelSections`. Pass
   composition **and** `canvasExpression` into SVG + pixel capture (their
   `roundRect` clip). Fix `downloadSnapshotPng` (must-fix #6). Do not
-  persist composition on `bible-strong-avatar-studio-v2`.
+  persist composition on `bible-strong-avatar-studio-v2`. Session defaults
+  match `fc7445002a`: transparent, `#F5F7FC` / `#C9D5FF`, 1024, png,
+  composition `{ x: 0, y: 0, scale: 1, cornerRadius: 18 }`. Enter Photo
+  calls `freezeLivePreviewForManipulation`. Shuffle =
+  `randomSnapshotPalette` when not transparent. Keep
+  `createPixelSnapshotCanvas`; do **not** set `PIXEL_RENDERING_ENABLED`
+  to true.
 - `src/app/studio-utils.ts` — add `PhotoTool = 'pose' | 'frame'` only.
   Do **not** add `'photo'` to `Mode`.
 - `src/app/PhotoView.tsx` — framed Photo Mode: `motion` host (classic
   colors bind); `PhotoStageFrame` wrapping classic **and** blob/mark;
   `canvasExpression` on blob/mark; frame **is** the snapshot background;
-  Pose + Frame; pet picker **writes** `photoPetHash`; Capture.
+  Pose + Frame; Shuffle; pet picker **writes** `photoPetHash`; Capture.
 - `src/app/surface.ts` — add `photoPetHash`.
 - `SiteHeader` — `variant: 'habitat' | 'bench' | 'grok'` plus Photo href
   `photoPetHash(activeAvatarId)`. Do not restyle Lab.
@@ -280,11 +288,12 @@ P1–P4 already shipped. Do not undo hash IA. Do not add Studio
 | Decision | Value |
 | -------- | ----- |
 | Composition persistence | Session `useState`, like upstream |
-| Classic / blob default | `{ x: 0, y: 0, scale: 1, cornerRadius: 18 }` |
-| Mark default | `{ x: 36, y: 48, scale: 1.2, cornerRadius: 18 }` |
+| Classic / blob / mark composition | `{ x: 0, y: 0, scale: 1, cornerRadius: 18 }` (18 is Photo session; module default is 0) |
+| Snapshot session | transparent, `#F5F7FC` / `#C9D5FF`, 1024, png |
 | Header variant | `grok` |
-| Photo tool on enter | `'frame'` |
-| Mark Photo background | Keep `transparent` (mark artwork is already opaque) |
+| Photo tool on enter | `'frame'` + `freezeLivePreviewForManipulation` |
+| Shuffle | `randomSnapshotPalette` when not transparent |
+| Pixel flag | Keep `createPixelSnapshotCanvas`. Do not enable `PIXEL_RENDERING_ENABLED`. |
 
 ### Done when
 
@@ -305,8 +314,9 @@ P1–P4 already shipped. Do not undo hash IA. Do not add Studio
 
 - [ ] Title includes `Pets reform P6`
 - [ ] Only paths in this Allow list
-- [ ] Wholesale copies are wholesale (frame + composition + palette)
-- [ ] No `Mode = 'photo'`; hash `#/photo` stays
+- [ ] Copies are from `fc7445002a` (whole files listed in PETS-PHOTO)
+- [ ] `#/photo` kept; no Studio `Mode = 'photo'`
+- [ ] Exporter replaced from that commit, then Mark helper appended
 - [ ] Composition is session state
 - [ ] Mark/blob go through the same clip + transform
 - [ ] All eight must-fix items closed (not frame-only)

@@ -122,8 +122,9 @@ The current tool. Left: stage. Right: inspector. Modes stay:
 ### Photo (`#/photo`)
 
 First-class product surface (P1). P2 shipped a thin dock. **P6 (Photo v2)**
-is the smontlouis Photo Mode on this hash — not a Studio inspector tab, not
-a raw `AvatarCanvas`. Law: [`PETS-PHOTO.md`](./PETS-PHOTO.md).
+is the smontlouis Photo Mode from commit `fc7445002a` on this hash — not a
+Studio inspector tab, not a raw `AvatarCanvas`. Law:
+[`PETS-PHOTO.md`](./PETS-PHOTO.md).
 
 Required on the surface:
 

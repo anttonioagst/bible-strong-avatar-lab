@@ -15,6 +15,26 @@ tokens, **and** closes the must-fix list (P2 Photo is buggy, not just
 frameless). Do not invent a third Photo. Porting the frame without those
 fixes is not done.
 
+## Port target (do not drift)
+
+Copy Photo pieces from **this commit only**, not from a later `main` and
+not from a redesign:
+
+| | |
+| --- | --- |
+| Repo | `https://github.com/smontlouis/bible-strong-avatar-lab` |
+| Commit | `fc7445002a2798648c5092101e0372c7731bc35c` |
+| Short | `fc7445002a` |
+| Message | `feat(studio): add interactive photo mode` (18 Aug 2026) |
+
+Raw: `https://raw.githubusercontent.com/smontlouis/bible-strong-avatar-lab/fc7445002a2798648c5092101e0372c7731bc35c/<path>`
+
+Their Photo is `mode === 'photo'` inside Studio. **Keep our `#/photo`
+hash.** Do not add `'photo'` to `Mode`. On `#/photo` the visitor gets the
+**same tools** as their photo mode (frame, pose, composition, shuffle,
+capture math). Capture is a **post-render** transform. Do not touch
+`geometry.ts` or `standaloneEngine.generated.ts`.
+
 ---
 
 ## Product fact (do not re-derive)
@@ -36,8 +56,17 @@ On `#/photo` the visitor gets the **smontlouis Photo Mode**:
 Studio shutter **opens** `#/photo?pet=` (must-fix #7). It does not capture.
 Export accordion stays packages + JSON, with a link to Photo.
 
-Blob and Mark go through the **same** frame + capture path. A mark preview
-that ignores composition is a bug.
+### Our extras that stay (do not drop while copying)
+
+These are this fork. They are not in `fc7445002a`. Keep them:
+
+- `#/photo` hash (do not revert to Studio-only `mode === 'photo'`).
+- Pet picker + `?pet=` **write-back** on `#/photo`.
+- Blob and Mark use the **same** `PhotoStageFrame` + composition + chosen
+  background. No hardcoded squircle when Photo background is transparent.
+- Grok / Antonio chrome on Photo only (`variant="grok"`).
+- Studio shutter opens `#/photo?pet=` (settings). It does not
+  silent-capture with in-memory defaults.
 
 Porting `PhotoStageFrame` without closing the bugs below is **not** P6.
 
@@ -163,25 +192,27 @@ contract.
 
 ---
 
-## Copy 1:1 from smontlouis
+## Copy 1:1 from smontlouis @ `fc7445002a`
 
 Repo: [smontlouis/bible-strong-avatar-lab](https://github.com/smontlouis/bible-strong-avatar-lab)
-(AGPL-3.0 — we are already this fork). Read **source on their `main`**, not
-`https://bible-strong-avatar-lab.vercel.app` (stale Aug 15 build).
+(AGPL-3.0 — we are already this fork). Read **that commit**, not
+`https://bible-strong-avatar-lab.vercel.app` (stale Aug 15 build) and not
+whatever `main` is today.
 
-Their Photo Mode is a Studio `Mode = '... | 'photo'`. Ours is `#/photo`. Port
-the **behavior and math**, not the Studio-mode IA.
+Their Photo Mode is a Studio `Mode = '... | 'photo'`. Ours is `#/photo`.
+Port the **files and math**, not the Studio-mode IA.
 
-Pinned from their `main` at plan time (fetch again if `main` moved; do not
-redesign if it did):
+**Replace / add these files whole** (blob SHA at `fc7445002a`):
 
-| File | SHA | Copy rule |
+| File | Blob SHA | Copy rule |
 | ---- | --- | --------- |
-| `src/features/studio/components/PhotoStageFrame.tsx` | `2130fdd88548c3aab34d1357e09e71fed06d38df` | **Wholesale.** Same path. Same drag / wheel / keyboard / Motion values. |
+| `src/features/studio/components/PhotoStageFrame.tsx` | `2130fdd88548c3aab34d1357e09e71fed06d38df` | **Wholesale.** Same path. |
 | `src/features/export/snapshotComposition.ts` | `6b3ea4ea7f69e5520b42466a46e2264c411eac08` | **Wholesale.** |
 | `src/features/export/snapshotPalette.ts` | `6681b78dba07b0b685af39f3b79edab54451ed44` | **Wholesale.** |
+| `src/features/export/snapshotExporter.ts` | `16f5e732753350aad9ddf8302798db3d833b362f` | **Replace ours** with theirs, then **append** `serializeMarkSnapshot` (they do not have Mark). Do not rewrite their classic serialize. |
 | `src/features/export/__tests__/snapshot-composition-test.ts` | `bc4506423fe07f4a5c574248d35ac8a83a109104` | **Wholesale.** |
 | `src/features/export/__tests__/snapshot-palette-test.ts` | `8ae388fc7f96c816c254c52213315f18e802f118` | **Wholesale.** |
+| `src/features/export/__tests__/snapshot-exporter-test.ts` | `975bc3ee3ac9041affd631902a33d26e597275b5` | **Align with theirs** (includes framing clip + `translate(55 65) scale(1.3)`). Then **add** our Mark/blob cases. Their transparent assert is `not.toContain('width="300" height="300" fill=')` — keep that. |
 
 ### Capture math (do not redesign)
 
@@ -209,7 +240,8 @@ snapshotCornerRadius(r) = normalize(...).cornerRadius * 3
   `radial-gradient(circle at 50% 42%, …)` / checkerboard when transparent.
 - `--photo-corner-radius: ${cornerRadius}%`.
 
-`serializeAvatarSnapshot` (port into our exporter; they do not have Mark):
+`serializeAvatarSnapshot` lives in the **replaced** `snapshotExporter.ts`
+(they do not have Mark — append after their exports):
 
 ```text
 defs:
@@ -252,20 +284,38 @@ Keep interaction geometry (square `aspect-ratio: 1`,
 the **picture**, not a card. **No `box-shadow`.** Checkerboard tiles may use
 `#0A0A0A` / `#1A1C20`. Focus ring: `pill-border` / ink, not their blue.
 
-### Controller session state (match them)
+### Controller session state (match `fc7445002a`)
 
 Their `useStudioController` (confirmed: `useState` only, not in the document):
 
 ```ts
-snapshotComposition = { ...defaultSnapshotComposition, cornerRadius: 18 }
+snapshotBackground = 'transparent'
+snapshotColorFrom = '#F5F7FC'
+snapshotColorTo = '#C9D5FF'
+snapshotSize = '1024'
+snapshotFormat = 'png'
+snapshotComposition = { x: 0, y: 0, scale: 1, cornerRadius: 18 }
+// 18 is the Photo session default. Module defaultSnapshotComposition.cornerRadius is 0.
 photoTool: PhotoTool = 'frame'
 photoPanelSections: PhotoTool[] = []
 ```
 
 `takePicture` / `currentSnapshotSvg` pass `composition: snapshotComposition`.
 Reset framing sets `{ x: 0, y: 0, scale: 1 }` and **keeps** `cornerRadius`.
-`openPhotoMode` sets tool `'frame'` and clears panel sections — on our fork
-that is “navigated to `#/photo`”, not `setMode('photo')`.
+
+Entering `#/photo` = their `openPhotoMode` without `setMode('photo')`:
+call `freezeLivePreviewForManipulation()`, set `photoTool` to `'frame'`,
+clear `photoPanelSections`.
+
+**Shuffle:** `randomSnapshotPalette` when background is not transparent
+(their inspector button). Wire it on Photo.
+
+**Pixel path:** copy `createPixelSnapshotCanvas` from that commit
+(composition `roundRect` clip + translate/scale). Upstream
+`PIXEL_RENDERING_ENABLED` is `false` in `avatars.ts`. **Keep the function.
+Do not flip the flag to true.** If this fork has no flag, do not add
+`PIXEL_RENDERING_ENABLED = true`. The live path stays
+`renderStyle.type !== 'pixel' → null`.
 
 ### i18n keys to port (FR source, EN + zh-CN)
 
@@ -324,31 +374,24 @@ Match upstream. `useState` on the controller. **Not** written to
 
 Snapshot background / colors / size / format stay session state as today.
 
-### 2. Default composition numbers
+### 2. Photo session defaults (classic, blob, and mark)
 
-Session init (classic + blob), same as their controller:
-
-```ts
-{ x: 0, y: 0, scale: 1, cornerRadius: 18 }
-```
-
-Mark (`styleFamily === 'ip-logo'`) starts tighter so the subject peeks from
-the **lower-right** at a close crop (~83% window of a full-bleed mark):
+Match `fc7445002a` for **every** family. Do not invent a tighter Mark
+init. s1dashu close-crop is what the Frame tool is for; the user frames.
 
 ```ts
-export const defaultMarkSnapshotComposition: SnapshotComposition = {
-  x: 36,   // 36/3 = 12% toward the right
-  y: 48,   // 48/3 = 16% toward the bottom
-  scale: 1.2,
-  cornerRadius: 18,
-}
+background: 'transparent'
+colorFrom: '#F5F7FC'
+colorTo: '#C9D5FF'
+size: '1024'
+format: 'png'
+composition: { x: 0, y: 0, scale: 1, cornerRadius: 18 }
 ```
 
-`36` / `48` / `1.2` sit inside the upstream clamps. Reset-frame on a Mark
-restores `{ x: 36, y: 48, scale: 1.2 }` and keeps `cornerRadius`. Reset on
-classic / blob restores `{ x: 0, y: 0, scale: 1 }` and keeps `cornerRadius`.
-
-Switching the active pet on Photo applies that pet’s **family default**.
+`defaultSnapshotComposition.cornerRadius` in the module is `0`. Photo
+session uses **18**. Reset-frame restores `{ x: 0, y: 0, scale: 1 }` and
+keeps `cornerRadius`. Switching pets does not invent a new composition
+preset.
 
 ### 3. Header variant name
 
@@ -441,8 +484,8 @@ not extract the whole Studio inspector. `PoseControls` does not exist in
 this fork; do not invent it.
 
 **Frame:** `PhotoStageFrame` interaction + numeric X / Y / Zoom% /
-corner-radius (reuse `NumericField`). Random palette button from upstream
-is allowed (`randomSnapshotPalette`).
+corner-radius (reuse `NumericField`). **Shuffle** =
+`randomSnapshotPalette` when not transparent (required, not optional).
 
 Pet picker writes `photoPetHash` (must-fix #3). `?pet=` is read and written.
 
@@ -450,8 +493,9 @@ Pet picker writes `photoPetHash` (must-fix #3). `?pet=` is read and written.
 
 ## Mark / blob capture (fork-only extension)
 
-Upstream `snapshotExporter.ts` has **no** `serializeMarkSnapshot`. Ours does.
-Do not drop it. Apply the **same** clip + `translate(x y) scale(s)`:
+Replace `snapshotExporter.ts` with theirs from `fc7445002a`, then
+**append** our `serializeMarkSnapshot` (they have none). Apply the **same**
+clip + `translate(x y) scale(s)`:
 
 1. Normalize `options.composition ??` the family default.
 2. Outer SVG `viewBox="-150 -150 300 300"` at `options.size`.
@@ -467,34 +511,36 @@ baked squircle when Photo background is transparent / solid / linear /
 radial (must-fix #4) and must include the mapped blobatar expression from
 `canvasExpression` (must-fix #2).
 
-When composition is the identity `{0,0,1,0}`, a full-bleed mark must still
-fill the square. `cornerRadius: 18` is the Photo session default — exports
-are allowed to have rounded clip. Tests must not assume “no `<rect>`”
-anymore: the clip path uses a rect. Assert “no background fill rect” for
-transparent instead.
+When composition is `{0,0,1,18}` (Photo session) or `{0,0,1,0}` (module
+default), a full-bleed mark must still fill the square. Exports may have
+rounded clip at 18. Align classic tests with theirs; add Mark/blob cases
+after. Transparent assert: `not.toContain('width="300" height="300" fill=')`.
 
 ---
 
 ## Implementation order
 
-1. Copy `snapshotComposition.ts` + composition tests wholesale.
-2. Copy `snapshotPalette.ts` + palette tests wholesale.
-3. Patch `snapshotExporter.ts`: `options.composition`, classic clip +
-   transform (their markup). Extend `serializeMarkSnapshot` as above. Keep
-   `serializePixelSnapshot` / `snapshotFileName`.
-4. Must-fix #4 / #2 on the mark/blob SVG path: optional background +
+Fetch every copy from commit `fc7445002a`, not from `main`.
+
+1. Copy wholesale: `snapshotComposition.ts` + composition test.
+2. Copy wholesale: `snapshotPalette.ts` + palette test.
+3. **Replace** `snapshotExporter.ts` with theirs. **Append**
+   `serializeMarkSnapshot` (must-fix #2 / #4). **Align**
+   `snapshot-exporter-test.ts` with theirs, then add Mark/blob cases.
+4. Copy wholesale: `PhotoStageFrame.tsx`.
+5. Must-fix #4 / #2 on the mark/blob SVG path: optional background +
    expression on `renderBlobatarSvg` / `AvatarMarkPreview` /
    `resolveAvatarMarkSvg`. Defaults keep today’s Lab/create behavior.
-5. Add `PhotoTool` to `studio-utils.ts` and `photoPetHash` to `surface.ts`.
+6. Add `PhotoTool` to `studio-utils.ts` and `photoPetHash` to `surface.ts`.
    Do not add `Mode = 'photo'`.
-6. Controller: session `snapshotComposition`, `photoTool`,
-   `photoPanelSections`; pass composition + expression into SVG + pixel
-   capture; port their pixel `roundRect` clip + translate/scale; fix
-   `downloadSnapshotPng` (must-fix #6).
-7. Copy `PhotoStageFrame.tsx` wholesale.
+7. Controller: session defaults from `fc7445002a`; `photoTool` /
+   `photoPanelSections`; `freezeLivePreviewForManipulation` on enter
+   Photo; Shuffle → `randomSnapshotPalette`; pass composition into SVG;
+   keep `createPixelSnapshotCanvas` (do not enable pixel rendering);
+   fix `downloadSnapshotPng` (must-fix #6).
 8. Rebuild `PhotoView`: `motion` host (must-fix #1); frame wraps classic
    **and** mark/blob; frame **is** the bg (must-fix #5); Pose / Frame
-   toolbar; `canvasExpression` on blob/mark; pet picker writes
+   toolbar; Shuffle; `canvasExpression` on blob/mark; pet picker writes
    `photoPetHash`; `SiteHeader variant="grok"` + Photo href with pet;
    one filled Capture pill.
 9. Studio shutter → `photoPetHash` only (must-fix #7). No `takePicture`.
@@ -508,7 +554,7 @@ transparent instead.
 
 ## Files Composer may touch
 
-### New (copy)
+### New (copy whole from `fc7445002a`)
 
 - `src/features/studio/components/PhotoStageFrame.tsx`
 - `src/features/export/snapshotComposition.ts`
@@ -526,9 +572,10 @@ transparent instead.
 - `src/app/studio-utils.ts` — `PhotoTool` only.
 - `src/app/__tests__/photo-surface-test.ts` and/or
   `src/app/__tests__/photo-view-test.ts` — must-fix #8 (not hash/i18n only).
-- `src/features/export/snapshotExporter.ts` — composition + mark wrap.
-- `src/features/export/__tests__/snapshot-exporter-test.ts` — update
-  transparent-rect assertion; add clip / transform / mark composition cases.
+- `src/features/export/snapshotExporter.ts` — **replace** with
+  `fc7445002a`, then append `serializeMarkSnapshot`.
+- `src/features/export/__tests__/snapshot-exporter-test.ts` — **align**
+  with theirs, then add Mark/blob cases.
 - `src/features/studio/useStudioController.ts` — session Photo state +
   capture plumbing. No document schema change.
 - `src/features/studio/components/StudioStage.tsx` — shutter **opens**
@@ -622,6 +669,9 @@ Behavior:
 - Pet picker writes `?pet=`; header Photo includes the active pet;
   refresh keeps it (must-fix #3).
 - Studio shutter opens Photo settings; it does not capture (must-fix #7).
+- Entering Photo freezes live preview (`freezeLivePreviewForManipulation`).
+- Shuffle calls `randomSnapshotPalette` when background is not transparent.
+- `createPixelSnapshotCanvas` exists; pixel rendering stays off.
 - Flash may stay. Download is local.
 
 Tests + check:
@@ -640,9 +690,10 @@ read tests **and** close must-fix #8 (write hash, mount or stub that
 proves frame / bg / pose, PNG error/alpha). Pose / Frame / cadrage
 strings exist in EN and zh-CN.
 
-`snapshot-exporter-test.ts` must assert composition clip + transform for
-classic and mark, blob-without-squircle when transparent, expression in
-blob capture, and keep filename / gradient / pixel-SVG cases green.
+`snapshot-exporter-test.ts` must **match theirs** at `fc7445002a`
+(framing clip, `translate(55 65) scale(1.3)`, transparent fill assert)
+and then add Mark/blob: no squircle when transparent, expression in blob
+capture.
 
 ---
 
