@@ -201,7 +201,9 @@ and only if it does not fight the Lab.
 
 **Goal:** `#/photo` becomes the smontlouis Photo Mode (square live frame,
 Pose + Frame, composition in the exporter), painted with Antonio Grok
-tokens. P2’s thin dock is not Photo Mode. Law: [`PETS-PHOTO.md`](./PETS-PHOTO.md).
+tokens, **and** the eight confirmed P2 Photo bugs in
+[`PETS-PHOTO.md`](./PETS-PHOTO.md) are closed. Porting the frame alone is
+not done. P2’s thin dock is not Photo Mode.
 
 P1–P4 already shipped. Do not undo hash IA. Do not add Studio
 `Mode = 'photo'`.
@@ -217,16 +219,22 @@ P1–P4 already shipped. Do not undo hash IA. Do not add Studio
   has no Mark exporter).
 - `useStudioController.ts` — session state only:
   `snapshotComposition`, `photoTool`, `photoPanelSections`. Pass
-  composition into SVG + pixel capture (their `roundRect` clip). Do not
+  composition **and** `canvasExpression` into SVG + pixel capture (their
+  `roundRect` clip). Fix `downloadSnapshotPng` (must-fix #6). Do not
   persist composition on `bible-strong-avatar-studio-v2`.
 - `src/app/studio-utils.ts` — add `PhotoTool = 'pose' | 'frame'` only.
   Do **not** add `'photo'` to `Mode`.
-- `src/app/PhotoView.tsx` — replace the raw canvas/dock with framed Photo
-  Mode: `PhotoStageFrame` wrapping classic **and** blob/mark preview;
-  Pose (expression grid via existing `transitionToExpression`) + Frame;
-  background / size / format / Capture; pet picker + `?pet=`.
-- `SiteHeader` — smallest change: `variant: 'habitat' | 'bench' | 'grok'`.
-  Photo passes `'grok'`. Do not restyle Lab.
+- `src/app/PhotoView.tsx` — framed Photo Mode: `motion` host (classic
+  colors bind); `PhotoStageFrame` wrapping classic **and** blob/mark;
+  `canvasExpression` on blob/mark; frame **is** the snapshot background;
+  Pose + Frame; pet picker **writes** `photoPetHash`; Capture.
+- `src/app/surface.ts` — add `photoPetHash`.
+- `SiteHeader` — `variant: 'habitat' | 'bench' | 'grok'` plus Photo href
+  `photoPetHash(activeAvatarId)`. Do not restyle Lab.
+- `AvatarMarkPreview` / `blobatarAdapter.renderBlobatarSvg` /
+  `resolveAvatarMarkSvg` — optional `background` + expression. Defaults
+  stay `'squircle'` / no pose so Lab / create do not change. Photo blob
+  must not bake a squircle.
 - `src/app/styles.css` — Grok tokens under `.photo-root` /
   `.site-header-grok`. Copy `.photo-live-frame` / `.photo-live-avatar` /
   `.photo-frame-interaction` / `.photo-tool-bar` selectors, restyle to
@@ -235,21 +243,28 @@ P1–P4 already shipped. Do not undo hash IA. Do not add Studio
   Inter. Do not change Lab / Studio fonts.
 - `src/i18n/index.ts` + `zh.ts` — port upstream Photo Mode strings
   (Pose / Cadrage / frame aria). EN / FR / zh-CN. No PT-BR.
-- `StudioStage.tsx` — shutter may jump to `#/photo` and/or capture with
-  session composition. Do **not** mount the live frame in Studio.
+- `StudioStage.tsx` — shutter **opens** `photoPetHash`. Do **not** call
+  `takePicture`. Do **not** mount the live frame in Studio.
+- `downloadSnapshotPng` — no silent `onerror`; transparent PNG keeps
+  alpha.
+- Tests: wholesale composition + palette tests; update
+  `snapshot-exporter-test.ts` (clip, transform, blob without squircle,
+  blob expression); `photo-surface-test.ts` / `photo-view-test.ts` must
+  prove frame / bg / pose / `?pet=` write / PNG — not hash/i18n only.
 - `StudioInspector.tsx` — Export stays packages + JSON + link to Photo.
   No Photo accordion in Studio.
-- Tests: wholesale composition + palette tests; update
-  `snapshot-exporter-test.ts`; extend `photo-surface-test.ts` + i18n
-  tests.
 - Optional: `@fontsource-variable/geist` + `@fontsource/geist-mono` in
   `package.json` / `src/main.tsx`, scoped to `.photo-root`.
+  `@testing-library/react` allowed only if a PhotoView mount test needs
+  it.
 
 ### Do not
 
 - Redesign pan / zoom / clip / `normalizeSnapshotComposition` numbers.
 - Invent a second renderer, logo CDN, or skill runner. Do not edit
-  `createIpLogoAvatar` / blobatar / `geometry.ts` / the generated engine.
+  `createIpLogoAvatar` / blobatar **recipe** / `geometry.ts` / the
+  generated engine. Optional background/expression args on the existing
+  adapter are required for must-fix #2 / #4.
 - Persist composition on the document. Default is session state (they do
   not persist it).
 - Add `'photo'` to Studio `Mode`. Do not bury Photo in the inspector.
@@ -276,6 +291,10 @@ P1–P4 already shipped. Do not undo hash IA. Do not add Studio
 - `#/photo` is upstream Photo Mode: square frame, Pose + Frame, pan /
   wheel zoom / keyboard nudge, corner radius, backgrounds, 512 / 1024 /
   2048, SVG / PNG, local Capture.
+- All eight must-fix items in [`PETS-PHOTO.md`](./PETS-PHOTO.md) are
+  closed (motion host, canvasExpression, `?pet=` write, blob bg truth,
+  live frame shows bg, PNG alpha/errors, shutter opens Photo, real
+  surface tests).
 - Classic, blob, and mark all use `PhotoStageFrame` + composition in the
   exporter (`snapshot-frame-clip` + `translate(x y) scale(s)`).
 - Chrome is Grok on Photo only. Capture is the one filled white pill.
@@ -290,9 +309,11 @@ P1–P4 already shipped. Do not undo hash IA. Do not add Studio
 - [ ] No `Mode = 'photo'`; hash `#/photo` stays
 - [ ] Composition is session state
 - [ ] Mark/blob go through the same clip + transform
+- [ ] All eight must-fix items closed (not frame-only)
 - [ ] Grok tokens scoped to Photo; Lab untouched
 - [ ] i18n EN / FR / zh-CN synced
-- [ ] Named tests + `pnpm check`
+- [ ] Named tests include frame/bg/pose + `?pet=` write + PNG, not only i18n
+- [ ] `pnpm check`
 - [ ] `radar.html` embed contract still true
 
 ---

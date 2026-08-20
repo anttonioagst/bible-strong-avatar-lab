@@ -10,8 +10,10 @@ stay in [`CONTEXT.md`](../CONTEXT.md).
 P1–P4 already shipped. `#/photo` exists. What shipped in P2 is a **thin dock**
 (pet, background, size, format, Capture) around a raw `AvatarCanvas` /
 `AvatarMarkPreview`. That is not Photo Mode. Phase 6 ports the **working**
-upstream Photo Mode onto `#/photo` and paints the chrome with Antonio’s Grok
-tokens. Do not invent a third Photo.
+upstream Photo Mode onto `#/photo`, paints the chrome with Antonio’s Grok
+tokens, **and** closes the must-fix list (P2 Photo is buggy, not just
+frameless). Do not invent a third Photo. Porting the frame without those
+fixes is not done.
 
 ---
 
@@ -31,11 +33,133 @@ On `#/photo` the visitor gets the **smontlouis Photo Mode**:
    stay.
 6. Pet picker stays. `?pet=` hash query stays.
 
-Studio shutter may still jump to `#/photo`. Export accordion stays packages +
-JSON, with a link to Photo.
+Studio shutter **opens** `#/photo?pet=` (must-fix #7). It does not capture.
+Export accordion stays packages + JSON, with a link to Photo.
 
 Blob and Mark go through the **same** frame + capture path. A mark preview
 that ignores composition is a bug.
+
+Porting `PhotoStageFrame` without closing the bugs below is **not** P6.
+
+---
+
+## Must fix (current `#/photo` — Composer closes all of these)
+
+Confirmed on this fork’s P2 Photo. Line numbers are `main` at plan time.
+Do not “port the frame and ship.” Every item has a done-when.
+
+### 1. MotionValues on a plain `<section>` — classic stage can look empty
+
+`PhotoView.tsx` (~68–76) sets `--avatar-body-color` / `--avatar-eye-color` to
+`renderedColors.body` / `.eyes` (MotionValues) on a plain `<section>`.
+Studio uses `motion.section` so those vars actually bind. On Photo the CSS
+fills drop; the classic pet can render empty. Capture still works because
+`serializeAvatarSnapshot` calls `.get()`.
+
+**Fix:** wrap the Photo stage (or the `PhotoStageFrame` host) in
+`motion.section` / `motion.div` the same way `StudioStage` does. Classic
+must be visible on screen, not only in the downloaded file.
+
+### 2. Blob / Mark pose is `expressions[0]`, not the live pose
+
+`PhotoView.tsx` stage (~107–114) and dock preview (~142–147) pass
+`expression={expressions[0] ?? defaultExpression}`. Classic correctly uses
+`canvasExpression`. `currentSnapshotSvg` → `resolveAvatarMarkSvg` →
+`renderBlobatarSvg(seed)` bakes **no** expression. Pose on a blob/mark is
+dead; Capture of blob SVG has no expression.
+
+**Fix:** preview **and** capture use `canvasExpression` (or
+`blobatarExpressionForStudio(canvasExpression)`). `renderBlobatarSvg` /
+`resolveAvatarMarkSvg` may take an optional expression; default stays
+today’s no-pose SVG for Lab / create. Pose tool on Photo must change what
+you see and what you download.
+
+### 3. Pet picker does not write `?pet=`
+
+Select only calls `activateAvatar`. `applyPetFromHash` is read-only
+(`useStudioController` ~1786–1796). `SiteHeader` Photo nav is bare
+`#/photo`. Refresh after changing pet restores the stale query (or the
+document’s last active pet vs the URL).
+
+**Fix:** add `photoPetHash(petId)` next to `studioPetHash` in
+`src/app/surface.ts`. Photo Select writes `#/photo?pet=<id>` then
+activates. Header Photo link is `photoPetHash(activeAvatarId)` (pass the
+id into `SiteHeader` — smallest prop). `applyPetFromHash` stays the
+reader. Refresh after a picker change keeps that pet.
+
+### 4. Blob “Transparent / Uni / dégradé” is a lie
+
+`AvatarMarkPreview` and `renderBlobatarSvg` hardcode `background="squircle"`.
+`currentSnapshotSvg` wraps that markup. Transparent still has the squircle
+plate. Solid / linear / radial stack a second fill on top of it.
+
+**Fix (Photo only):** optional `background` on `AvatarMarkPreview` and
+`renderBlobatarSvg`, default `'squircle'` so Lab / Studio / create do not
+change. On Photo, blob preview + capture use **no** baked squircle;
+`PhotoStageFrame` / `serializeMarkSnapshot` paint the chosen snapshot
+background (checkerboard in the live frame when transparent). Mark
+(`ip-logo`) keeps its own artwork field; do not double-paint.
+
+Do not change `createBlobAvatar` / blobatar recipe / create surfaces.
+
+### 5. Stage never shows the chosen snapshot background
+
+`.photo-stage` is always `--habitat`. Only the 96px dock
+`SnapshotPreview` reflects bg, and that preview is `display: none` under
+900px.
+
+**Fix:** the square `PhotoStageFrame` **is** the background preview
+(upstream already does this: solid / linear / radial / checkerboard).
+Do not rely on the dock thumbnail. After P6 the dock preview is optional
+chrome, not the only place the bg is true.
+
+### 6. `downloadSnapshotPng` silent fail + killed alpha
+
+`downloadSnapshotPng` (~1701–1725): `Image.onerror` only revokes the
+object URL. `takePicture` always increments `photoFlash` first. SVG→
+`Image`→canvas often flattens transparent pixels to an opaque plate.
+
+**Fix:**
+
+- Flash may stay, but a failed rasterize must **not** be silent: fall
+  back to SVG download or skip the flash until `downloadBlob` succeeds.
+- Transparent PNG must keep an alpha channel (no white/black plate). Do
+  not `fillRect` an opaque default. If the `Image` path cannot preserve
+  alpha, use a raster path that can. Classic, blob, and mark.
+
+### 7. Studio shutter still `takePicture`s with in-memory defaults
+
+`StudioStage.tsx` shutter `onClick={takePicture}` (~128–136). Settings
+already links to `#/photo?pet=`. The shutter captures whatever session
+defaults are (transparent / 1024 / png, no framing) and skips Photo.
+
+**Fix:** shutter **opens** `#/photo?pet=<activeId>` (`photoPetHash`). It
+does **not** call `takePicture`. Capture lives on Photo. Do not mount
+`PhotoStageFrame` in Studio.
+
+### 8. Tests do not prove Photo works
+
+`photo-surface-test.ts` only checks hashes and i18n keys. No PhotoView
+mount, no `takePicture` / PNG / `?pet=` write, no frame / bg / pose
+contract.
+
+**Fix:**
+
+- Port upstream `snapshot-composition-test.ts` + `snapshot-palette-test.ts`
+  wholesale.
+- Update `snapshot-exporter-test.ts` for clip + transform + mark/blob
+  composition; transparent blob SVG must **not** contain the squircle
+  plate when Photo asks for transparent; pose/expression must appear in
+  blob capture when `canvasExpression` is set.
+- Extend `photo-surface-test.ts` and/or add `photo-view-test.ts`:
+  - `photoPetHash` write + picker updates the hash
+  - Pose / Frame / cadrage copy in EN + zh-CN
+  - Frame / bg / pose are **real**: mount PhotoView (or the extracted
+    stage + hash writer) with a stub controller. `@testing-library/react`
+    is allowed for this test only if needed.
+  - PNG path: failed `Image` is not silent; transparent canvas is not
+    pre-filled opaque (extract `rasterizeSnapshotPng` / error handling
+    if that keeps the test off the DOM).
 
 ---
 
@@ -312,14 +436,15 @@ dock: pet · Pose/Frame panel · bg · size · format · Capture
 
 **Pose:** expression grid from the active pet’s library. Selecting one calls
 existing `transitionToExpression` / `updateImmediate`. Still pose = that
-expression. Do not extract the whole Studio inspector. `PoseControls` does
-not exist in this fork; do not invent it.
+expression. Preview and capture read `canvasExpression` (must-fix #2). Do
+not extract the whole Studio inspector. `PoseControls` does not exist in
+this fork; do not invent it.
 
 **Frame:** `PhotoStageFrame` interaction + numeric X / Y / Zoom% /
 corner-radius (reuse `NumericField`). Random palette button from upstream
 is allowed (`randomSnapshotPalette`).
 
-Pet picker and `?pet=` stay.
+Pet picker writes `photoPetHash` (must-fix #3). `?pet=` is read and written.
 
 ---
 
@@ -336,8 +461,11 @@ Do not drop it. Apply the **same** clip + `translate(x y) scale(s)`:
    mark’s own `viewBox` is preserved, inside
    `<g transform="translate(x y) scale(s)">`.
 
-PNG of a mark rasterizes that SVG (existing `downloadSnapshotPng` path).
-Do not add a second rasterizer.
+PNG rasterizes that SVG through the **fixed** `downloadSnapshotPng` path
+(must-fix #6). Do not add a second renderer. Blob capture must omit the
+baked squircle when Photo background is transparent / solid / linear /
+radial (must-fix #4) and must include the mapped blobatar expression from
+`canvasExpression` (must-fix #2).
 
 When composition is the identity `{0,0,1,0}`, a full-bleed mark must still
 fill the square. `cornerRadius: 18` is the Photo session default — exports
@@ -354,20 +482,27 @@ transparent instead.
 3. Patch `snapshotExporter.ts`: `options.composition`, classic clip +
    transform (their markup). Extend `serializeMarkSnapshot` as above. Keep
    `serializePixelSnapshot` / `snapshotFileName`.
-4. Add `PhotoTool` to `studio-utils.ts`. Do not add `Mode = 'photo'`.
-5. Controller: session `snapshotComposition`, `photoTool`,
-   `photoPanelSections`, `setSnapshotComposition` /
-   `updateSnapshotComposition`; pass composition into SVG + pixel capture;
-   port their pixel `roundRect` clip + translate/scale.
-6. Copy `PhotoStageFrame.tsx` wholesale.
-7. Rebuild `PhotoView`: frame wraps classic **and** mark/blob preview;
-   Pose / Frame toolbar; dock controls; `SiteHeader variant="grok"`;
+4. Must-fix #4 / #2 on the mark/blob SVG path: optional background +
+   expression on `renderBlobatarSvg` / `AvatarMarkPreview` /
+   `resolveAvatarMarkSvg`. Defaults keep today’s Lab/create behavior.
+5. Add `PhotoTool` to `studio-utils.ts` and `photoPetHash` to `surface.ts`.
+   Do not add `Mode = 'photo'`.
+6. Controller: session `snapshotComposition`, `photoTool`,
+   `photoPanelSections`; pass composition + expression into SVG + pixel
+   capture; port their pixel `roundRect` clip + translate/scale; fix
+   `downloadSnapshotPng` (must-fix #6).
+7. Copy `PhotoStageFrame.tsx` wholesale.
+8. Rebuild `PhotoView`: `motion` host (must-fix #1); frame wraps classic
+   **and** mark/blob; frame **is** the bg (must-fix #5); Pose / Frame
+   toolbar; `canvasExpression` on blob/mark; pet picker writes
+   `photoPetHash`; `SiteHeader variant="grok"` + Photo href with pet;
    one filled Capture pill.
-8. Grok tokens on `.photo-root` / `.site-header-grok`. Copy frame CSS
-   selectors, restyle only. Optional Geist fontsource scoped to Photo.
-9. i18n EN / FR / zh-CN.
-10. Tests listed below. `pnpm typecheck` + touched tests while working;
-    `pnpm check` before commit.
+9. Studio shutter → `photoPetHash` only (must-fix #7). No `takePicture`.
+10. Grok tokens on `.photo-root` / `.site-header-grok`. Copy frame CSS
+    selectors, restyle only. Optional Geist fontsource scoped to Photo.
+11. i18n EN / FR / zh-CN.
+12. Tests in must-fix #8 + below. `pnpm typecheck` + touched tests while
+    working; `pnpm check` before commit.
 
 ---
 
@@ -383,20 +518,31 @@ transparent instead.
 
 ### Existing
 
-- `src/app/PhotoView.tsx` — replace thin dock stage with framed Photo Mode.
-- `src/app/SiteHeader.tsx` — add `'grok'` variant only.
+- `src/app/PhotoView.tsx` — framed Photo Mode + all PhotoView must-fixes.
+- `src/app/SiteHeader.tsx` — `'grok'` variant + Photo href `photoPetHash`.
+- `src/app/surface.ts` — add `photoPetHash`.
 - `src/app/styles.css` — Photo + grok header + frame selectors. No Lab
   restyle.
 - `src/app/studio-utils.ts` — `PhotoTool` only.
-- `src/app/__tests__/photo-surface-test.ts` — Pose / Frame / frame copy.
+- `src/app/__tests__/photo-surface-test.ts` and/or
+  `src/app/__tests__/photo-view-test.ts` — must-fix #8 (not hash/i18n only).
 - `src/features/export/snapshotExporter.ts` — composition + mark wrap.
 - `src/features/export/__tests__/snapshot-exporter-test.ts` — update
   transparent-rect assertion; add clip / transform / mark composition cases.
 - `src/features/studio/useStudioController.ts` — session Photo state +
   capture plumbing. No document schema change.
-- `src/features/studio/components/StudioStage.tsx` — shutter may keep jump
-  to `#/photo` and/or capture with **current session** composition. Do not
-  mount `PhotoStageFrame` inside Studio. Do not add `mode === 'photo'`.
+- `src/features/studio/components/StudioStage.tsx` — shutter **opens**
+  `photoPetHash(activeId)`. Do not call `takePicture`. Do not mount
+  `PhotoStageFrame` in Studio. Do not add `mode === 'photo'`.
+- `src/features/avatar/components/AvatarMarkPreview.tsx` — optional
+  `background` (default `'squircle'`).
+- `src/features/avatar/blobatarAdapter.ts` — optional `background` +
+  expression on `renderBlobatarSvg` only. Default stays squircle / no pose.
+- `src/features/avatar/avatarMark.ts` — `resolveAvatarMarkSvg` may take
+  Photo capture options (background, expression). Create paths unchanged.
+- `src/features/avatar/__tests__/avatar-style-test.ts` — keep default
+  `renderBlobatarSvg` callers green; add Photo bg/expression cases if
+  the helper grows.
 - `src/features/studio/components/StudioInspector.tsx` — Export stays
   packages + JSON + link to `#/photo`. No Photo accordion in Studio.
 - `src/i18n/index.ts` + `src/i18n/zh.ts` + `src/i18n/__tests__/i18n-test.ts`
@@ -404,7 +550,8 @@ transparent instead.
   `SnapshotPreview` must honor composition. Prefer the live frame as the
   preview.
 - `src/main.tsx` + `package.json` + `pnpm-lock.yaml` — Geist for Photo
-  only.
+  only. `@testing-library/react` only if a PhotoView mount test needs it.
+- `src/app/__tests__/hash-surface-test.ts` — `photoPetHash` if added.
 
 ### Optional tiny reuse
 
@@ -418,8 +565,10 @@ transparent instead.
 - `src/features/avatar/geometry.ts`
 - `src/features/export/standaloneEngine.generated.ts` (no `pnpm engine`
   unless a listed source of the generator actually changes — it should not)
-- `src/features/avatar/blobatar*` / `createBlobAvatar` / `createIpLogoAvatar`
-  / `generateIpLogoSvg` / `readSquareMarkFile`
+- `createBlobAvatar` / `createIpLogoAvatar` / `generateIpLogoSvg` /
+  `readSquareMarkFile` / blobatar **recipe** (seed → pet). Optional
+  background / expression args on the existing adapter are allowed
+  (must-fix #2 / #4).
 - `src/features/studio/defaultStudioDocument.json`
 - Persistence key / parse / migrate
 - `src/app/LabHome.tsx`, create views, `radar.html`, `src/player/`
@@ -455,17 +604,25 @@ transparent instead.
 Behavior:
 
 - `#/photo` shows a square live frame (not a raw full-bleed canvas).
+- Classic stage is **visible** (`motion` host; must-fix #1).
 - Frame tool: drag pan, wheel zoom (page does not scroll), keyboard nudge.
-- Pose tool: picking an expression updates the framed pet.
+- Pose tool: picking an expression updates the framed pet **and** the
+  file for classic, blob, and mark (must-fix #2).
+- The live frame shows the chosen snapshot background (must-fix #5).
+  Blob transparent has no squircle plate (must-fix #4).
 - Classic, blob, and mark all sit inside `PhotoStageFrame`.
-- Background / 512 / 1024 / 2048 / SVG / PNG / Capture still work.
+- Background / 512 / 1024 / 2048 / SVG / PNG / Capture work as labeled.
 - Capture SVG contains `snapshot-frame-clip` and
   `translate(x y) scale(s)` matching session composition.
 - Mark / blob capture uses that same transform, not an unframed embed.
-- PNG matches the framed picture (including corner radius clip).
+- PNG matches the framed picture, keeps transparent alpha, and does not
+  fail silently (must-fix #6).
 - Capture is the only filled white pill. Header is `grok` (no habitat amber).
 - Lab / Studio look unchanged. Studio Export still links to Photo.
-- `?pet=` still selects. Flash may stay. Download is local.
+- Pet picker writes `?pet=`; header Photo includes the active pet;
+  refresh keeps it (must-fix #3).
+- Studio shutter opens Photo settings; it does not capture (must-fix #7).
+- Flash may stay. Download is local.
 
 Tests + check:
 
@@ -478,11 +635,14 @@ pnpm test -- src/i18n/__tests__/i18n-test.ts
 pnpm check
 ```
 
-`photo-surface-test.ts` must keep hash / `?pet=` / existing chrome keys and
-assert Pose / Frame / cadrage strings exist in EN and zh-CN.
+`photo-surface-test.ts` / `photo-view-test.ts` must keep hash / `?pet=`
+read tests **and** close must-fix #8 (write hash, mount or stub that
+proves frame / bg / pose, PNG error/alpha). Pose / Frame / cadrage
+strings exist in EN and zh-CN.
 
 `snapshot-exporter-test.ts` must assert composition clip + transform for
-classic and mark, and keep filename / gradient / pixel-SVG cases green.
+classic and mark, blob-without-squircle when transparent, expression in
+blob capture, and keep filename / gradient / pixel-SVG cases green.
 
 ---
 

@@ -116,8 +116,8 @@ The current tool. Left: stage. Right: inspector. Modes stay:
 - **Pets** is the shelf inside the tool (create, reorder, duplicate, delete).
 - **Export** keeps React ZIP, JavaScript ZIP, and Studio project JSON.
 - Photo settings **leave** Export once Phase 2 ships. Export may link to Photo.
-- Stage shutter may jump to `#/photo` or keep a one-shot capture. After Phase 2,
-  settings must be visible on Photo, not only in a tooltip.
+- Stage shutter **opens** `#/photo?pet=<id>` (P6). It does not capture with
+  in-memory defaults. Settings live on Photo.
 
 ### Photo (`#/photo`)
 
@@ -135,7 +135,11 @@ Required on the surface:
 - Background `transparent` · `solid` · `linear` · `radial` + colors.
 - Size 512 · 1024 · 2048. Format SVG · PNG.
 - Capture downloads locally (`takePicture` / `snapshotFileName`). Flash
-  may stay. Pet picker + `?pet=` stay.
+  may stay. Pet picker **writes** `?pet=`. Studio shutter opens this
+  hash; it does not capture.
+- P2 bugs on this surface (empty classic stage, blob pose/bg lies, PNG
+  silent fail, tests that only check i18n) are listed in PETS-PHOTO and
+  must close in P6.
 
 Chrome on `#/photo` uses Antonio **Grok** tokens (dark canvas, white
 Capture pill), not habitat parchment. Lab / Studio stay habitat until a
