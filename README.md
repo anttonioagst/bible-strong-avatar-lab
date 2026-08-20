@@ -189,7 +189,8 @@ Geometry, playback, document operations, and the standalone runtime remain frame
 | `scripts/generate-standalone-engine.mjs` | Standalone-engine generator.                                             |
 | `docs/adr/`                              | Accepted architecture decisions.                                         |
 | `docs/PETS-SITE.md`                      | Hosted site map (Lab, Studio, Photo, create, Radar embed).               |
-| `docs/PETS-UI.md`                        | AntX visual tokens and anatomy for the hosted site.                      |
+| `docs/PETS-UI.md`                        | AntX visual tokens and anatomy for Lab / Studio.                         |
+| `docs/PETS-PHOTO.md`                     | Photo v2 law: smontlouis Photo Mode on `#/photo`, Grok chrome.           |
 | `docs/PETS-REFORM.md`                    | Phased allowlists for reforming the hosted interface.                    |
 | `legacy/`                                | Self-contained HTML prototypes that preceded the React application.      |
 | `radar.html`                             | Player-only page for Radar idle playback and embeds.                     |
@@ -208,7 +209,7 @@ English, French, and Simplified Chinese interface copy must stay synchronized ac
 
 For the domain vocabulary, invariants, and architecture boundaries, read [CONTEXT.md](./CONTEXT.md).
 
-The hosted site reform (Lab home, Photo as a first-class surface, Blob/Mark create paths) is specified in [docs/PETS-SITE.md](./docs/PETS-SITE.md), [docs/PETS-UI.md](./docs/PETS-UI.md), and [docs/PETS-REFORM.md](./docs/PETS-REFORM.md). Composer implements one reform phase per PR from those allowlists. This README remains the AGPL attribution surface.
+The hosted site reform (Lab home, Photo as a first-class surface, Blob/Mark create paths) is specified in [docs/PETS-SITE.md](./docs/PETS-SITE.md), [docs/PETS-UI.md](./docs/PETS-UI.md), [docs/PETS-PHOTO.md](./docs/PETS-PHOTO.md), and [docs/PETS-REFORM.md](./docs/PETS-REFORM.md). Composer implements one reform phase per PR from those allowlists. This README remains the AGPL attribution surface.
 
 ## License
 

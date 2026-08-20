@@ -1,7 +1,8 @@
 # AntX Pets — UI tokens and anatomy
 
 Visual law for the hosted Lab + Studio. Composer restyles from this file, not
-from taste. Product map: [`PETS-SITE.md`](./PETS-SITE.md).
+from taste. Product map: [`PETS-SITE.md`](./PETS-SITE.md). Photo v2 chrome on
+`#/photo` is the addendum at the bottom plus [`PETS-PHOTO.md`](./PETS-PHOTO.md).
 
 ## Decision: split habitat, not a theme toggle
 
@@ -146,8 +147,12 @@ Bible Strong does not.
 
 ### Photo
 
-Habitat stage, pet centered, **dock on the surface**: background, size, format,
-Capture. No tooltip that sends people to Export. Capture is amber, 44px tall.
+P2 shipped habitat stage + parchment dock (amber Capture). **P6 replaces that
+chrome on `#/photo` only** — see the addendum. Lab / Studio stay on this
+file’s habitat split.
+
+Until P6 lands, the dock remains: background, size, format, Capture. No
+tooltip that sends people to Export.
 
 ### Create Blob / Mark
 
@@ -186,3 +191,39 @@ phase opens: Web Audio only, no MP3, user gesture, mute with reduced motion.
 - Stickers: “Blob” badges that do not open `#/create/blob`.
 - MP3 / CDN sound packs.
 - Replacing `geometry.ts` to “match the new look.”
+
+---
+
+## Addendum — Photo v2 chrome (P6)
+
+Habitat / parchment in this file still govern **Lab, Studio, create, and
+`radar.html`**. They do **not** govern `#/photo` after Phase 6.
+
+Photo surface uses Antonio’s Grok tokens (personal DESIGN.md). That
+overrides the “Photo = habitat stage + parchment dock + amber Capture”
+anatomy above, **for `#/photo` only**. Do not rewrite Lab to Grok in this
+phase. Do not treat this addendum as permission to restyle the whole app.
+
+Locked Photo tokens and rules live in [`PETS-PHOTO.md`](./PETS-PHOTO.md):
+
+| Token | Value |
+| ----- | ----- |
+| canvas | `#0A0A0A` |
+| canvas-soft | `#1A1C20` |
+| canvas-card | `#191919` |
+| hairline | `#212327` |
+| pill-border | `rgba(255,255,255,0.25)` |
+| ink / body / mute | `#FFFFFF` / `#DADBDF` / `#7D8187` |
+| CTA | white filled pill — **Capture only** |
+
+Geist + Geist Mono, weight 400, radius pill 9999 / card 8, press 0.97, no
+box-shadow, no hover lift. Shared `SiteHeader` on Photo uses
+`variant="grok"` so the bar is not habitat amber.
+
+The square stage is the **picture** (`PhotoStageFrame`), not a Grok card.
+Checkerboard when the background is transparent. Frame interaction CSS
+comes from upstream and is restyled to these tokens, not redesigned.
+
+Until a later named phase, ignore the earlier “Why not full dark? /
+No Geist / `#0A0A0A`” bans **only** inside `.photo-root` and
+`.site-header-grok`. They still apply everywhere else.

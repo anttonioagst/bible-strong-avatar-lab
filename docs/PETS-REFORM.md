@@ -2,7 +2,8 @@
 
 Composer implements **one phase per PR**. This file is law. Do not invent
 architecture, backends, or extra surfaces. Read [`PETS-SITE.md`](./PETS-SITE.md)
-and [`PETS-UI.md`](./PETS-UI.md) before touching UI.
+and [`PETS-UI.md`](./PETS-UI.md) before touching UI. Photo v2 also reads
+[`PETS-PHOTO.md`](./PETS-PHOTO.md) — that file wins on `#/photo`.
 
 Domain, persistence, and engine invariants stay in [`CONTEXT.md`](../CONTEXT.md)
 and `docs/adr/`.
@@ -17,7 +18,7 @@ and `docs/adr/`.
 | Schema stays additive | `styleFamily` / `projection` / `styleSeed` / `markSvg` already exist. Do not invent a v3 document.                             |
 | AGPL credit stays     | README + LICENSE + Lab footer. No Bible Strong **chrome**.                                                                     |
 | No second tree        | No extra Vite app, no Next.js marketing site, no parallel design system.                                                       |
-| No banned visuals     | No Geist, `#0A0A0A`, Estel, Glide teal, personal DESIGN.md.                                                                    |
+| No banned visuals     | No Estel, Glide teal, or Wiipo-coral chrome. Geist / `#0A0A0A` stay banned on Lab / Studio / create. **Photo v2 (P6) is the exception:** `#/photo` uses Antonio Grok tokens from [`PETS-PHOTO.md`](./PETS-PHOTO.md). Do not leak those tokens into Lab. |
 | UI primitives         | Reuse `src/components/ui/`. No `useMemo` / `useCallback` / `memo`.                                                             |
 | i18n                  | EN / FR / zh-CN stay in sync. No extra locale.                                                                                 |
 | Pages-safe URLs       | Hash surfaces only. `base: './'` stays. `radar.html` stays a build input.                                                      |
@@ -178,7 +179,8 @@ gallery of creatures, not a style-family admin.
 
 ## Phase 5 — Optional interaction sounds
 
-**Only after Phases 1–4.** Skip if it fights the Lab.
+**Skipped / optional.** Do not ship sounds in P6. Only after Phases 1–4,
+and only if it does not fight the Lab.
 
 ### Allow
 
@@ -191,6 +193,107 @@ gallery of creatures, not a style-family admin.
 
 - Sound on `radar.html` (embed stays silent unless wiip.club asks later).
 - Autoplay before a user gesture.
+- Bundling P5 with Photo v2.
+
+---
+
+## Phase 6 — Photo v2
+
+**Goal:** `#/photo` becomes the smontlouis Photo Mode (square live frame,
+Pose + Frame, composition in the exporter), painted with Antonio Grok
+tokens. P2’s thin dock is not Photo Mode. Law: [`PETS-PHOTO.md`](./PETS-PHOTO.md).
+
+P1–P4 already shipped. Do not undo hash IA. Do not add Studio
+`Mode = 'photo'`.
+
+### Allow
+
+- **Wholesale copy** from `smontlouis/bible-strong-avatar-lab` `main`:
+  `PhotoStageFrame.tsx`, `snapshotComposition.ts`, `snapshotPalette.ts`,
+  and their two test files. Same paths. Do not redesign the capture math.
+- `snapshotExporter.ts` — add `options.composition`, `snapshot-frame-clip`,
+  `translate(x y) scale(s)` around the existing scene offset. Extend
+  **our** `serializeMarkSnapshot` with the same clip + transform (upstream
+  has no Mark exporter).
+- `useStudioController.ts` — session state only:
+  `snapshotComposition`, `photoTool`, `photoPanelSections`. Pass
+  composition into SVG + pixel capture (their `roundRect` clip). Do not
+  persist composition on `bible-strong-avatar-studio-v2`.
+- `src/app/studio-utils.ts` — add `PhotoTool = 'pose' | 'frame'` only.
+  Do **not** add `'photo'` to `Mode`.
+- `src/app/PhotoView.tsx` — replace the raw canvas/dock with framed Photo
+  Mode: `PhotoStageFrame` wrapping classic **and** blob/mark preview;
+  Pose (expression grid via existing `transitionToExpression`) + Frame;
+  background / size / format / Capture; pet picker + `?pet=`.
+- `SiteHeader` — smallest change: `variant: 'habitat' | 'bench' | 'grok'`.
+  Photo passes `'grok'`. Do not restyle Lab.
+- `src/app/styles.css` — Grok tokens under `.photo-root` /
+  `.site-header-grok`. Copy `.photo-live-frame` / `.photo-live-avatar` /
+  `.photo-frame-interaction` / `.photo-tool-bar` selectors, restyle to
+  Grok (no box-shadow). Checkerboard for transparent.
+- Geist + Geist Mono for Photo chrome only (fontsource 400). Do not add
+  Inter. Do not change Lab / Studio fonts.
+- `src/i18n/index.ts` + `zh.ts` — port upstream Photo Mode strings
+  (Pose / Cadrage / frame aria). EN / FR / zh-CN. No PT-BR.
+- `StudioStage.tsx` — shutter may jump to `#/photo` and/or capture with
+  session composition. Do **not** mount the live frame in Studio.
+- `StudioInspector.tsx` — Export stays packages + JSON + link to Photo.
+  No Photo accordion in Studio.
+- Tests: wholesale composition + palette tests; update
+  `snapshot-exporter-test.ts`; extend `photo-surface-test.ts` + i18n
+  tests.
+- Optional: `@fontsource-variable/geist` + `@fontsource/geist-mono` in
+  `package.json` / `src/main.tsx`, scoped to `.photo-root`.
+
+### Do not
+
+- Redesign pan / zoom / clip / `normalizeSnapshotComposition` numbers.
+- Invent a second renderer, logo CDN, or skill runner. Do not edit
+  `createIpLogoAvatar` / blobatar / `geometry.ts` / the generated engine.
+- Persist composition on the document. Default is session state (they do
+  not persist it).
+- Add `'photo'` to Studio `Mode`. Do not bury Photo in the inspector.
+- Restyle Lab / Studio / create to Grok. Habitat tokens stay there.
+- Estel, Glide, Wiipo-coral chrome, Inter, Portuguese UI, Phase 5 sounds.
+- Backend, auth, share URLs, watermarks, hosted gallery, second Vite app,
+  react-router.
+- Rename `bible-strong-avatar-studio-v2`.
+- “While I’m here” Lab redesign.
+
+### Defaults (locked in PETS-PHOTO — do not reopen)
+
+| Decision | Value |
+| -------- | ----- |
+| Composition persistence | Session `useState`, like upstream |
+| Classic / blob default | `{ x: 0, y: 0, scale: 1, cornerRadius: 18 }` |
+| Mark default | `{ x: 36, y: 48, scale: 1.2, cornerRadius: 18 }` |
+| Header variant | `grok` |
+| Photo tool on enter | `'frame'` |
+| Mark Photo background | Keep `transparent` (mark artwork is already opaque) |
+
+### Done when
+
+- `#/photo` is upstream Photo Mode: square frame, Pose + Frame, pan /
+  wheel zoom / keyboard nudge, corner radius, backgrounds, 512 / 1024 /
+  2048, SVG / PNG, local Capture.
+- Classic, blob, and mark all use `PhotoStageFrame` + composition in the
+  exporter (`snapshot-frame-clip` + `translate(x y) scale(s)`).
+- Chrome is Grok on Photo only. Capture is the one filled white pill.
+- Lab / Studio / `radar.html` / persistence key / engine unchanged.
+- `pnpm check` plus the named tests in [`PETS-PHOTO.md`](./PETS-PHOTO.md).
+
+### Composer checklist (P6)
+
+- [ ] Title includes `Pets reform P6`
+- [ ] Only paths in this Allow list
+- [ ] Wholesale copies are wholesale (frame + composition + palette)
+- [ ] No `Mode = 'photo'`; hash `#/photo` stays
+- [ ] Composition is session state
+- [ ] Mark/blob go through the same clip + transform
+- [ ] Grok tokens scoped to Photo; Lab untouched
+- [ ] i18n EN / FR / zh-CN synced
+- [ ] Named tests + `pnpm check`
+- [ ] `radar.html` embed contract still true
 
 ---
 
@@ -201,7 +304,8 @@ gallery of creatures, not a style-family admin.
 - Migrating off `bible-strong-avatar-studio-v2` without an ADR.
 - Portuguese UI strings.
 - Replacing AGPL with a different license.
-- Shipping Phase 5 as part of Phase 1 “polish.”
+- Shipping Phase 5 as part of Phase 1 or Phase 6 “polish.”
+- A custom Photo that ignores smontlouis composition/frame math.
 
 ## Composer checklist (copy onto each implementation PR)
 

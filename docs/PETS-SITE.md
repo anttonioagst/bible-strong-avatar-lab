@@ -2,7 +2,8 @@
 
 This is the product map of the **hosted site**. Composer implements from
 [`PETS-REFORM.md`](./PETS-REFORM.md). Visual law is [`PETS-UI.md`](./PETS-UI.md).
-Domain law stays in [`CONTEXT.md`](../CONTEXT.md).
+Photo v2 law is [`PETS-PHOTO.md`](./PETS-PHOTO.md). Domain law stays in
+[`CONTEXT.md`](../CONTEXT.md).
 
 ## What is live today
 
@@ -80,8 +81,9 @@ screenshot and not a logo dump.
    Each tile is a creature. Actions: Photograph · Open in Studio.
 3. **25–40s — One create path.** “Make a Blob” or “Turn a mark into a pet.”
    Seed or name, live preview, Create. Lands in Studio with that pet selected.
-4. **40–55s — Photo.** Full pet, controls on the surface: transparent / solid /
-   linear / radial, 512 / 1024 / 2048, SVG or PNG. Capture downloads locally.
+4. **40–55s — Photo.** Square live frame of the pet (Pose + Frame), then
+   transparent / solid / linear / radial, 512 / 1024 / 2048, SVG or PNG.
+   Capture downloads locally. See [`PETS-PHOTO.md`](./PETS-PHOTO.md).
 5. **55–60s — Leave with a file.** Photo download or Export → Studio project
    JSON. No account. Closing the tab keeps the local document.
 
@@ -119,21 +121,28 @@ The current tool. Left: stage. Right: inspector. Modes stay:
 
 ### Photo (`#/photo`)
 
-First-class product surface. This is the feature saved from
-[avatars.bible-strong.app](https://avatars.bible-strong.app) — make it obvious.
+First-class product surface (P1). P2 shipped a thin dock. **P6 (Photo v2)**
+is the smontlouis Photo Mode on this hash — not a Studio inspector tab, not
+a raw `AvatarCanvas`. Law: [`PETS-PHOTO.md`](./PETS-PHOTO.md).
 
-Reuse `snapshotExporter` and the controller’s `takePicture` / snapshot state.
-Do not add a server, a gallery host, or new formats.
+Required on the surface:
 
-| Control    | Allowed values                                |
-| ---------- | --------------------------------------------- |
-| Background | `transparent` · `solid` · `linear` · `radial` |
-| Colors     | `colorFrom` / `colorTo` when not transparent  |
-| Size       | 512 · 1024 · 2048                             |
-| Format     | SVG · PNG                                     |
+- Square **live frame** (`PhotoStageFrame`) of the active pet (classic /
+  blob / mark). Composition `{ x, y, scale, cornerRadius }` is session
+  state. Capture must clip and `translate(x y) scale(s)` the same way.
+- Tools: **Pose** (existing expressions) and **Frame** (pan, wheel zoom,
+  corner radius). Same `PhotoTool` as upstream.
+- Background `transparent` · `solid` · `linear` · `radial` + colors.
+- Size 512 · 1024 · 2048. Format SVG · PNG.
+- Capture downloads locally (`takePicture` / `snapshotFileName`). Flash
+  may stay. Pet picker + `?pet=` stay.
 
-Capture writes a local file (`snapshotFileName`). Flash on the stage may stay.
-Photo is not a social share sheet.
+Chrome on `#/photo` uses Antonio **Grok** tokens (dark canvas, white
+Capture pill), not habitat parchment. Lab / Studio stay habitat until a
+later phase. See the Photo addendum in [`PETS-UI.md`](./PETS-UI.md).
+
+Do not add a server, a gallery host, or new formats. Photo is not a
+social share sheet.
 
 ### Create Blob (`#/create/blob`)
 
@@ -190,6 +199,8 @@ No backend. Import replaces the local document after confirm.
 - Accounts, cloud sync, comments, likes.
 - A second Next.js / marketing repo.
 - Replacing `geometry.ts` or the standalone engine.
-- Bible Strong, Estel, Glide, or personal Geist/#0A0A0A chrome.
+- Bible Strong, Estel, or Glide chrome. Geist / `#0A0A0A` stay off Lab /
+  Studio / create; Photo v2 may use them on `#/photo` only
+  ([`PETS-PHOTO.md`](./PETS-PHOTO.md)).
 - Portuguese UI (keep EN / FR / zh-CN in sync).
 - Interaction sounds, unless a later named phase in `PETS-REFORM.md`.
