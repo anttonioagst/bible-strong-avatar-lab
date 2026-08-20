@@ -92,7 +92,9 @@ describe('Studio chrome branding', () => {
     expect(tabs).toContain('@/components/ui/tabs')
     expect(inspector).toContain('StudioModeTabs')
     expect(dialogs).toContain('@/components/ui/dialog')
-    expect(gallery).toContain('@/components/ui/tabs')
+    expect(gallery).toContain('pet-shelf')
+    expect(gallery).toContain('@/components/ui/button')
+    expect(gallery).not.toContain('style-family-picker')
   })
 
   it('keeps AGPL fork attribution in LICENSE and README', () => {

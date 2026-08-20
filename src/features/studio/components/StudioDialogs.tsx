@@ -60,7 +60,7 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
             <AlertDialogTitle>{t(`Supprimer ${activeAvatar.name} ?`)}</AlertDialogTitle>
             <AlertDialogDescription>
               {t(
-                'Le corps, les expressions et les animations propres à cet avatar seront définitivement supprimés. La bibliothèque de base sera conservée.'
+                'Le corps, les expressions et les animations propres à ce pet seront définitivement supprimés. La bibliothèque de base sera conservée.'
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -75,9 +75,7 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
           <AlertDialogHeader>
             <AlertDialogTitle>{t('Supprimer cette expression ?')}</AlertDialogTitle>
             <AlertDialogDescription>
-              {t(
-                'Cette action retirera définitivement le preset de la bibliothèque de cet avatar.'
-              )}
+              {t('Cette action retirera définitivement le preset de la bibliothèque de ce pet.')}
             </AlertDialogDescription>
             {animationsAffectedByExpressionDeletion.length > 0 && (
               <div className="mt-2 grid gap-2 rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm">
@@ -130,7 +128,7 @@ export function StudioDialogs({ controller }: { controller: StudioController }) 
             <AlertDialogTitle>{t('Importer ce projet ?')}</AlertDialogTitle>
             <AlertDialogDescription>
               {t(
-                'Le projet local actuel sera remplacé par les avatars, expressions, animations et état de lecture de ce fichier.'
+                'Le projet local actuel sera remplacé par les pets, expressions, animations et état de lecture de ce fichier.'
               )}{' '}
               {pendingProjectImport?.fileName}
             </AlertDialogDescription>

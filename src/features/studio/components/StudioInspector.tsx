@@ -352,7 +352,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                 <p className="eyebrow">{t('Construction du corps')}</p>
                 <Input
                   className="avatar-name-input"
-                  aria-label={t('Nom de l’avatar')}
+                  aria-label={t('Nom du pet')}
                   autoFocus={focusAvatarName}
                   value={activeAvatar.name}
                   onChange={event => renameActiveAvatar(event.currentTarget.value)}
@@ -394,7 +394,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                             ? 'Expressions'
                             : mode === 'states'
                               ? 'Animations'
-                              : 'Exporter'
+                              : 'Export'
                     )}
                   </h1>
                 </div>
@@ -415,8 +415,8 @@ export function StudioInspector({ controller }: { controller: StudioController }
             {!editing && mode === 'manual' && (
               <div className="panel-stack">
                 <ControlSection
-                  title="Famille"
-                  subtitle="Choisissez le style de cet avatar. Classic conserve le moteur procédural actuel."
+                  title="Type"
+                  subtitle="Choisissez le type de ce pet. Classic conserve le moteur procédural actuel."
                 >
                   <InspectorCard>
                     <PanelTitle
@@ -473,7 +473,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                   <>
                     <ControlSection
                       title="Corps"
-                      subtitle="Construction, forme et couleur de la tête de l’avatar."
+                      subtitle="Construction, forme et couleur de la tête du pet."
                     >
                       <InspectorCard className="body-panel">
                         <PanelTitle
@@ -850,7 +850,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                     </ControlSection>
                     <ControlSection
                       title="Rendu"
-                      subtitle="Choisis la finition visuelle propre à cet avatar."
+                      subtitle="Choisis la finition visuelle propre à ce pet."
                     >
                       <InspectorCard className="render-style-panel">
                         <PanelTitle
@@ -910,7 +910,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                     >
                       <p className="section-description">
                         {t(
-                          'Définis l’identité du regard de cet avatar. Les poses s’ajoutent ensuite à cette base.'
+                          'Définis l’identité du regard de ce pet. Les poses s’ajoutent ensuite à cette base.'
                         )}
                       </p>
                       {(['width', 'height', 'size'] as const).map(dimension => (
@@ -981,7 +981,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                           <div>
                             <h3>{t('Position et espacement')}</h3>
                             <p className="panel-inline-subtitle">
-                              {t('Coordonnées propres à l’avatar, indépendantes des poses.')}
+                              {t('Coordonnées propres au pet, indépendantes des poses.')}
                             </p>
                           </div>
                           <LinkButton
@@ -1116,7 +1116,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                         <PanelTitle
                           level={3}
                           title="Couleur du corps"
-                          subtitle="La pose peut remplacer temporairement la couleur de l’avatar."
+                          subtitle="La pose peut remplacer temporairement la couleur du pet."
                         />
                         <ColorField
                           label="Corps"
@@ -1128,7 +1128,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                             className="inherit-colors"
                             variant="ghost"
                             size="icon-sm"
-                            aria-label={t('Reprendre la couleur de l’avatar')}
+                            aria-label={t('Reprendre la couleur du pet')}
                             onClick={() => {
                               const next = { ...expression }
                               delete next.bodyColor
@@ -1176,7 +1176,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                         <PanelTitle
                           level={3}
                           title="Couleur des yeux"
-                          subtitle="La pose peut remplacer temporairement la couleur de l’avatar."
+                          subtitle="La pose peut remplacer temporairement la couleur du pet."
                         />
                         <ColorField
                           label="Yeux"
@@ -1188,7 +1188,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                             className="inherit-colors"
                             variant="ghost"
                             size="icon-sm"
-                            aria-label={t('Reprendre la couleur de l’avatar')}
+                            aria-label={t('Reprendre la couleur du pet')}
                             onClick={() => {
                               const next = { ...expression }
                               delete next.eyeColor
@@ -1712,7 +1712,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                 <ExportSection
                   value="photo"
                   title="Photo"
-                  subtitle="Capture une image statique de l’avatar."
+                  subtitle="Capture une image statique du pet."
                 >
                   <InspectorCard>
                     <PanelTitle
@@ -1732,7 +1732,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
 
                 <ExportSection
                   value="avatar"
-                  title="Exporter l’avatar"
+                  title="Exporter le pet"
                   subtitle="Télécharge un composant autonome avec les animations de ton choix."
                 >
                   <InspectorCard>
@@ -1744,7 +1744,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                         id={`export-avatar-${activeAvatar.id}`}
                       />
                       <div>
-                        <small>{t('Avatar sélectionné')}</small>
+                        <small>{t('Pet sélectionné')}</small>
                         <strong>{activeAvatar.name}</strong>
                       </div>
                     </div>
@@ -1860,7 +1860,7 @@ export function StudioInspector({ controller }: { controller: StudioController }
                 <ExportSection
                   value="project"
                   title="Projet du Studio"
-                  subtitle="Transfère tous les avatars, expressions et animations vers un autre navigateur."
+                  subtitle="Transfère tous les pets, expressions et animations vers un autre navigateur."
                 >
                   <div className="project-transfer-actions">
                     <Button variant="outline" type="button" onClick={downloadStudioProject}>
