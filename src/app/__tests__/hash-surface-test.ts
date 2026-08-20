@@ -1,4 +1,4 @@
-import { parseHashSurface, parseNavSurface, parsePetQuery } from '@/app/surface'
+import { parseHashSurface, parseNavSurface, parsePetQuery, photoPetHash } from '@/app/surface'
 
 describe('hash surfaces', () => {
   it('maps empty and root hashes to the Lab surface', () => {
@@ -37,5 +37,9 @@ describe('hash surfaces', () => {
     expect(parsePetQuery('#/studio?pet=wiipo')).toBe('wiipo')
     expect(parsePetQuery('#/photo')).toBeNull()
     expect(parsePetQuery('#/')).toBeNull()
+  })
+
+  it('builds photo pet hashes for navigation', () => {
+    expect(photoPetHash('radar')).toBe('#/photo?pet=radar')
   })
 })

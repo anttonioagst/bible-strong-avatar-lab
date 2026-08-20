@@ -1,7 +1,7 @@
 import { animate, useMotionValue, useMotionValueEvent, useReducedMotion } from 'motion/react'
 import { useEffect, useEffectEvent, useRef, useState } from 'react'
 
-import { parsePetQuery, studioPetHash } from '@/app/surface'
+import { parsePetQuery, photoPetHash, studioPetHash } from '@/app/surface'
 import { useStudioLanguage } from '@/i18n'
 
 import {
@@ -18,6 +18,7 @@ import {
   type ExportFormat,
   type Highlight,
   type Mode,
+  type PhotoTool,
   type PlaybackStatus,
   type Side,
   type SnapshotFormat,
@@ -90,7 +91,13 @@ import {
   generateJavaScriptAvatarPackage,
   generateReactAvatarPackage,
 } from '@/features/export/exporter'
+import { randomSnapshotPalette } from '@/features/export/snapshotPalette'
 import {
+  defaultSnapshotComposition,
+  normalizeSnapshotComposition,
+} from '@/features/export/snapshotComposition'
+import {
+  rasterizeSnapshotPng,
   serializeAvatarSnapshot,
   serializeMarkSnapshot,
   serializePixelSnapshot,
@@ -154,6 +161,12 @@ export function useStudioController() {
   const [snapshotColorTo, setSnapshotColorTo] = useState('#C9D5FF')
   const [snapshotSize, setSnapshotSize] = useState('1024')
   const [snapshotFormat, setSnapshotFormat] = useState<SnapshotFormat>('png')
+  const [snapshotComposition, setSnapshotComposition] = useState(() => ({
+    ...defaultSnapshotComposition,
+    cornerRadius: 18,
+  }))
+  const [photoTool, setPhotoTool] = useState<PhotoTool>('frame')
+  const [photoPanelSections, setPhotoPanelSections] = useState<PhotoTool[]>([])
   const [photoFlash, setPhotoFlash] = useState(0)
   const initialStatePlayback = initialDocument.playback
   const updateStudioLibrary = (library: typeof initialDocument.library) =>
@@ -473,6 +486,40 @@ export function useStudioController() {
     setActiveExpression(null)
     return renderedExpression
   }
+
+  const enterPhotoMode = () => {
+    freezeLivePreviewForManipulation()
+    setPhotoTool('frame')
+    setPhotoPanelSections([])
+  }
+
+  const selectPhotoPet = (petId: string) => {
+    window.location.hash = photoPetHash(petId).slice(1)
+    activateAvatar(petId)
+  }
+
+  const resetPhotoFraming = () => {
+    setSnapshotComposition(current => ({ ...current, x: 0, y: 0, scale: 1 }))
+  }
+
+  const resetPhotoSetup = () => {
+    updateImmediate({ ...defaultExpression })
+    resetPhotoFraming()
+  }
+
+  const shuffleSnapshotColors = () => {
+    if (snapshotBackground === 'transparent') return
+    const palette = randomSnapshotPalette(
+      snapshotBackground,
+      expression.bodyColor ?? activeAvatar.colors.body,
+      { colorFrom: snapshotColorFrom, colorTo: snapshotColorTo }
+    )
+    setSnapshotColorFrom(palette.colorFrom)
+    setSnapshotColorTo(palette.colorTo)
+  }
+
+  const updateSnapshotComposition = (patch: Partial<typeof snapshotComposition>) =>
+    setSnapshotComposition(current => normalizeSnapshotComposition({ ...current, ...patch }))
 
   const updateImmediate = (next: Expression, preservePlayback = false) => {
     if (!preservePlayback && statePlaying) pauseState()
@@ -1601,12 +1648,16 @@ export function useStudioController() {
     downloadBlob(blob, 'avatar-studio-project.json')
   }
   const currentSnapshotSvg = () => {
-    const markSvg = resolveAvatarMarkSvg(activeAvatar)
+    const markSvg = resolveAvatarMarkSvg(activeAvatar, {
+      background: false,
+      expression: canvasExpression,
+    })
     const options = {
       background: snapshotBackground,
       colorFrom: snapshotColorFrom,
       colorTo: snapshotColorTo,
       size: Number(snapshotSize),
+      composition: snapshotComposition,
     }
     if (markSvg) return serializeMarkSnapshot(activeAvatar.name, markSvg, options)
     return serializeAvatarSnapshot(
@@ -1629,6 +1680,11 @@ export function useStudioController() {
     canvas.height = size
     const context = canvas.getContext('2d')
     if (!context) return null
+    const composition = normalizeSnapshotComposition(snapshotComposition)
+    context.save()
+    context.beginPath()
+    context.roundRect(0, 0, size, size, (size * composition.cornerRadius) / 100)
+    context.clip()
     if (snapshotBackground === 'solid') {
       context.fillStyle = snapshotColorFrom
       context.fillRect(0, 0, size, size)
@@ -1681,7 +1737,13 @@ export function useStudioController() {
       renderStyle
     )
     context.imageSmoothingEnabled = false
-    context.drawImage(avatarCanvas, 0, 0, size, size)
+    context.translate(
+      size / 2 + (composition.x / 300) * size,
+      size / 2 + (composition.y / 300) * size
+    )
+    context.scale(composition.scale, composition.scale)
+    context.drawImage(avatarCanvas, -size / 2, -size / 2, size, size)
+    context.restore()
     return canvas
   }
   const downloadSnapshotSvg = () => {
@@ -1698,36 +1760,38 @@ export function useStudioController() {
       snapshotFileName(activeAvatar.name)
     )
   }
-  const downloadSnapshotPng = () => {
+  const downloadSnapshotPng = async () => {
     const pixelCanvas = createPixelSnapshotCanvas()
     if (pixelCanvas) {
-      pixelCanvas.toBlob(blob => {
-        if (blob) downloadBlob(blob, snapshotFileName(activeAvatar.name, 'png'))
-      }, 'image/png')
-      return
+      return new Promise<boolean>(resolve => {
+        pixelCanvas.toBlob(blob => {
+          if (blob) {
+            downloadBlob(blob, snapshotFileName(activeAvatar.name, 'png'))
+            resolve(true)
+          } else resolve(false)
+        }, 'image/png')
+      })
     }
     const size = Number(snapshotSize)
-    const source = new Blob([currentSnapshotSvg()], { type: 'image/svg+xml;charset=utf-8' })
-    const sourceUrl = URL.createObjectURL(source)
-    const image = new Image()
-    image.onload = () => {
-      const canvas = document.createElement('canvas')
-      canvas.width = size
-      canvas.height = size
-      canvas.getContext('2d')?.drawImage(image, 0, 0, size, size)
-      URL.revokeObjectURL(sourceUrl)
-      canvas.toBlob(blob => {
-        if (blob) downloadBlob(blob, snapshotFileName(activeAvatar.name, 'png'))
-      }, 'image/png')
+    const svg = currentSnapshotSvg()
+    const blob = await rasterizeSnapshotPng(svg, size, snapshotBackground)
+    if (blob) {
+      downloadBlob(blob, snapshotFileName(activeAvatar.name, 'png'))
+      return true
     }
-    image.onerror = () => URL.revokeObjectURL(sourceUrl)
-    image.src = sourceUrl
+    downloadSnapshotSvg()
+    return false
   }
   const takePicture = () => {
-    setPhotoFlash(current => current + 1)
     requestAnimationFrame(() => {
-      if (snapshotFormat === 'png') downloadSnapshotPng()
-      else downloadSnapshotSvg()
+      if (snapshotFormat === 'png') {
+        void downloadSnapshotPng().then(success => {
+          if (success) setPhotoFlash(current => current + 1)
+        })
+      } else {
+        setPhotoFlash(current => current + 1)
+        downloadSnapshotSvg()
+      }
     })
   }
   const prepareStudioProjectImport = (file: File | undefined) => {
@@ -1907,6 +1971,7 @@ export function useStudioController() {
     duplicateState,
     editing,
     editorPageOpen,
+    enterPhotoMode,
     exportAnimationIdSet,
     exportFormat,
     expression,
@@ -1930,6 +1995,8 @@ export function useStudioController() {
     pendingProjectImport,
     persistEditedEyeExpression,
     photoFlash,
+    photoPanelSections,
+    photoTool,
     playbackStatus,
     playbackVisual,
     prepareStudioProjectImport,
@@ -1961,6 +2028,9 @@ export function useStudioController() {
     setBlobSeedDraft,
     setCreateBlobOpen,
     setCreateIpOpen,
+    resetPhotoFraming,
+    resetPhotoSetup,
+    selectPhotoPet,
     setDeleteAvatarOpen,
     setDeleteExpressionOpen,
     setDeleteSequenceOpen,
@@ -1976,9 +2046,12 @@ export function useStudioController() {
     setLinked,
     setMode,
     setPendingProjectImport,
+    setPhotoPanelSections,
+    setPhotoTool,
     setSelectedEyeSide,
     setSelectedSequenceStepId,
     setSequenceEditing,
+    setSnapshotComposition,
     setSnapshotBackground,
     setSnapshotColorFrom,
     setSnapshotColorTo,
@@ -1987,9 +2060,11 @@ export function useStudioController() {
     setSpringSpeed,
     setStatePlayerExpanded,
     showWire,
+    shuffleSnapshotColors,
     snapshotBackground,
     snapshotColorFrom,
     snapshotColorTo,
+    snapshotComposition,
     snapshotFormat,
     snapshotSize,
     springSpeed,
@@ -2005,6 +2080,7 @@ export function useStudioController() {
     toggleExportAnimation,
     toggleStatePlayback,
     transitionToExpression,
+    updateSnapshotComposition,
     updateAvatarColors,
     updateAvatarProjection,
     updateAvatarRenderStyle,

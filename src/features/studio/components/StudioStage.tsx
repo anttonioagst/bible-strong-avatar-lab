@@ -2,6 +2,7 @@ import { Camera, Settings2 } from 'lucide-react'
 import { motion } from 'motion/react'
 import { type CSSProperties } from 'react'
 
+import { photoPetHash } from '@/app/surface'
 import { Button } from '@/components/ui/button'
 
 import { AvatarMarkPreview } from '@/features/avatar/components/AvatarMarkPreview'
@@ -44,7 +45,6 @@ export function StudioStage({ controller }: { controller: StudioController }) {
     showWire,
     surface,
     t,
-    takePicture,
     transitionToExpression,
     updateHighlight,
     updateImmediate,
@@ -126,10 +126,11 @@ export function StudioStage({ controller }: { controller: StudioController }) {
       )}
       <div className="photo-capture-bar">
         <Button
+          nativeButton={false}
           className="photo-capture-button"
           type="button"
-          aria-label={t('Prendre une photo')}
-          onClick={takePicture}
+          aria-label={t('Ouvrir Photo')}
+          render={<a href={photoPetHash(activeAvatar.id)} aria-label={t('Ouvrir Photo')} />}
         >
           <Camera />
           <span className="photo-capture-label">{t('Prendre une photo')}</span>
@@ -139,12 +140,7 @@ export function StudioStage({ controller }: { controller: StudioController }) {
           className="photo-settings-button"
           variant="secondary"
           size="sm"
-          render={
-            <a
-              href={`#/photo?pet=${encodeURIComponent(activeAvatar.id)}`}
-              aria-label={t('Ouvrir Photo')}
-            />
-          }
+          render={<a href={photoPetHash(activeAvatar.id)} aria-label={t('Ouvrir Photo')} />}
         >
           <Settings2 />
           <span className="photo-settings-label">{t('Photo')}</span>

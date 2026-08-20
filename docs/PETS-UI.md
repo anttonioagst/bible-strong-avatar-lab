@@ -206,15 +206,15 @@ phase. Do not treat this addendum as permission to restyle the whole app.
 
 Locked Photo tokens and rules live in [`PETS-PHOTO.md`](./PETS-PHOTO.md):
 
-| Token | Value |
-| ----- | ----- |
-| canvas | `#0A0A0A` |
-| canvas-soft | `#1A1C20` |
-| canvas-card | `#191919` |
-| hairline | `#212327` |
-| pill-border | `rgba(255,255,255,0.25)` |
-| ink / body / mute | `#FFFFFF` / `#DADBDF` / `#7D8187` |
-| CTA | white filled pill — **Capture only** |
+| Token             | Value                                |
+| ----------------- | ------------------------------------ |
+| canvas            | `#0A0A0A`                            |
+| canvas-soft       | `#1A1C20`                            |
+| canvas-card       | `#191919`                            |
+| hairline          | `#212327`                            |
+| pill-border       | `rgba(255,255,255,0.25)`             |
+| ink / body / mute | `#FFFFFF` / `#DADBDF` / `#7D8187`    |
+| CTA               | white filled pill — **Capture only** |
 
 Geist + Geist Mono, weight 400, radius pill 9999 / card 8, press 0.97, no
 box-shadow, no hover lift. Shared `SiteHeader` on Photo uses

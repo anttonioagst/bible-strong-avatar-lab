@@ -1,5 +1,11 @@
 import type { AvatarColors } from '../avatar/avatars'
 import type { RenderedScene } from '../rendering/renderedScene'
+import {
+  defaultSnapshotComposition,
+  normalizeSnapshotComposition,
+  snapshotCornerRadius,
+  type SnapshotComposition,
+} from './snapshotComposition'
 
 export type SnapshotBackground = 'transparent' | 'solid' | 'linear' | 'radial'
 
@@ -8,6 +14,7 @@ export type SnapshotOptions = {
   colorFrom: string
   colorTo: string
   size: number
+  composition?: SnapshotComposition
 }
 
 const escapeXml = (value: string) =>
@@ -51,9 +58,18 @@ export const serializeAvatarSnapshot = (
   colors: AvatarColors,
   options: SnapshotOptions
 ) => {
+  const composition = normalizeSnapshotComposition(
+    options.composition ?? defaultSnapshotComposition
+  )
   const headPath = scene.headPath.get()
-  const backPaths = scene.backPaths.map(item => item.get()).filter(Boolean)
-  const frontPaths = scene.frontPaths.map(item => item.get()).filter(Boolean)
+  const backPaths = scene.backPaths.flatMap(item => {
+    const value = item.get()
+    return value ? [value] : []
+  })
+  const frontPaths = scene.frontPaths.flatMap(item => {
+    const value = item.get()
+    return value ? [value] : []
+  })
   const offsetX = scene.offsetX.get()
   const offsetY = scene.offsetY.get()
   const body = [
@@ -65,9 +81,11 @@ export const serializeAvatarSnapshot = (
 
   return `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-150 -150 300 300" width="${options.size}" height="${options.size}" role="img" aria-label="${escapeXml(name)}">
-  <defs>${gradientMarkup(options)}<clipPath id="snapshot-head-clip"><path d="${escapeXml(headPath)}"/></clipPath></defs>
-  ${backgroundMarkup(options)}
-  <g transform="translate(${offsetX} ${offsetY})">${body}</g>
+  <defs>${gradientMarkup(options)}<clipPath id="snapshot-frame-clip"><rect x="-150" y="-150" width="300" height="300" rx="${snapshotCornerRadius(composition.cornerRadius)}"/></clipPath><clipPath id="snapshot-head-clip"><path d="${escapeXml(headPath)}"/></clipPath></defs>
+  <g clip-path="url(#snapshot-frame-clip)">
+    ${backgroundMarkup(options)}
+    <g transform="translate(${composition.x} ${composition.y}) scale(${composition.scale})"><g transform="translate(${offsetX} ${offsetY})">${body}</g></g>
+  </g>
 </svg>`
 }
 
@@ -78,28 +96,32 @@ export const serializePixelSnapshot = (name: string, imageDataUrl: string, size:
 </svg>`
 
 export const serializeMarkSnapshot = (name: string, markSvg: string, options: SnapshotOptions) => {
-  const inner = markSvg.replace(/<\?xml[\s\S]*?\?>/i, '').trim()
-  const labeled = inner.replace(/<svg\b([^>]*)>/i, (_match, attributes: string) => {
-    const cleaned = String(attributes)
-      .replace(/\swidth="[^"]*"/i, '')
-      .replace(/\sheight="[^"]*"/i, '')
-      .replace(/\saria-label="[^"]*"/i, '')
-    return `<svg${cleaned} width="${options.size}" height="${options.size}" role="img" aria-label="${escapeXml(name)}">`
-  })
-  if (options.background === 'transparent') {
-    return `<?xml version="1.0" encoding="UTF-8"?>\n${labeled}`
-  }
-  const fill =
-    options.background === 'solid'
-      ? options.colorFrom
-      : options.background === 'linear'
-        ? 'url(#snapshot-linear)'
-        : 'url(#snapshot-radial)'
-  const framed = labeled.replace(
-    /(<svg\b[^>]*>)/i,
-    `$1<defs>${gradientMarkup(options)}</defs><rect width="100%" height="100%" fill="${fill}"/>`
+  const composition = normalizeSnapshotComposition(
+    options.composition ?? defaultSnapshotComposition
   )
-  return `<?xml version="1.0" encoding="UTF-8"?>\n${framed}`
+  const inner = markSvg.replace(/<\?xml[\s\S]*?\?>/i, '').trim()
+  const svgOpenMatch = inner.match(/<svg\b([^>]*)>/i)
+  if (!svgOpenMatch) {
+    return `<?xml version="1.0" encoding="UTF-8"?>\n${inner}`
+  }
+  const svgAttributes = svgOpenMatch[1] ?? ''
+  const viewBoxMatch = svgAttributes.match(/viewBox="([^"]+)"/i)
+  const viewBox = viewBoxMatch?.[1] ?? '0 0 100 100'
+  const innerBody = inner
+    .replace(/<svg\b[^>]*>/i, '')
+    .replace(/<\/svg>\s*$/i, '')
+    .trim()
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-150 -150 300 300" width="${options.size}" height="${options.size}" role="img" aria-label="${escapeXml(name)}">
+  <defs>${gradientMarkup(options)}<clipPath id="snapshot-frame-clip"><rect x="-150" y="-150" width="300" height="300" rx="${snapshotCornerRadius(composition.cornerRadius)}"/></clipPath></defs>
+  <g clip-path="url(#snapshot-frame-clip)">
+    ${backgroundMarkup(options)}
+    <g transform="translate(${composition.x} ${composition.y}) scale(${composition.scale})">
+      <svg x="-150" y="-150" width="300" height="300" viewBox="${viewBox}" preserveAspectRatio="xMidYMid meet">${innerBody}</svg>
+    </g>
+  </g>
+</svg>`
 }
 
 export const snapshotFileName = (name: string, extension: 'svg' | 'png' = 'svg') => {
@@ -112,4 +134,44 @@ export const snapshotFileName = (name: string, extension: 'svg' | 'png' = 'svg')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-|-$/g, '') || 'avatar'
   return `${slug}-snapshot.${extension}`
+}
+
+export const rasterizeSnapshotPng = (
+  svg: string,
+  size: number,
+  background: SnapshotBackground
+): Promise<Blob | null> =>
+  new Promise(resolve => {
+    const source = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' })
+    const sourceUrl = URL.createObjectURL(source)
+    const image = new Image()
+    image.onload = () => {
+      const canvas = document.createElement('canvas')
+      canvas.width = size
+      canvas.height = size
+      const context = canvas.getContext('2d', { alpha: true })
+      if (!context) {
+        URL.revokeObjectURL(sourceUrl)
+        resolve(null)
+        return
+      }
+      prepareSnapshotPngCanvas(context, size, background)
+      context.drawImage(image, 0, 0, size, size)
+      URL.revokeObjectURL(sourceUrl)
+      canvas.toBlob(blob => resolve(blob), 'image/png')
+    }
+    image.onerror = () => {
+      URL.revokeObjectURL(sourceUrl)
+      resolve(null)
+    }
+    image.src = sourceUrl
+  })
+
+export const prepareSnapshotPngCanvas = (
+  context: CanvasRenderingContext2D,
+  size: number,
+  background: SnapshotBackground
+) => {
+  context.clearRect(0, 0, size, size)
+  if (background !== 'transparent') return
 }

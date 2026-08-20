@@ -20,11 +20,11 @@ fixes is not done.
 Copy Photo pieces from **this commit only**, not from a later `main` and
 not from a redesign:
 
-| | |
-| --- | --- |
-| Repo | `https://github.com/smontlouis/bible-strong-avatar-lab` |
-| Commit | `fc7445002a2798648c5092101e0372c7731bc35c` |
-| Short | `fc7445002a` |
+|         |                                                          |
+| ------- | -------------------------------------------------------- |
+| Repo    | `https://github.com/smontlouis/bible-strong-avatar-lab`  |
+| Commit  | `fc7445002a2798648c5092101e0372c7731bc35c`               |
+| Short   | `fc7445002a`                                             |
 | Message | `feat(studio): add interactive photo mode` (18 Aug 2026) |
 
 Raw: `https://raw.githubusercontent.com/smontlouis/bible-strong-avatar-lab/fc7445002a2798648c5092101e0372c7731bc35c/<path>`
@@ -204,15 +204,15 @@ Port the **files and math**, not the Studio-mode IA.
 
 **Replace / add these files whole** (blob SHA at `fc7445002a`):
 
-| File | Blob SHA | Copy rule |
-| ---- | --- | --------- |
-| `src/features/studio/components/PhotoStageFrame.tsx` | `2130fdd88548c3aab34d1357e09e71fed06d38df` | **Wholesale.** Same path. |
-| `src/features/export/snapshotComposition.ts` | `6b3ea4ea7f69e5520b42466a46e2264c411eac08` | **Wholesale.** |
-| `src/features/export/snapshotPalette.ts` | `6681b78dba07b0b685af39f3b79edab54451ed44` | **Wholesale.** |
-| `src/features/export/snapshotExporter.ts` | `16f5e732753350aad9ddf8302798db3d833b362f` | **Replace ours** with theirs, then **append** `serializeMarkSnapshot` (they do not have Mark). Do not rewrite their classic serialize. |
-| `src/features/export/__tests__/snapshot-composition-test.ts` | `bc4506423fe07f4a5c574248d35ac8a83a109104` | **Wholesale.** |
-| `src/features/export/__tests__/snapshot-palette-test.ts` | `8ae388fc7f96c816c254c52213315f18e802f118` | **Wholesale.** |
-| `src/features/export/__tests__/snapshot-exporter-test.ts` | `975bc3ee3ac9041affd631902a33d26e597275b5` | **Align with theirs** (includes framing clip + `translate(55 65) scale(1.3)`). Then **add** our Mark/blob cases. Their transparent assert is `not.toContain('width="300" height="300" fill=')` — keep that. |
+| File                                                         | Blob SHA                                   | Copy rule                                                                                                                                                                                                   |
+| ------------------------------------------------------------ | ------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/features/studio/components/PhotoStageFrame.tsx`         | `2130fdd88548c3aab34d1357e09e71fed06d38df` | **Wholesale.** Same path.                                                                                                                                                                                   |
+| `src/features/export/snapshotComposition.ts`                 | `6b3ea4ea7f69e5520b42466a46e2264c411eac08` | **Wholesale.**                                                                                                                                                                                              |
+| `src/features/export/snapshotPalette.ts`                     | `6681b78dba07b0b685af39f3b79edab54451ed44` | **Wholesale.**                                                                                                                                                                                              |
+| `src/features/export/snapshotExporter.ts`                    | `16f5e732753350aad9ddf8302798db3d833b362f` | **Replace ours** with theirs, then **append** `serializeMarkSnapshot` (they do not have Mark). Do not rewrite their classic serialize.                                                                      |
+| `src/features/export/__tests__/snapshot-composition-test.ts` | `bc4506423fe07f4a5c574248d35ac8a83a109104` | **Wholesale.**                                                                                                                                                                                              |
+| `src/features/export/__tests__/snapshot-palette-test.ts`     | `8ae388fc7f96c816c254c52213315f18e802f118` | **Wholesale.**                                                                                                                                                                                              |
+| `src/features/export/__tests__/snapshot-exporter-test.ts`    | `975bc3ee3ac9041affd631902a33d26e597275b5` | **Align with theirs** (includes framing clip + `translate(55 65) scale(1.3)`). Then **add** our Mark/blob cases. Their transparent assert is `not.toContain('width="300" height="300" fill=')` — keep that. |
 
 ### Capture math (do not redesign)
 
@@ -437,17 +437,17 @@ Antonio’s personal DESIGN.md, applied here. These **override** PETS-UI
 habitat / parchment **on `#/photo` only**. Not Estel. Not Glide. Not Wiipo
 coral chrome.
 
-| Token | Value | Use |
-| ----- | ----- | --- |
-| canvas | `#0A0A0A` | `.photo-root`, stage well |
-| canvas-soft | `#1A1C20` | elevated chrome, checkerboard pair |
-| canvas-card | `#191919` | dock / tool panels |
-| hairline | `#212327` | rules |
-| pill-border | `rgba(255,255,255,0.25)` | outline pills, frame outline |
-| ink | `#FFFFFF` | titles, Capture label |
-| body | `#DADBDF` | controls |
-| mute | `#7D8187` | meta (`512 × 512 · PNG`) |
-| CTA | `#FFFFFF` fill, `#0A0A0A` label | **one** filled control: Capture |
+| Token       | Value                           | Use                                |
+| ----------- | ------------------------------- | ---------------------------------- |
+| canvas      | `#0A0A0A`                       | `.photo-root`, stage well          |
+| canvas-soft | `#1A1C20`                       | elevated chrome, checkerboard pair |
+| canvas-card | `#191919`                       | dock / tool panels                 |
+| hairline    | `#212327`                       | rules                              |
+| pill-border | `rgba(255,255,255,0.25)`        | outline pills, frame outline       |
+| ink         | `#FFFFFF`                       | titles, Capture label              |
+| body        | `#DADBDF`                       | controls                           |
+| mute        | `#7D8187`                       | meta (`512 × 512 · PNG`)           |
+| CTA         | `#FFFFFF` fill, `#0A0A0A` label | **one** filled control: Capture    |
 
 Rules:
 
@@ -630,19 +630,19 @@ Fetch every copy from commit `fc7445002a`, not from `main`.
 
 ## What does not change
 
-| Lock | Meaning |
-| ---- | ------- |
-| Persistence key | `bible-strong-avatar-studio-v2` |
-| Schema | Additive only. Composition is **not** persisted. |
-| Engine | `geometry.ts` + generated engine stay |
-| AGPL | README, LICENSE, Lab footer |
-| `radar.html` | Embed contract |
-| URLs | Hash only. `base: './'`. No react-router |
-| i18n | EN / FR / zh-CN. No PT-BR |
-| UI kit | `src/components/ui/`. No `useMemo` / `useCallback` / `memo` |
-| P1 IA | `#/photo` stays first-class. Studio modes stay Pets / Pose / Expressions / Animations / Export |
-| Lab / Studio look | Habitat / parchment until a later phase |
-| Create paths | Blob / Mark already exist. Photo only frames them |
+| Lock              | Meaning                                                                                        |
+| ----------------- | ---------------------------------------------------------------------------------------------- |
+| Persistence key   | `bible-strong-avatar-studio-v2`                                                                |
+| Schema            | Additive only. Composition is **not** persisted.                                               |
+| Engine            | `geometry.ts` + generated engine stay                                                          |
+| AGPL              | README, LICENSE, Lab footer                                                                    |
+| `radar.html`      | Embed contract                                                                                 |
+| URLs              | Hash only. `base: './'`. No react-router                                                       |
+| i18n              | EN / FR / zh-CN. No PT-BR                                                                      |
+| UI kit            | `src/components/ui/`. No `useMemo` / `useCallback` / `memo`                                    |
+| P1 IA             | `#/photo` stays first-class. Studio modes stay Pets / Pose / Expressions / Animations / Export |
+| Lab / Studio look | Habitat / parchment until a later phase                                                        |
+| Create paths      | Blob / Mark already exist. Photo only frames them                                              |
 
 ---
 

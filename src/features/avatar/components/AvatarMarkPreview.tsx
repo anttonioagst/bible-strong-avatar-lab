@@ -12,23 +12,26 @@ import type { Expression } from '@/features/avatar/geometry'
 export function AvatarMarkPreview({
   avatar,
   animate = false,
+  background = 'squircle',
   expression,
   className = 'avatar-preview',
 }: {
   avatar: StudioAvatar
   animate?: false | 'hover' | 'always'
+  background?: 'squircle' | false
   expression?: Expression
   className?: string
 }) {
   if (avatar.styleFamily === 'blob') {
     const name = blobatarNameForAvatar(avatar)
     const expressionPose = blobatarExpressionForStudio(expression)
+    const blobBackground = background === false ? false : 'squircle'
     if (animate) {
       return (
         <Blobatar
           className={className}
           name={name}
-          background="squircle"
+          background={blobBackground}
           animate={animate}
           expression={expressionPose}
           title={avatar.name}
@@ -39,7 +42,7 @@ export function AvatarMarkPreview({
       <Blobatar
         className={className}
         name={name}
-        background="squircle"
+        background={blobBackground}
         expression={expressionPose}
         title={avatar.name}
       />
