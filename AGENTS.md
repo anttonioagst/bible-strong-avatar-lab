@@ -38,7 +38,8 @@ pnpm check
 The public product is **AntX Pets** (Lab + Studio + Photo + `radar.html`), not a renamed Studio header. Before changing hosted IA, chrome, Photo Mode, or Blob/Mark create paths, read:
 
 - [`docs/PETS-SITE.md`](./docs/PETS-SITE.md) — pages, IA, visitor flow
-- [`docs/PETS-UI.md`](./docs/PETS-UI.md) — tokens and anatomy
+- [`docs/PETS-UI.md`](./docs/PETS-UI.md) — tokens and anatomy (Lab / Studio)
+- [`docs/PETS-PHOTO.md`](./docs/PETS-PHOTO.md) — Photo v2 law (`#/photo`)
 - [`docs/PETS-REFORM.md`](./docs/PETS-REFORM.md) — one phase per PR; allowlists are law
 
 Do not invent a backend, a second app tree, or a new document schema. Engine and AGPL attribution stay.
