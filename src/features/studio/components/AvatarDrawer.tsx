@@ -10,18 +10,23 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AvatarThumb } from '@/features/avatar/components/AvatarThumb'
-import { avatarStyleFamilies, type AvatarStyleFamily } from '@/features/avatar/avatarStyle'
+import { type AvatarStyleFamily } from '@/features/avatar/avatarStyle'
+import { LAB_SHELF_PRIORITY_IDS } from '@/features/studio/studioBrand'
 import type { StudioController } from '@/features/studio/useStudioController'
 
 const familyLabel = (family: AvatarStyleFamily) =>
   family === 'classic' ? 'Classic' : family === 'blob' ? 'Blob' : 'Mark'
 
-type StyleFilter = 'all' | AvatarStyleFamily
-
-const isStyleFilter = (value: string | null): value is StyleFilter =>
-  value === 'all' || value === 'classic' || value === 'blob' || value === 'ip-logo'
+const sortShelfPets = <T extends { id: string }>(pets: T[]): T[] => {
+  const priority = new Map<string, number>(LAB_SHELF_PRIORITY_IDS.map((id, index) => [id, index]))
+  return [...pets].sort((left, right) => {
+    const leftRank = priority.get(left.id) ?? Number.MAX_SAFE_INTEGER
+    const rightRank = priority.get(right.id) ?? Number.MAX_SAFE_INTEGER
+    if (leftRank !== rightRank) return leftRank - rightRank
+    return left.id.localeCompare(right.id)
+  })
+}
 
 export function AvatarPage({ controller }: { controller: StudioController }) {
   const {
@@ -46,165 +51,159 @@ export function AvatarPage({ controller }: { controller: StudioController }) {
     setFocusAvatarName,
     t,
   } = controller
-  const [styleFilter, setStyleFilter] = useState<StyleFilter>('all')
   const [hoveredId, setHoveredId] = useState<string | null>(null)
-  const visibleAvatars =
-    styleFilter === 'all' ? avatars : avatars.filter(avatar => avatar.styleFamily === styleFilter)
+  const shelfPets = sortShelfPets(avatars)
 
   return (
     <div className="panel-stack avatar-page">
-      <section className="avatar-shelf" aria-label={t('Choisir un pet')}>
-        <div className="avatar-shelf-heading">
-          <strong>{t('Famille')}</strong>
-          <span>{visibleAvatars.length}</span>
-        </div>
-        <Tabs
-          className="style-family-tabs"
-          value={styleFilter}
-          onValueChange={next => {
-            if (isStyleFilter(next)) setStyleFilter(next)
-          }}
-        >
-          <TabsList aria-label={t('Famille')} className="style-family-picker">
-            <TabsTrigger value="all">{t('Toutes')}</TabsTrigger>
-            {avatarStyleFamilies.map(family => (
-              <TabsTrigger key={family} value={family}>
-                {t(familyLabel(family))}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        <p className="style-family-hint">{t('Survolez une carte pour lire l’animation.')}</p>
-        {visibleAvatars.length === 0 && (
+      <section className="avatar-shelf pet-shelf" aria-label={t('Choisir un pet')}>
+        <header className="pet-shelf-header">
+          <div>
+            <h2 className="pet-shelf-title">{t('Vos pets')}</h2>
+            <p className="pet-shelf-lead">{t('Survolez une carte pour lire l’animation.')}</p>
+          </div>
+          <span className="pet-shelf-count">{shelfPets.length}</span>
+        </header>
+        {shelfPets.length === 0 ? (
           <div className="studio-empty-state" role="status">
-            <p>{t('Aucun pet dans cette famille.')}</p>
+            <p>{t('Aucun pet pour l’instant.')}</p>
             <p>{t('Créez un pet Classic, Blob ou Mark.')}</p>
           </div>
-        )}
-        <div className="avatar-grid">
-          {visibleAvatars.map(avatar => (
-            <motion.div
-              className="avatar-sort-item"
-              data-dragging={draggingAvatarId === avatar.id || undefined}
-              key={avatar.id}
-              layout="position"
-              animate={{
-                opacity: draggingAvatarId === avatar.id ? 0.28 : 1,
-                scale: draggingAvatarId === avatar.id ? 0.96 : 1,
-              }}
-              transition={
-                reduceMotion
-                  ? { duration: 0 }
-                  : { type: 'spring', stiffness: 520, damping: 42, mass: 0.7 }
-              }
-            >
-              <ContextMenu>
-                <ContextMenuTrigger
-                  render={
-                    <Button
-                      className="avatar-card"
-                      variant="outline"
-                      aria-pressed={activeAvatarId === avatar.id}
-                      type="button"
-                      draggable
-                      onPointerEnter={() => setHoveredId(avatar.id)}
-                      onPointerLeave={() =>
-                        setHoveredId(current => (current === avatar.id ? null : current))
-                      }
-                      onDragStart={event => {
-                        avatarDragOrigin.current = avatarsRef.current
-                        avatarDragPreview.current = avatarsRef.current
-                        draggedAvatarId.current = avatar.id
-                        setDraggingAvatarId(avatar.id)
-                        event.dataTransfer.effectAllowed = 'move'
-                      }}
-                      onDragEnter={() => previewAvatarMove(avatar.id)}
-                      onDragOver={event => {
-                        event.preventDefault()
-                        event.dataTransfer.dropEffect = 'move'
-                      }}
-                      onDrop={event => {
-                        event.preventDefault()
-                        commitAvatarMove(avatar.id)
-                      }}
-                      onDragEnd={cancelAvatarMove}
-                      onClick={() => activateAvatar(avatar.id, false, true)}
-                      onDoubleClick={() => {
+        ) : (
+          <div className="avatar-grid pet-shelf-grid">
+            {shelfPets.map(avatar => (
+              <motion.div
+                className="avatar-sort-item pet-shelf-item"
+                data-dragging={draggingAvatarId === avatar.id || undefined}
+                key={avatar.id}
+                layout="position"
+                animate={{
+                  opacity: draggingAvatarId === avatar.id ? 0.28 : 1,
+                  scale: draggingAvatarId === avatar.id ? 0.96 : 1,
+                }}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : { type: 'spring', stiffness: 520, damping: 42, mass: 0.7 }
+                }
+              >
+                <ContextMenu>
+                  <ContextMenuTrigger
+                    render={
+                      <Button
+                        className="avatar-card pet-shelf-card"
+                        variant="outline"
+                        aria-pressed={activeAvatarId === avatar.id}
+                        type="button"
+                        draggable
+                        onPointerEnter={() => setHoveredId(avatar.id)}
+                        onPointerLeave={() =>
+                          setHoveredId(current => (current === avatar.id ? null : current))
+                        }
+                        onDragStart={event => {
+                          avatarDragOrigin.current = avatarsRef.current
+                          avatarDragPreview.current = avatarsRef.current
+                          draggedAvatarId.current = avatar.id
+                          setDraggingAvatarId(avatar.id)
+                          event.dataTransfer.effectAllowed = 'move'
+                        }}
+                        onDragEnter={() => previewAvatarMove(avatar.id)}
+                        onDragOver={event => {
+                          event.preventDefault()
+                          event.dataTransfer.dropEffect = 'move'
+                        }}
+                        onDrop={event => {
+                          event.preventDefault()
+                          commitAvatarMove(avatar.id)
+                        }}
+                        onDragEnd={cancelAvatarMove}
+                        onClick={() => activateAvatar(avatar.id, false, true)}
+                        onDoubleClick={() => {
+                          setFocusAvatarName(false)
+                          activateAvatar(avatar.id, true)
+                        }}
+                      >
+                        <span className="pet-shelf-thumb">
+                          <AvatarThumb
+                            avatar={avatar}
+                            baseBehavior={baseBehavior}
+                            expression={activeAvatarId === avatar.id ? expression : undefined}
+                            hoverPlaying={hoveredId === avatar.id}
+                            reduceMotion={Boolean(reduceMotion)}
+                            id={`avatar-${avatar.id}`}
+                          />
+                        </span>
+                        <span className="pet-shelf-meta">
+                          <strong className="pet-shelf-name">{avatar.name}</strong>
+                          <small className="pet-shelf-family">
+                            {t(familyLabel(avatar.styleFamily))}
+                          </small>
+                        </span>
+                      </Button>
+                    }
+                  />
+                  <ContextMenuContent>
+                    <ContextMenuItem
+                      onClick={() => {
                         setFocusAvatarName(false)
                         activateAvatar(avatar.id, true)
                       }}
                     >
-                      <AvatarThumb
-                        avatar={avatar}
-                        baseBehavior={baseBehavior}
-                        expression={activeAvatarId === avatar.id ? expression : undefined}
-                        hoverPlaying={hoveredId === avatar.id}
-                        reduceMotion={Boolean(reduceMotion)}
-                        id={`avatar-${avatar.id}`}
-                      />
-                      <span>
-                        {avatar.name}
-                        <small>{t(familyLabel(avatar.styleFamily))}</small>
-                      </span>
-                    </Button>
-                  }
-                />
-                <ContextMenuContent>
-                  <ContextMenuItem
-                    onClick={() => {
-                      setFocusAvatarName(false)
-                      activateAvatar(avatar.id, true)
-                    }}
-                  >
-                    <Pencil /> {t('Modifier')}
-                  </ContextMenuItem>
-                  <ContextMenuItem onClick={() => duplicateAvatar(avatar)}>
-                    <Copy /> {t('Dupliquer')}
-                  </ContextMenuItem>
-                  <ContextMenuSeparator />
-                  <ContextMenuItem
-                    variant="destructive"
-                    disabled={avatars.length <= 1}
-                    onClick={() => {
-                      activateAvatar(avatar.id, false, true)
-                      setDeleteAvatarOpen(true)
-                    }}
-                  >
-                    <Trash2 /> {t('Supprimer')}
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
-            </motion.div>
-          ))}
-          <Button
-            variant="outline"
-            className="avatar-add creation-card"
-            onClick={createNewAvatar}
-            aria-label={t('Nouveau pet Classic')}
-          >
-            <Plus />
-            <span>{t('Classic')}</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="avatar-add creation-card"
-            nativeButton={false}
-            render={<a href="#/create/blob" />}
-            aria-label={t('Nouveau pet Blob')}
-          >
-            <Plus />
-            <span>{t('Blob')}</span>
-          </Button>
-          <Button
-            variant="outline"
-            className="avatar-add creation-card"
-            nativeButton={false}
-            render={<a href="#/create/ip" />}
-            aria-label={t('Nouveau pet Mark')}
-          >
-            <Plus />
-            <span>{t('Mark')}</span>
-          </Button>
+                      <Pencil /> {t('Modifier')}
+                    </ContextMenuItem>
+                    <ContextMenuItem onClick={() => duplicateAvatar(avatar)}>
+                      <Copy /> {t('Dupliquer')}
+                    </ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem
+                      variant="destructive"
+                      disabled={avatars.length <= 1}
+                      onClick={() => {
+                        activateAvatar(avatar.id, false, true)
+                        setDeleteAvatarOpen(true)
+                      }}
+                    >
+                      <Trash2 /> {t('Supprimer')}
+                    </ContextMenuItem>
+                  </ContextMenuContent>
+                </ContextMenu>
+              </motion.div>
+            ))}
+          </div>
+        )}
+        <div className="pet-shelf-create">
+          <p className="pet-shelf-create-label">{t('Ajouter un pet')}</p>
+          <div className="pet-shelf-create-grid">
+            <Button
+              variant="outline"
+              className="avatar-add creation-card pet-create-card"
+              onClick={createNewAvatar}
+              aria-label={t('Nouveau pet Classic')}
+            >
+              <Plus />
+              <span>{t('Classic')}</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="avatar-add creation-card pet-create-card"
+              nativeButton={false}
+              render={<a href="#/create/blob" />}
+              aria-label={t('Nouveau pet Blob')}
+            >
+              <Plus />
+              <span>{t('Blob')}</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="avatar-add creation-card pet-create-card"
+              nativeButton={false}
+              render={<a href="#/create/ip" />}
+              aria-label={t('Nouveau pet Mark')}
+            >
+              <Plus />
+              <span>{t('Mark')}</span>
+            </Button>
+          </div>
         </div>
       </section>
     </div>

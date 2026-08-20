@@ -11,7 +11,7 @@ const MODE_ITEMS = [
   ['manual', 'Pose', Move3D],
   ['expressions', 'Expressions', Smile],
   ['states', 'Animations', Play],
-  ['export', 'Exporter', Download],
+  ['export', 'Export', Download],
 ] as const
 
 const isMode = (value: string | null): value is Mode =>

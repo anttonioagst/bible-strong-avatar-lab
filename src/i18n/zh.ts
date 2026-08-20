@@ -38,6 +38,7 @@ export const chinese: Record<string, string> = {
   Corps: '身体',
   Rendu: '渲染',
   'Choisis la finition visuelle propre à cet avatar.': '选择此头像专属的视觉效果。',
+  'Choisis la finition visuelle propre à ce pet.': '选择此宠物专属的视觉效果。',
   'Type de rendu': '渲染类型',
   'Pixel utilise une palette franche, sans lissage ni couleur intermédiaire.':
     '像素渲染使用纯色调色板，不进行平滑处理，也不产生中间色。',
@@ -80,9 +81,11 @@ export const chinese: Record<string, string> = {
   Exporter: '导出',
   Export: '导出',
   'Exporter l’avatar': '导出头像',
+  'Exporter le pet': '导出宠物',
   'Télécharge un composant autonome avec les animations de ton choix.':
     '下载包含所选动画的独立组件。',
   'Avatar sélectionné': '已选头像',
+  'Pet sélectionné': '已选宠物',
   Format: '格式',
   'Choisis l’intégration correspondant à ton projet.': '选择适合项目的集成方式。',
   'Composant TSX autonome': '独立 TSX 组件',
@@ -100,12 +103,14 @@ export const chinese: Record<string, string> = {
   Snapshot: '快照',
   'Mode photo': '照片模式',
   'Capture une image statique de l’avatar.': '捕获头像的静态图像。',
+  'Capture une image statique du pet.': '捕获宠物的静态图像。',
   'Les options de capture seront configurées ici.': '快照选项将在此配置。',
   'Aperçu du Snapshot': '快照预览',
   'Aperçu du mode photo': '照片模式预览',
   'Arrière-plan': '背景',
   'Choisis un fond transparent, uni ou en dégradé.': '选择透明、纯色或渐变背景。',
   Style: '样式',
+  Type: '类型',
   Famille: '系列',
   Pets: '宠物',
   Toutes: '全部',
@@ -150,6 +155,8 @@ export const chinese: Record<string, string> = {
   'Nouveau pet Classic': '新建 Classic 宠物',
   'Nouveau pet Blob': '新建 Blob 宠物',
   'Aucun pet dans cette famille.': '该系列中没有宠物。',
+  'Aucun pet pour l’instant.': '还没有宠物。',
+  'Ajouter un pet': '添加宠物',
   'Créez un pet Classic, Blob ou IP logo.': '创建一个 Classic、Blob 或 IP logo 宠物。',
   'Aucune expression.': '还没有表情。',
   'Aucune animation.': '还没有动画。',
@@ -165,6 +172,8 @@ export const chinese: Record<string, string> = {
   Générer: '生成',
   'Choisissez le style de cet avatar. Classic conserve le moteur procédural actuel.':
     '选择此头像的风格系列。Classic 保留当前程序化引擎。',
+  'Choisissez le type de ce pet. Classic conserve le moteur procédural actuel.':
+    '选择此宠物的类型。Classic 保留当前程序化引擎。',
   'Les documents existants sans champ de style restent Classic.':
     '没有 style 字段的现有文档仍为 Classic。',
   '2D': '2D',
@@ -200,6 +209,8 @@ export const chinese: Record<string, string> = {
   'Projet du Studio': '工作室项目',
   'Transfère tous les avatars, expressions et animations vers un autre navigateur.':
     '将所有头像、表情和动画传输到另一个浏览器。',
+  'Transfère tous les pets, expressions et animations vers un autre navigateur.':
+    '将所有宠物、表情和动画传输到另一个浏览器。',
   'Télécharger le projet JSON': '下载 JSON 项目',
   'Importer un projet JSON': '导入 JSON 项目',
   'Ce fichier ne contient pas un projet Avatar Studio valide et compatible.':
@@ -207,10 +218,13 @@ export const chinese: Record<string, string> = {
   'Importer ce projet ?': '导入此项目？',
   'Le projet local actuel sera remplacé par les avatars, expressions, animations et état de lecture de ce fichier.':
     '当前本地项目将被此文件中的头像、表情、动画和播放状态替换。',
+  'Le projet local actuel sera remplacé par les pets, expressions, animations et état de lecture de ce fichier.':
+    '当前本地项目将被此文件中的宠物、表情、动画和播放状态替换。',
   'Le projet n’a pas pu être enregistré dans ce navigateur. Libère de l’espace puis réessaie.':
     '无法在此浏览器中保存项目。请释放空间后重试。',
   Importer: '导入',
   'Construction, forme et couleur de la tête de l’avatar.': '头像头部的构建、形状和颜色。',
+  'Construction, forme et couleur de la tête du pet.': '宠物头部的构建、形状和颜色。',
   'Une forme principale porte les yeux. Les autres primitives se placent autour d’elle.':
     '主形状承载眼睛，其他基础形状围绕它放置。',
   'Forme principale': '主形状',
@@ -239,11 +253,16 @@ export const chinese: Record<string, string> = {
     '默认眼睛的形状、位置、方向和颜色。',
   'Définis l’identité du regard de cet avatar. Les poses s’ajoutent ensuite à cette base.':
     '定义此头像的默认眼睛，姿势将在此基础上叠加。',
+  'Définis l’identité du regard de ce pet. Les poses s’ajoutent ensuite à cette base.':
+    '定义此宠物的默认眼睛，姿势将在此基础上叠加。',
   'Coordonnées propres à l’avatar, indépendantes des poses.': '头像自身的坐标，与姿势无关。',
+  'Coordonnées propres au pet, indépendantes des poses.': '宠物自身的坐标，与姿势无关。',
   'Inclinaison par défaut propre à chaque œil.': '每只眼睛的默认倾斜角度。',
   'Orientation et apparence générale de la pose.': '姿势的整体方向和外观。',
   'La pose peut remplacer temporairement la couleur de l’avatar.': '姿势可以暂时覆盖头像颜色。',
+  'La pose peut remplacer temporairement la couleur du pet.': '姿势可以暂时覆盖宠物颜色。',
   'Reprendre la couleur de l’avatar': '恢复头像颜色',
+  'Reprendre la couleur du pet': '恢复宠物颜色',
   'Les libellés ↔ sont scrubbables, comme dans Figma.': '带 ↔ 的标签可像 Figma 一样拖动调整。',
   'Forme, placement, orientation et couleur du regard.': '眼睛的形状、位置、方向和颜色。',
   'Coordonnées communes projetées sur la forme choisie.': '投影到所选形状上的共享坐标。',
@@ -349,11 +368,15 @@ export const chinese: Record<string, string> = {
   'Supprimer cette expression ?': '删除此表情？',
   'Cette action retirera définitivement le preset de la bibliothèque de cet avatar.':
     '此操作将从该头像的库中永久删除该预设。',
+  'Cette action retirera définitivement le preset de la bibliothèque de ce pet.':
+    '此操作将从该宠物的库中永久删除该预设。',
   'Cette expression sera aussi retirée des animations suivantes :': '此表情也会从以下动画中移除：',
   'Si une animation ne contient que cette expression, l’expression de repli lui sera assignée pour qu’elle reste jouable.':
     '如果动画只包含此表情，将为其分配备用表情以保持可播放。',
   'Le corps, les expressions et les animations propres à cet avatar seront définitivement supprimés. La bibliothèque de base sera conservée.':
     '此头像的身体、表情和动画将被永久删除，基础库将被保留。',
+  'Le corps, les expressions et les animations propres à ce pet seront définitivement supprimés. La bibliothèque de base sera conservée.':
+    '此宠物的身体、表情和动画将被永久删除，基础库将被保留。',
   'Glisse sur la surface pour orienter la tête. Les anneaux du gizmo contrôlent X, Y et Z.':
     '在表面上拖动以调整头部方向。控制器圆环分别控制 X、Y 和 Z。',
   Sphère: '球体',

@@ -67,6 +67,7 @@ const english: Record<string, string> = {
   Rendu: 'Rendering',
   'Choisis la finition visuelle propre à cet avatar.':
     'Choose the visual finish specific to this avatar.',
+  'Choisis la finition visuelle propre à ce pet.': 'Choose the visual finish specific to this pet.',
   'Type de rendu': 'Rendering type',
   'Pixel utilise une palette franche, sans lissage ni couleur intermédiaire.':
     'Pixel uses a hard palette, with no smoothing or intermediate colors.',
@@ -108,9 +109,12 @@ const english: Record<string, string> = {
   Animations: 'Animations',
   Exporter: 'Export',
   'Exporter l’avatar': 'Export avatar',
+  'Exporter le pet': 'Export pet',
+  Export: 'Export',
   'Télécharge un composant autonome avec les animations de ton choix.':
     'Download a standalone component with the animations you choose.',
   'Avatar sélectionné': 'Selected avatar',
+  'Pet sélectionné': 'Selected pet',
   Format: 'Format',
   'Choisis l’intégration correspondant à ton projet.':
     'Choose the integration that matches your project.',
@@ -129,6 +133,7 @@ const english: Record<string, string> = {
   Snapshot: 'Snapshot',
   'Mode photo': 'Photo Mode',
   'Capture une image statique de l’avatar.': 'Capture a static image of the avatar.',
+  'Capture une image statique du pet.': 'Capture a static image of the pet.',
   'Les options de capture seront configurées ici.': 'Snapshot options will be configured here.',
   'Aperçu du Snapshot': 'Snapshot preview',
   'Aperçu du mode photo': 'Photo Mode preview',
@@ -136,6 +141,7 @@ const english: Record<string, string> = {
   'Choisis un fond transparent, uni ou en dégradé.':
     'Choose a transparent, solid or gradient background.',
   Style: 'Style',
+  Type: 'Type',
   Famille: 'Family',
   Pets: 'Pets',
   Toutes: 'All',
@@ -181,6 +187,8 @@ const english: Record<string, string> = {
   'Nouveau pet Classic': 'New Classic pet',
   'Nouveau pet Blob': 'New Blob pet',
   'Aucun pet dans cette famille.': 'No pets in this family.',
+  'Aucun pet pour l’instant.': 'No pets yet.',
+  'Ajouter un pet': 'Add a pet',
   'Créez un pet Classic, Blob ou IP logo.': 'Create a Classic, Blob, or IP logo pet.',
   'Aucune expression.': 'No expressions yet.',
   'Aucune animation.': 'No animations yet.',
@@ -196,6 +204,8 @@ const english: Record<string, string> = {
   Générer: 'Generate',
   'Choisissez le style de cet avatar. Classic conserve le moteur procédural actuel.':
     'Choose this avatar’s style family. Classic keeps the current procedural engine.',
+  'Choisissez le type de ce pet. Classic conserve le moteur procédural actuel.':
+    'Choose this pet’s type. Classic keeps the current procedural engine.',
   'Les documents existants sans champ de style restent Classic.':
     'Existing documents without a style field stay Classic.',
   '2D': '2D',
@@ -232,6 +242,8 @@ const english: Record<string, string> = {
   'Projet du Studio': 'Studio project',
   'Transfère tous les avatars, expressions et animations vers un autre navigateur.':
     'Transfer every avatar, expression and animation to another browser.',
+  'Transfère tous les pets, expressions et animations vers un autre navigateur.':
+    'Transfer every pet, expression and animation to another browser.',
   'Télécharger le projet JSON': 'Download JSON project',
   'Importer un projet JSON': 'Import JSON project',
   'Ce fichier ne contient pas un projet Avatar Studio valide et compatible.':
@@ -239,11 +251,14 @@ const english: Record<string, string> = {
   'Importer ce projet ?': 'Import this project?',
   'Le projet local actuel sera remplacé par les avatars, expressions, animations et état de lecture de ce fichier.':
     'The current local project will be replaced with the avatars, expressions, animations and playback state from this file.',
+  'Le projet local actuel sera remplacé par les pets, expressions, animations et état de lecture de ce fichier.':
+    'The current local project will be replaced with the pets, expressions, animations and playback state from this file.',
   'Le projet n’a pas pu être enregistré dans ce navigateur. Libère de l’espace puis réessaie.':
     'The project could not be saved in this browser. Free up some space and try again.',
   Importer: 'Import',
   'Construction, forme et couleur de la tête de l’avatar.':
     'Build, shape and color of the avatar head.',
+  'Construction, forme et couleur de la tête du pet.': 'Build, shape and color of the pet head.',
   'Une forme principale porte les yeux. Les autres primitives se placent autour d’elle.':
     'One primary shape carries the eyes. Other primitives are placed around it.',
   'Forme principale': 'Primary shape',
@@ -274,13 +289,20 @@ const english: Record<string, string> = {
     'Default eye shape, placement, orientation and color.',
   'Définis l’identité du regard de cet avatar. Les poses s’ajoutent ensuite à cette base.':
     'Define this avatar’s default eyes. Poses are then applied on top of this base.',
+  'Définis l’identité du regard de ce pet. Les poses s’ajoutent ensuite à cette base.':
+    'Define this pet’s default eyes. Poses are then applied on top of this base.',
   'Coordonnées propres à l’avatar, indépendantes des poses.':
     'Avatar-specific coordinates, independent from poses.',
+  'Coordonnées propres au pet, indépendantes des poses.':
+    'Pet-specific coordinates, independent from poses.',
   'Inclinaison par défaut propre à chaque œil.': 'Default tilt for each eye.',
   'Orientation et apparence générale de la pose.': 'General pose orientation and appearance.',
   'La pose peut remplacer temporairement la couleur de l’avatar.':
     'The pose can temporarily override the avatar color.',
+  'La pose peut remplacer temporairement la couleur du pet.':
+    'The pose can temporarily override the pet color.',
   'Reprendre la couleur de l’avatar': 'Use avatar color',
+  'Reprendre la couleur du pet': 'Use pet color',
   'Les libellés ↔ sont scrubbables, comme dans Figma.':
     'Labels marked ↔ can be scrubbed, like in Figma.',
   'Forme, placement, orientation et couleur du regard.':
@@ -394,12 +416,16 @@ const english: Record<string, string> = {
   'Supprimer cette expression ?': 'Delete this expression?',
   'Cette action retirera définitivement le preset de la bibliothèque de cet avatar.':
     'This permanently removes the preset from this avatar’s library.',
+  'Cette action retirera définitivement le preset de la bibliothèque de ce pet.':
+    'This permanently removes the preset from this pet’s library.',
   'Cette expression sera aussi retirée des animations suivantes :':
     'This expression will also be removed from the following animations:',
   'Si une animation ne contient que cette expression, l’expression de repli lui sera assignée pour qu’elle reste jouable.':
     'If an animation only contains this expression, the fallback expression will be assigned so it remains playable.',
   'Le corps, les expressions et les animations propres à cet avatar seront définitivement supprimés. La bibliothèque de base sera conservée.':
     'This avatar’s body, expressions and animations will be permanently deleted. The base library will be preserved.',
+  'Le corps, les expressions et les animations propres à ce pet seront définitivement supprimés. La bibliothèque de base sera conservée.':
+    'This pet’s body, expressions and animations will be permanently deleted. The base library will be preserved.',
   'Glisse sur la surface pour orienter la tête. Les anneaux du gizmo contrôlent X, Y et Z.':
     'Drag on the surface to orient the head. The gizmo rings control X, Y and Z.',
   Sphère: 'Sphere',
