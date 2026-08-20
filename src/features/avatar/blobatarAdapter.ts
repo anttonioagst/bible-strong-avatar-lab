@@ -37,8 +37,15 @@ const blobatarPoses: Array<BlobatarExpression | undefined> = [
 export const blobatarNameForAvatar = (avatar: { id: string; name: string; styleSeed?: string }) =>
   avatarStyleSeed(avatar)
 
-export const renderBlobatarSvg = (seed: string) =>
-  blobatar(seed, { background: 'squircle', title: seed })
+export const renderBlobatarSvg = (
+  seed: string,
+  options?: { background?: 'squircle' | false; expression?: Expression }
+) =>
+  blobatar(seed, {
+    background: options?.background === false ? false : 'squircle',
+    title: seed,
+    expression: blobatarExpressionForStudio(options?.expression),
+  })
 
 export const blobatarExpressionForStudio = (
   expression: Expression | undefined

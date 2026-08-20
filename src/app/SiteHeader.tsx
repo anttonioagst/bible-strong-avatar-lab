@@ -14,11 +14,12 @@ import {
   STUDIO_PRODUCT_NAME,
 } from '@/features/studio/studioBrand'
 import { type StudioLanguage } from '@/i18n'
-import { type NavSurface } from '@/app/surface'
+import { type NavSurface, photoPetHash } from '@/app/surface'
 
 type SiteHeaderProps = {
   activeSurface: NavSurface
-  variant: 'habitat' | 'bench'
+  activeAvatarId?: string
+  variant: 'habitat' | 'bench' | 'grok'
   language: StudioLanguage
   setLanguage: (language: StudioLanguage) => void
   t: (text: string) => string
@@ -39,14 +40,15 @@ const LANGUAGE_ITEMS: { value: StudioLanguage; flag: string; label: string }[] =
   { value: 'zh-CN', flag: '🇨🇳', label: '简体中文' },
 ]
 
-const NAV_ITEMS: { surface: NavSurface; hash: string; labelKey: string }[] = [
-  { surface: 'lab', hash: '#/', labelKey: 'Lab' },
-  { surface: 'studio', hash: '#/studio', labelKey: 'Studio' },
-  { surface: 'photo', hash: '#/photo', labelKey: 'Photo' },
+const NAV_ITEMS: { surface: NavSurface; hash: (petId?: string) => string; labelKey: string }[] = [
+  { surface: 'lab', hash: () => '#/', labelKey: 'Lab' },
+  { surface: 'studio', hash: () => '#/studio', labelKey: 'Studio' },
+  { surface: 'photo', hash: petId => (petId ? photoPetHash(petId) : '#/photo'), labelKey: 'Photo' },
 ]
 
 export function SiteHeader({
   activeSurface,
+  activeAvatarId,
   variant,
   language,
   setLanguage,
@@ -71,7 +73,7 @@ export function SiteHeader({
           <a
             key={item.surface}
             className={`site-nav-link${activeSurface === item.surface ? ' site-nav-link-active' : ''}`}
-            href={item.hash}
+            href={item.hash(item.surface === 'photo' ? activeAvatarId : undefined)}
             aria-current={activeSurface === item.surface ? 'page' : undefined}
           >
             {t(item.labelKey)}

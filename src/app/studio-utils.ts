@@ -18,6 +18,7 @@ import { poseFromExpression, renderAvatar, type Expression } from '@/features/av
 import { type SurfaceConfig } from '@/features/avatar/surfaces'
 
 export type Mode = 'avatars' | 'manual' | 'expressions' | 'states' | 'export'
+export type PhotoTool = 'pose' | 'frame'
 export type ExportFormat = 'react' | 'javascript'
 export type SnapshotFormat = 'svg' | 'png'
 export type PlaybackStatus = 'playing' | 'paused' | 'stopped'

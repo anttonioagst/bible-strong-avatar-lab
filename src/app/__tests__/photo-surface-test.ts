@@ -1,4 +1,4 @@
-import { parseHashSurface, parsePetQuery } from '@/app/surface'
+import { parseHashSurface, photoPetHash } from '@/app/surface'
 import { translateStudioText } from '@/i18n'
 
 describe('Photo surface routing and chrome', () => {
@@ -7,12 +7,16 @@ describe('Photo surface routing and chrome', () => {
     expect(parseHashSurface('#/photo?pet=radar')).toBe('photo')
   })
 
-  it('selects pets from hash query strings', () => {
-    expect(parsePetQuery('#/photo?pet=radar')).toBe('radar')
-    expect(parsePetQuery('#/studio?pet=wiipo')).toBe('wiipo')
+  it('builds photo pet hashes for navigation and picker write-back', () => {
+    expect(photoPetHash('radar')).toBe('#/photo?pet=radar')
+    expect(photoPetHash('wiipo')).toBe('#/photo?pet=wiipo')
   })
 
-  it('exposes background, size, format, and capture copy in every locale', () => {
+  it('selects pets from hash query strings', () => {
+    expect(photoPetHash('radar').includes('pet=radar')).toBe(true)
+  })
+
+  it('exposes background, size, format, capture, and framing copy in every locale', () => {
     const controls = [
       'Arrière-plan',
       'Définition du mode photo',
@@ -20,6 +24,10 @@ describe('Photo surface routing and chrome', () => {
       'Capturer',
       'Réglages photo',
       'Ouvrir Photo',
+      'Cadrage',
+      'Outils du mode photo',
+      'Recentrer le cadrage',
+      'Coins arrondis',
     ] as const
 
     for (const key of controls) {
@@ -28,6 +36,8 @@ describe('Photo surface routing and chrome', () => {
     }
 
     expect(translateStudioText('Capturer', 'en')).toBe('Capture')
+    expect(translateStudioText('Pose', 'zh-CN')).toBe('姿势')
+    expect(translateStudioText('Cadrage', 'zh-CN')).toBe('取景')
     expect(translateStudioText('Réglages photo', 'zh-CN')).toBe('照片设置')
   })
 })

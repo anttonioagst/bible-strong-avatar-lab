@@ -6,6 +6,8 @@ export type NavSurface = 'lab' | 'studio' | 'photo'
 
 export const studioPetHash = (petId: string) => `#/studio?pet=${encodeURIComponent(petId)}`
 
+export const photoPetHash = (petId: string) => `#/photo?pet=${encodeURIComponent(petId)}`
+
 export const parseHashSurface = (hash: string): AppSurface => {
   const normalized = hash.replace(/^#/, '').replace(/^\/?/, '/').split('?')[0] ?? '/'
   if (normalized === '/' || normalized === '') return 'lab'

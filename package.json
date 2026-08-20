@@ -34,6 +34,8 @@
   "dependencies": {
     "@base-ui/react": "^1.7.0",
     "@fontsource-variable/fraunces": "^5.3.0",
+    "@fontsource-variable/geist": "^5.2.8",
+    "@fontsource/geist-mono": "^5.2.8",
     "@fontsource-variable/source-sans-3": "^5.3.0",
     "@fontsource/ibm-plex-mono": "^5.3.0",
     "@vercel/analytics": "^2.0.1",
@@ -59,6 +61,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",
     "babel-plugin-react-compiler": "^1.0.0",
+    "happy-dom": "^20.0.10",
     "prettier": "^3.8.1",
     "rolldown": "^1.0.0-rc.5",
     "tailwindcss": "^4.3.3",

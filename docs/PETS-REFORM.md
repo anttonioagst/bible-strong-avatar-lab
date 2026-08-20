@@ -10,19 +10,19 @@ and `docs/adr/`.
 
 ## Hard locks (every phase)
 
-| Lock                  | Meaning                                                                                                                        |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| No engine rewrite     | Do not edit `src/features/avatar/geometry.ts` or hand-edit `standaloneEngine.generated.ts`.                                    |
-| No new backend        | No auth, API, database, analytics, or hosted asset store.                                                                      |
-| Persistence stays     | `bible-strong-avatar-studio-v2` + JSON export/import. Do not rename the key.                                                   |
-| Schema stays additive | `styleFamily` / `projection` / `styleSeed` / `markSvg` already exist. Do not invent a v3 document.                             |
-| AGPL credit stays     | README + LICENSE + Lab footer. No Bible Strong **chrome**.                                                                     |
-| No second tree        | No extra Vite app, no Next.js marketing site, no parallel design system.                                                       |
+| Lock                  | Meaning                                                                                                                                                                                                                                                 |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| No engine rewrite     | Do not edit `src/features/avatar/geometry.ts` or hand-edit `standaloneEngine.generated.ts`.                                                                                                                                                             |
+| No new backend        | No auth, API, database, analytics, or hosted asset store.                                                                                                                                                                                               |
+| Persistence stays     | `bible-strong-avatar-studio-v2` + JSON export/import. Do not rename the key.                                                                                                                                                                            |
+| Schema stays additive | `styleFamily` / `projection` / `styleSeed` / `markSvg` already exist. Do not invent a v3 document.                                                                                                                                                      |
+| AGPL credit stays     | README + LICENSE + Lab footer. No Bible Strong **chrome**.                                                                                                                                                                                              |
+| No second tree        | No extra Vite app, no Next.js marketing site, no parallel design system.                                                                                                                                                                                |
 | No banned visuals     | No Estel, Glide teal, or Wiipo-coral chrome. Geist / `#0A0A0A` stay banned on Lab / Studio / create. **Photo v2 (P6) is the exception:** `#/photo` uses Antonio Grok tokens from [`PETS-PHOTO.md`](./PETS-PHOTO.md). Do not leak those tokens into Lab. |
-| UI primitives         | Reuse `src/components/ui/`. No `useMemo` / `useCallback` / `memo`.                                                             |
-| i18n                  | EN / FR / zh-CN stay in sync. No extra locale.                                                                                 |
-| Pages-safe URLs       | Hash surfaces only. `base: './'` stays. `radar.html` stays a build input.                                                      |
-| Tests                 | Focused tests for new surface/IA behavior. `pnpm typecheck` + the touched test file while working; `pnpm check` before commit. |
+| UI primitives         | Reuse `src/components/ui/`. No `useMemo` / `useCallback` / `memo`.                                                                                                                                                                                      |
+| i18n                  | EN / FR / zh-CN stay in sync. No extra locale.                                                                                                                                                                                                          |
+| Pages-safe URLs       | Hash surfaces only. `base: './'` stays. `radar.html` stays a build input.                                                                                                                                                                               |
+| Tests                 | Focused tests for new surface/IA behavior. `pnpm typecheck` + the touched test file while working; `pnpm check` before commit.                                                                                                                          |
 
 ## Hypothesis (resolved)
 
@@ -285,15 +285,15 @@ P1–P4 already shipped. Do not undo hash IA. Do not add Studio
 
 ### Defaults (locked in PETS-PHOTO — do not reopen)
 
-| Decision | Value |
-| -------- | ----- |
-| Composition persistence | Session `useState`, like upstream |
+| Decision                          | Value                                                                                   |
+| --------------------------------- | --------------------------------------------------------------------------------------- |
+| Composition persistence           | Session `useState`, like upstream                                                       |
 | Classic / blob / mark composition | `{ x: 0, y: 0, scale: 1, cornerRadius: 18 }` (18 is Photo session; module default is 0) |
-| Snapshot session | transparent, `#F5F7FC` / `#C9D5FF`, 1024, png |
-| Header variant | `grok` |
-| Photo tool on enter | `'frame'` + `freezeLivePreviewForManipulation` |
-| Shuffle | `randomSnapshotPalette` when not transparent |
-| Pixel flag | Keep `createPixelSnapshotCanvas`. Do not enable `PIXEL_RENDERING_ENABLED`. |
+| Snapshot session                  | transparent, `#F5F7FC` / `#C9D5FF`, 1024, png                                           |
+| Header variant                    | `grok`                                                                                  |
+| Photo tool on enter               | `'frame'` + `freezeLivePreviewForManipulation`                                          |
+| Shuffle                           | `randomSnapshotPalette` when not transparent                                            |
+| Pixel flag                        | Keep `createPixelSnapshotCanvas`. Do not enable `PIXEL_RENDERING_ENABLED`.              |
 
 ### Done when
 
